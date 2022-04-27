@@ -77,8 +77,8 @@ def common_test(request):
     # https://cem.mrzero.kr/rodata/ca/CommonTest?Time=457537&Mcode=26533
     mcode = request.GET.get('Mcode')
     data = {
-        "Lcode": "0",
-        "Pcode": "0",
+        "Lcode": "110",
+        "Pcode": "364",
     }
     return JsonResponse(data)
 
