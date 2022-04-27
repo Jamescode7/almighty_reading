@@ -2,7 +2,7 @@ FROM python:3.9.0
 
 WORKDIR /home/
 
-RUN echo "makeimage27"
+RUN echo "django_ar_image3"
 
 RUN git clone https://github.com/Jamescode7/almighty_reading.git
 

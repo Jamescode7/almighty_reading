@@ -25,7 +25,7 @@ class Theme(models.Model):
     total = models.IntegerField(max_length=5, null=True, blank=True)
 
     def __str__(self):
-        return self.theme_name
+        return str(self.theme_name)
 
 
 class Topic(models.Model):
