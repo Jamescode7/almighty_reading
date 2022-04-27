@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% include 'head.html' %}
+
+<body style="font-family: 'NanumSquareR;">
+
+    <hr>
+     {% for word in word_list %}
+
+          <a href="">
+            <p>
+                {{ word.eng }}  {{ word.kor }}
+            </p>
+          </a>
+    {% endfor %}
+
+    <hr>
+
+
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+{% include 'library_head.html' %}
+<body style="font-family: 'NanumSquareR;">
+<div id="CEM" class="SelectPage SelectLevel">
+
+    <div class="Topbar">
+        <img src="{% static 'imgs/logo.jpg' %}"/>
+    </div>
+    <div class="Content">
+        <h1>Select Level</h1>
+
+        <p class="SelectList">
+            {% for level in level_list %}
+              <a href="{% url 'library:theme_list' level_code=level.level_code %}">
+                  {{ level.level_name }}
+              </a>
+            {% endfor %}
+        </p>
+    </div>
+</div>
+</body>
+</html>

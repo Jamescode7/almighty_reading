@@ -1,0 +1,102 @@
+/*
+Copyright (C) Hello@CreatorsMeetup.net
+@author mr.Zero (mrZeroKr@Gmail.com)
+*/
+
+@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+* {margin: 0; padding: 0}
+HTML, BODY, #HS{
+    padding: 0;             font-size: 10px;
+    margin: 0;              width: 100%;
+    overflow-x: hidden !important;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+*{  letter-spacing: -0.05em; box-sizing: border-box; }
+
+H1, H2, H3, DL, DT, DD{ margin: 0;  padding: 0; }
+ul,ol,li{list-style:none; padding:0; margin:0}
+A{ text-decoration: none; }
+
+.hide{ display: none; }
+.clear{ clear: both; }
+
+TABLE TD{
+    font-size: 2rem;
+}
+
+SECTION,
+P{
+    max-width: 768px;
+    margin: 2rem auto;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.3);
+    padding: 2rem;
+    border-radius: 2rem;
+}
+
+.Topbar{
+    text-align: center;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    padding: 2rem;
+    width: 100vw;
+    box-shadow: 0 0.3rem 6rem rgba(0,0,0,0.3);
+}
+.Topbar IMG{
+    height: 3rem; width: auto;
+}
+.Content{
+    margin-top: 12rem;
+}
+
+H1{
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 200;
+}
+.SelectList A{
+    display: block;
+    padding: 2rem;
+    font-size: 2rem;
+    border-top: solid 1px #ddd;
+    text-align: center;
+}
+.SelectList A:hover{
+    background-color: #f4f4f4;
+}
+.SelectList A:first-child{
+    border: none;
+}
+
+.TopicView TABLE A{
+    color: #fff;
+    background-color: orange;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    padding: 0.5rem;
+    border-radius: 1rem;
+}
+
+@media (min-width: 768px){
+    HTML, BODY{ font-size: 10px; }
+}
+@media (min-width: 100px) and (max-width: 767px){
+    HTML, BODY{ font-size: 1.5vw; }
+    .TopicView THEAD{
+        display: none !important;
+    }
+    .TopicView H2{
+        font-size: 5vw;
+    }
+    .TopicView TD{
+        font-size: 3.5vw;
+    }
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+{% include 'library_head.html' %}
+<body style="font-family: 'NanumSquareR;">
+<div id="CEM" class="SelectPage SelectLevel">
+
+    <div class="Topbar">
+        <img src="{% static 'imgs/logo.jpg' %}"/>
+    </div>
+    <div class="Content">
+        <h1>Select Topic</h1>
+
+        <p class="SelectList">
+            {% for topic in topic_list %}
+              <a href="{% url 'library:topic_view' topic_code=topic.topic_code %}">
+                  {{ topic.topic_name }}
+              </a>
+            {% endfor %}
+        </p>
+    </div>
+</div>
+</body>
+</html>

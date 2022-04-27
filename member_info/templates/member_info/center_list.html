@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% include 'head.html' %}
+
+<body style="font-family: 'NanumSquareR;">
+
+    <hr>
+
+     {% for center in center_list %}
+      <a href="{% url 'member_info:center_member_list' %}">
+        <p>
+            {{ center.code }} {{ center.cname }} - {{ center.uname }}
+        </p>
+      </a>
+    {% endfor %}
+
+
+    <div style="text-align: center; margin: 1rem 0;">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary rounded-pill">
+        {{ page_obj.previous_page_number }}
+    </a>
+    {% endif %}
+    <a href="?page={{ page_obj.number }}" class="btn btn-secondary rounded-pill active">
+        {{ page_obj.number }}
+    </a>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary rounded-pill">
+        {{ page_obj.next_page_number }}
+    </a>
+    {% endif %}
+
+</div>
+    <hr>
+
+
+
+</body>
+</html>

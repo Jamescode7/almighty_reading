@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+{% include 'library_head.html' %}
+<body style="font-family: 'NanumSquareR;">
+<div id="CEM" class="TopicView">
+    <div class="Topbar">
+        <img src="{% static 'imgs/logo.jpg' %}"/>
+    </div>
+    <div class="Content">
+        <h1>{{ topic_name }}</h1>
+    </div>
+    <section id="Words" class="Word">
+        <h2>Word</h2>
+        <table class="dataTable ui celled striped table">
+            <thead>
+                <tr>
+                    <th>Eng</th>
+                    <th>Kor</th>
+                    <th>DicEng</th>
+                    <th>DicKor</th>
+                    <th>Sound</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for word in word_list %}
+                <tr>
+                    <td>{{ word.eng }}</td>
+                    <td>{{ word.kor }}</td>
+                    <td>{{ word.dic_eng }}</td>
+                    <td>{{ word.dic_kor }}</td>
+                    <td>
+                        <a href="javascript:playSound('WordSound', '{{word.sound}}');">PLAY</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+    </section>
+
+
+
+    <section id="Sentence" class="Sentence">
+        <h2>Sentence</h2>
+        <table class="dataTable ui celled striped table">
+            <thead>
+                <tr>
+                    <th>Eng</th><th>Kor</th><th>Sound</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sentence in sentence_list %}
+                <tr>
+                    <td>{{ sentence.eng }}</td>
+                    <td>{{ sentence.kor }}</td>
+                    <td><a href="javascript:playSound('SentSound', '{{sentence.sound}}');">PLAY</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section id="Paragraph" class="Paragraph">
+        <h2>Paragraph</h2>
+        <table class="dataTable ui celled striped table">
+            <thead>
+                <tr>
+                    <th>Eng</th>
+                    <th>Kor</th>
+                    <th>Sound</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for para in para_list %}
+                <tr>
+                    <td style="line-height:130%">{{para.eng|linebreaksbr}}</td>
+                    <td style="line-height:130%">{{para.kor|linebreaksbr}}</td>
+                    <td style="vertical-align:middle"><a href="javascript:playSound('ParaSound', '{{para.sound}}');">PLAY</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+<script>
+this.audio = null;
+function playSound(group, snd){
+    if( this.audio ) this.audio.pause();
+    url = '{{ sound_path }}' + group + '/' + snd;
+    alert(url);
+    this.audio = new Audio(url);
+    this.audio.play();
+}
+</script>
+</body>
+</html>
+
