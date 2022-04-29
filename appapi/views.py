@@ -20,7 +20,6 @@ def version_dic(version):
     dic["app_version"] = str(version.app_version)
     dic["download_url"] = version.download_url or ""
     dic["create_at"] = version.create_at
-    dic["app_version_down_file"] = version.app_version_down_file
     return dic
 
 
