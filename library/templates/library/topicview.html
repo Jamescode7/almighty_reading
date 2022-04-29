@@ -87,7 +87,6 @@ this.audio = null;
 function playSound(group, snd){
     if( this.audio ) this.audio.pause();
     url = '{{ sound_path }}' + group + '/' + snd;
-    alert(url);
     this.audio = new Audio(url);
     this.audio.play();
 }

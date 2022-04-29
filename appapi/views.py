@@ -20,6 +20,7 @@ def version_dic(version):
     dic["app_version"] = str(version.app_version)
     dic["download_url"] = version.download_url or ""
     dic["create_at"] = version.create_at
+    dic["app_version_down_file"] = version.app_version_down_file
     return dic
 
 
@@ -45,9 +46,17 @@ def user_info_load(request):
             user = User.objects.create_user(user_id, '', password)
             user.save()
 
+
+    level_code = 0
+    topic_code = 0
+    if TopicLog.objects.filter(username=user_id).order_by('-select_dt')[:1]:
+        row = TopicLog[0]
+        row.topic_name
+
+
     info = {
         "Mcode": mcode,
-        "Mname": "Cem",
+        "Mname": mcode,
         "Point": 0,
         "Lcode": 0,
         "Pcode": 0,
@@ -76,9 +85,11 @@ def user_info_load(request):
 def common_test(request):
     # https://cem.mrzero.kr/rodata/ca/CommonTest?Time=457537&Mcode=26533
     mcode = request.GET.get('Mcode')
+    p_code = "0"
+
     data = {
         "Lcode": "110",
-        "Pcode": "364",
+        "Pcode": p_code,
     }
     return JsonResponse(data)
 
@@ -348,7 +359,7 @@ def stepTimeSave(request):
     topic_code = request.GET.get('Pcode')
     step_code = request.GET.get('StepCode')
     study_time = request.GET.get('StudyTime')
-
+    #https://www.almightyreading.shop/api/StepTimeSave?Time=256619&Mcode=songcheckim&Pcode=364&FlashCode=108142&StudyTime=0&StepCode=P00
     save_topic = StepTimeLog(username=mcode, topic_code=topic_code, step_code=step_code, study_time=study_time)
     save_topic.save()
 
