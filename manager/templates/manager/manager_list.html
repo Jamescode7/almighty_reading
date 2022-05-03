@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<body style="font-family: 'NanumSquareR;">
+<div id="CEM" class="SelectPage SelectLevel">
+
+    <div class="Topbar">
+        <img src="{% static 'imgs/logo.jpg' %}"/>
+    </div>
+    <div class="Content">
+        <table border="1">
+            <tr>
+                <th>성명</th>
+                <th>아이디</th>
+                <th>타입</th>
+                <th>학원코드</th>
+            </tr>
+            {% for member in member_list %}
+            <tr>
+                <td>{{ member.mname }}</td>
+                <td>{{ member.mcode }}</td>
+                <td>{{ member.mtype }}</td>
+                <td>{{ member.acode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</body>
+</html>

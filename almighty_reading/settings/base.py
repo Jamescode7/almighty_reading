@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'study_info',
     'import_export',
     'appapi',
+    'manager',
 
 ]
 

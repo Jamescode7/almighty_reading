@@ -4,8 +4,8 @@ from django.db import models
 
 
 class Level(models.Model):
-    level_code = models.IntegerField(max_length=3)
-    level_name = models.CharField(max_length=30)
+    level_code = models.IntegerField(max_length=3, blank=True, null=True)
+    level_name = models.CharField(max_length=30, blank=True, null=True)
     memo = models.CharField(max_length=20, null=True, blank=True)
     use_yn = models.CharField(max_length=1, null=True, blank=True)
     index_order = models.IntegerField(max_length=5, null=True, blank=True)

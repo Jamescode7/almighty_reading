@@ -14,17 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.urls import path, include
+from django.shortcuts import redirect
 
 from common_value.models import AppVersion
+from manage import main
 from study_info.views import bin_response
 
 urlpatterns = [
-    path('', bin_response),
+    path('', lambda request: redirect('manager/main/', permanent=False)),
     path('admin/', admin.site.urls),
     path('member_info/', include('member_info.urls')),
     path('library/', include('library.urls')),
     path('common_value/', include('common_value.urls')),
     path('study_info/', include('study_info.urls')),
     path('api/', include('appapi.urls')),
+    path('manager/', include('manager.urls')),
 ]

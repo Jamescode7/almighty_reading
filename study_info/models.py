@@ -12,7 +12,7 @@ class TopicLog(models.Model):
 
     def __str__(self):
         qset = Topic.objects.filter(topic_code=self.topic_code)
-        print(qset[0])
+        #print(qset[0])
         return self.username + '-' + str(qset[0]) + '(' + str(self.topic_code) + ')'
 
 
@@ -33,5 +33,4 @@ class StepTimeLog(models.Model):
     step_code = models.CharField(max_length=10, null=True, blank=True)
     study_time = models.CharField(max_length=25, null=True, blank=True)
     step_dt = models.DateTimeField(auto_now=True, null=True)
-
 

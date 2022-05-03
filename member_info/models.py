@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from library.models import Level
+from manager.models import Plan
+
 
 class ZCenter(models.Model):
     code = models.CharField(max_length=6, null=True)
@@ -24,3 +27,31 @@ class ZMember(models.Model):
     mkind = models.CharField(max_length=10, null=True)
     state = models.CharField(max_length=6, null=True)
 
+
+class TestAgency(models.Model):
+    acode = models.CharField(max_length=10, null=True)
+    aname = models.CharField(max_length=30, null=True)
+    aman = models.CharField(max_length=10, null=True)
+    webid = models.CharField(max_length=10, null=True)
+    wcode = models.CharField(max_length=10, null=True)
+    akind = models.CharField(max_length=10, null=True)
+    bonbuacode = models.CharField(max_length=10, null=True)
+    analkind = models.CharField(max_length=10, null=True)
+    busikind = models.CharField(max_length=10, null=True)
+    typekind = models.CharField(max_length=10, null=True)
+    zonekind = models.CharField(max_length=10, null=True)
+
+    def __str__(self):
+        return '(' + str(self.acode) + ')' + str(self.aname) + '(' + str(self.webid) + ')'
+
+
+class TestMember(models.Model):
+    mcode = models.CharField(max_length=10, null=True)
+    mname = models.CharField(max_length=10, null=True)
+    mtype = models.CharField(max_length=10, null=True)
+    acode = models.CharField(max_length=10, null=True)
+    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True)
+    level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True)
+
+    def __str__(self):
+        return '(' + str(self.mcode) + ')' + str(self.mname) + '(' + str(self.mtype) + ')'

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+{% include 'head_manager.html' %}
+<style>
+
+tr.colored:nth-child(even){
+
+}
+
+tr.colored:nth-child(odd){
+}
+
+tr.colored:hover td{
+
+  background-color:#cdcdcd !important;
+
+  color:#303f39 !important;
+
+}
+
+</style>
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        {% include 'topbar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        {% include 'left-sidebar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <h4 class="page-title">학원생정보</h4>
+                    </div>
+                    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+                        <div class="d-md-flex">
+                            <ol class="breadcrumb ms-auto">
+                                <li><a href="#" class="fw-normal">Dashboard</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="white-box">
+                            <h3 class="box-title">학생 리스트</h3>
+                            <p class="text-muted">전체 학생수 <code>{{ member_list|length }}</code></p>
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0"><a href="?order_by=id&desc={{isDesc}}">#</a></th>
+                                            <th class="border-top-0"><a href="?order_by=mname&desc={{isDesc}}">이름</a></th>
+                                            <th class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">아이디</a></th>
+                                            <th class="border-top-0"><a href="?order_by=level_code&desc={{isDesc}}">레벨</a></th>
+                                            <th class="border-top-0"><a href="?order_by=plan_code&desc={{isDesc}}">플랜</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for member in member_list %}
+                                        <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:main' user_id=member.mcode %}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
+                                            <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
+                                            <td>{{ member.mname }}</td>
+                                            <td style="color:#aaaaaa">{{ member.mcode }}</td>
+                                            <td style="{%if member.level_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.level_code == NONE %} 선택없음 {% else %} {{ member.level_code }} {% endif %}</td>
+                                            <td style="{%if member.plan_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.plan_code == NONE %} 자유학습 {% else %} {{ member.plan_code }} {% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-7">
+                        <div class="white-box">
+                            <h3 class="box-title">학습 정보<code>&nbsp; 레벨 / 플랜</code></h3>
+                            <div class="table-responsive">
+                                <form name="memForm" method="get" action="" onsubmit="return validateForm();" >
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">이름</th>
+                                            <th class="border-top-0">{{ user_name }}</th>
+                                            <th class="border-top-0">아이디</th>
+                                            <th class="border-top-0">{{ user_id }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-top-0">레벨제한</th>
+                                            <th class="border-top-0">
+                                                <div class="border-bottom">
+                                                    <select name="mem_level" class="shadow-none p-0 border-0 form-control-line">
+                                                        <option {% if is_select_level == False %} selected{% endif %}>선택없음</option>
+                                                        {% for level in level_list %}
+                                                            <option {% if level.level_name == select_level_name %} selected{% endif %} value="{{ level.level_code }}">
+                                                                {{ level.level_name }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary">변경</button>
+                                                </div>
+                                            </th>
+                                            <th class="border-top-0">마이플랜</th>
+                                            <th class="border-top-0">
+                                                <div class="border-bottom">
+                                                    <select name="mem_plan" class="shadow-none p-0 border-0 ">
+                                                        {% for plan in plan_list %}
+                                                            <option {% if plan.plan_name == select_plan_name %} selected{% endif %} value="{{ plan.plan_code }}">
+                                                                {{ plan.plan_name }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary">변경</button>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="white-box">
+                            <h3 class="box-title">학습 이력 </h3>
+                            <p class="text-muted">전체 토픽수 <code>{{ member_topic_log|length }}</code></p>
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">#</th>
+                                            <th class="border-top-0">토픽명</th>
+                                            <th class="border-top-0">토픽레벨</th>
+                                            <th class="border-top-0">시작일</th>
+                                            <th class="border-top-0">종료일</th>
+                                            <th class="border-top-0">문제</th>
+                                            <th class="border-top-0">실전문제</th>
+                                            <th class="border-top-0">동시통역</th>
+                                            <th class="border-top-0">처리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in member_topic_log %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ row.topic_code }}</td>
+                                            <td>{{ row.level_code }}</td>
+                                            <td>{% if row.start_dt == None %}  {% else %} {{ row.start_dt|date:'y.m.d' }} {% endif %}</td>
+                                            <td>{% if row.end_dt == None %}  {% else %} {{ row.end_dt|date:'y.m.d' }} {% endif %}</td>
+                                            <td><button type="button" class="btn btn-outline-primary">보기</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary">출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary">출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-danger">종료</button></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <footer class="footer text-center"> 2021 © Ample Admin brought to you by <a
+                    href="https://www.wrappixel.com/">wrappixel.com</a>
+            </footer>
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app-style-switcher.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'js/custom.js' %}"></script>
+    <!--This page JavaScript -->
+    <!--chartis chart-->
+    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
+    <script>
+        function validateForm()
+        {
+            var mem_level = document.forms["memForm"]["mem_level"].value;
+            if( mem_level == '선택없음' )
+            {
+                alert( '레벨을 선택해주세요' );
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>
