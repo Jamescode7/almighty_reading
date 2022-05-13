@@ -12,6 +12,7 @@ from common_value.models import AppVersion
 #
 ###################################################
 from library.models import Topic, WrtMoon, Word, SpkSent, Level, Theme, WrtWord, Exam
+from member_info.models import TestMember
 from study_info.models import TopicLog, StepFinishLog, StepTimeLog
 
 
@@ -85,9 +86,16 @@ def common_test(request):
     # https://cem.mrzero.kr/rodata/ca/CommonTest?Time=457537&Mcode=26533
     mcode = request.GET.get('Mcode')
     p_code = "0"
+    mem_level = "0"
+
+    user = TestMember.objects.filter(mcode=mcode)
+    if user:
+        print('in user')
+        user = user[0]
+        mem_level = str(user.level_code.level_code)
 
     data = {
-        "Lcode": "110",
+        "Lcode": mem_level,
         "Pcode": p_code,
     }
     return JsonResponse(data)

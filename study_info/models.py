@@ -9,6 +9,8 @@ class TopicLog(models.Model):
     username = models.CharField(max_length=25)
     topic_code = models.CharField(max_length=5)
     select_dt = models.DateTimeField(auto_now=True, null=True)
+    start_dt = models.DateTimeField(null=True, blank=True)
+    end_dt = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         qset = Topic.objects.filter(topic_code=self.topic_code)

@@ -187,9 +187,9 @@ tr.colored:hover td{
                                             <td>{{ row.level_code }}</td>
                                             <td>{% if row.start_dt == None %}  {% else %} {{ row.start_dt|date:'y.m.d' }} {% endif %}</td>
                                             <td>{% if row.end_dt == None %}  {% else %} {{ row.end_dt|date:'y.m.d' }} {% endif %}</td>
-                                            <td><button type="button" class="btn btn-outline-primary">보기</button></td>
-                                            <td><button type="button" class="btn btn-outline-primary">출력</button></td>
-                                            <td><button type="button" class="btn btn-outline-primary">출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:answer' topic_code=row.topic_code.topic_code %}', 'answer', 'width=500px, height=600px' );">보기</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=row.topic_code.topic_code %}', 'comprehension', 'width=900px, height=1000px' );">출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=row.topic_code.topic_code %}', 'interpretation', 'width=900px, height=1000px' );"> 출력</button></td>
                                             <td><button type="button" class="btn btn-outline-danger">종료</button></td>
                                         </tr>
                                         {% endfor %}
@@ -250,6 +250,7 @@ tr.colored:hover td{
     <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
     <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
     <script>
+
         function validateForm()
         {
             var mem_level = document.forms["memForm"]["mem_level"].value;

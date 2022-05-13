@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+
+<style>
+
+.subtitle{
+    margin-top:40px;
+}
+
+.tb{
+    border-collapse: collapse;
+    border: 1px solid #adadad;
+
+    text-align:center;
+    font-size:0.85rem;
+}
+
+.ttitle{
+    padding:0.4rem;
+}
+
+.tbd{
+    padding:0.4rem;
+    text-align:left;
+
+}
+
+
+
+
+
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html, body {
+    width: 210mm;
+    height: 297mm;
+  }
+   .noprint{
+       display:none;
+   }
+}
+
+</style>
+<script>
+    function printPage(){
+        window.print();
+    }
+</script>
+<body>
+    <table width="90%" style="margin-left:auto; margin-right:auto;">
+        <tr><td>
+        <div id="ctrlArea" class="noprint">
+            <button onclick="printPage()">Print this page</button>
+            <a href="?type=eng&random={{random}}" ><button>영어</button></a>
+            <a href="?type=kor&random={{random}}" ><button>한글</button></a>
+            <a href="?type=both&random={{random}}" ><button>영어+한글</button></a>
+            &nbsp;|&nbsp;
+            <a href="?type={{both}}&random=normal" ><button>순서대로</button></a>
+            <a href="?type={{both}}&random=random" ><button>섞어서</button></a>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="white-box">
+                        <div style="">
+                            <h1 class="" style="text-align:center; margin-bottom:0px;">Interpretation</h1>
+                            <p class="page-title" style="font-weight: 400; font-size:1.3rem; text-align:center; margin-top:0px" >(올리 동시통역지)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p>1. 토픽정보</p>
+        <table class="tb" border="1" width="100%" align="center"  >
+            <tr>
+                <td class="tbd" width="10%" >Level</td>
+                <td class="tbd" width="40%" >{{ level_info }}</td>
+                <td class="tbd" width="10%" >Theme</td>
+                <td class="tbd" width="40%" >{{ theme_info }}</td>
+            </tr>
+            <tr>
+                <td class="tbd" width="10%" >Topic</td>
+                <td class="tbd" width="90%" colspan="3">{{ topic_info }}</td>
+            </tr>
+        </table>
+
+        <p class="subtitle">2. 토픽본문</p>
+        <table class="tb" border="1" width="100%" align="center"  >
+            <tr>
+                <td class="ttitle" width="50%" colspan="2">영어</td>
+                <td class="ttitle" width="50%" colspan="2">한글</td>
+            </tr>
+            {% for sentence in sentence_list %}
+            <tr>
+                <td class="" width="4%" >{{ forloop.counter }}</td>
+                <td class="tbd" >{% if both == 'kor' %} &nbsp; {% else %} {{ sentence.eng }} {% endif %}</td>
+                <td class="" width="4%" >{{ forloop.counter }}</td>
+                <td class="tbd">{% if both == 'eng' %} &nbsp; {% else %} {{ sentence.kor }} {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        </td></tr>
+    </table>
+
+</body>
+
+</html>
