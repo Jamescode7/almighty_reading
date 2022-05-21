@@ -1,21 +1,30 @@
 from django.urls import path, re_path
 
-from appapi.views import user_info_load, flash_version_check, common_test, \
-    levelThemeLoad, themeTopicLoad, topicSelectSave, topicMainLoad, speakSentLoad, writeWordLoad, compLoad, \
-    oXnoteLoad, stepFinishSave, stepTimeSave
-from manager.views import manager_list, dashboard, basic_table, main, profile, interpretation,\
-    comprehension, week, print_page, answer_page
+from appapi.views import flash_version_check
+from manager.views import dashboard, basic_table, main, profile, interpretation,\
+    comprehension, week, print_page, answer_page, WeekListView, daytest, info, agency
 
 app_name = "manager"
 
 urlpatterns = [
     path('FlashVersionCheck/', flash_version_check, name='FlashVersionCheck'),
-    path('manager_list/', manager_list, name='manager_list'),
 
+    # sample - dev
     path('main/', main, name='main'),
     path('main/<str:user_id>', main, name='main'),
 
+    path('info/', info, name='info'),
+    path('info/<str:user_id>', info, name='info'),
+
+    path('agency/', agency, name='agency'),
+    path('agency/<str:agency_id>', agency, name='agency'),
+
     path('week/', week, name='week'),
+
+
+    #dev check
+    path('daytest/', daytest, name='daytest'),
+    path('week_dev/', WeekListView.as_view(), name='week_dev'),
 
     #paper
     path('interpretation/', interpretation, name='interpretation'),

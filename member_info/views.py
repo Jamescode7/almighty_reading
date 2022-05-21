@@ -7,7 +7,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.generic import ListView
 
-from member_info.models import ZCenter, ZMember
+
 
 
 def bin_response(request):
@@ -39,35 +39,5 @@ def del_center(request):
     #ZCenter.objects.all().delete() 데이터 모두 삭제. --엑셀 데이터 잘 못 넣었을때 사용함.
     return HttpResponse('ok')
 
-
-class CenterListView(ListView):
-    model = ZCenter
-    context_object_name = 'center_list'
-    template_name = 'member_info/center_list.html'
-    paginate_by = 30
-
-    def get_queryset(self):
-        ZCenter.objects.select_related('cname')
-        return ZCenter.objects.filter(btype='교실')
-
-
-class MemberList2View(ListView):
-    model = ZMember
-    context_object_name = 'member_list'
-    template_name = 'member_info/member_list.html'
-    paginate_by = 300
-
-    def get_queryset(self):
-        return ZMember.objects.filter(state='학습', acode='C70067')
-
-
-class MemberListView(ListView):
-    model = ZMember
-    context_object_name = 'member_list'
-    template_name = 'member_info/member_list.html'
-    paginate_by = 30
-
-    def get_queryset(self):
-        return ZMember.objects.filter(mname='장은영')
 
 

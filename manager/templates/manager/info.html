@@ -99,7 +99,7 @@ tr.colored:hover td{
                                     </thead>
                                     <tbody>
                                         {% for member in member_list %}
-                                        <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:main' user_id=member.mcode %}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
+                                        <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:info' user_id=member.mcode %}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
                                             <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
                                             <td>{{ member.mname }}</td>
                                             <td style="color:#aaaaaa">{{ member.mcode }}</td>
