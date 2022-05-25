@@ -20,13 +20,10 @@ from study_info.models import StepFinishLog
 
 def comprehension(request, topic_code=''):
     if topic_code == '':
-        return HttpResponse('topic code')
+        return HttpResponse('잘못된 접근입니다(topic code)')
 
     exam_info = Exam.objects.filter(topic_code=topic_code)
-
-    context = {
-        'exam_info': exam_info,
-    }
+    context = { 'exam_info': exam_info}
     return render(request, 'manager/comprehension.html', context)
 
 
@@ -58,33 +55,31 @@ def print_page(request):
 
 def answer_page(request, topic_code=''):
     if topic_code == '':
-        return HttpResponse('topic code')
-
+        return HttpResponse('잘못된 접근입니다(topic code)')
     exam_info = Exam.objects.filter(topic_code=topic_code)
-
-    context = {
-        'exam_info': exam_info,
-    }
+    context = {'exam_info': exam_info}
     return render(request, 'manager/answer.html', context)
 
 
 def interpretation(request, topic_code=''):
     if topic_code == '':
-        return HttpResponse('topic code')
+        return HttpResponse('잘못된 접근입니다 (topic code)')
 
-    both = 'both'
+    # 영어 / 한글 표시
+    reading_type = 'both'  # eng, kor, both(eng+kor)
     if request.GET.get('type'):
-        both = request.GET.get('type')
+        reading_type = request.GET.get('type')
 
-    random = 'normal'
+    # 순차적 / 랜덤 표시
+    is_random = 'normal'
     if request.GET.get('random'):
-        random = request.GET.get('random')
+        is_random = request.GET.get('random')
 
     topic_info = Topic.objects.get(topic_code=topic_code)
     theme_info = Theme.objects.get(theme_code=topic_info.theme_code)
     level_info = Level.objects.get(level_code=theme_info.level_code)
 
-    if random == 'normal':
+    if is_random == 'normal':
         sentence_list = SpkSent.objects.filter(topic_code=topic_code)
     else:
         sentence_list = SpkSent.objects.filter(topic_code=topic_code).order_by('?')
@@ -93,56 +88,75 @@ def interpretation(request, topic_code=''):
         'level_info': level_info,
         'theme_info': theme_info,
         'topic_info': topic_info,
-        'both': both,  # eng, kor, eng+kor
-        'random': random,
+        'reading_type': reading_type,  # eng, kor, eng+kor
+        'random': is_random,
         'sentence_list': sentence_list,
     }
     return render(request, 'manager/interpretation.html', context)
 
 
+def get_aid(request):
+    if 'agency' in request.session:
+        aid = request.session['agency']
+        return aid
+    else:
+        return 'bad_way'
+
+
 def agency(request, agency_id=''):
+    """
+        올리 관리자 페이지에서는 로그인 페이지가 없다. 포겟미낫 관리자 페이지 우상단에서
+        [올리] 를 클릭하면 이쪽으로 오도록 회의에서 결정하였다.
+        따라서 그러한 루트로 아래 agency에 접근하면 세션을 등록하고, 그것으로 아이디처럼 사용하도록 한다. """
     if agency_id == '':
         return HttpResponse('잘못된 접근입니다')
     else:
-        aid = request.session['agency'] = agency_id
-        # print('agency id : ' + aid)
+        request.session['agency'] = agency_id
         return HttpResponseRedirect(reverse('manager:info'))
 
 
-def get_json_url(url):
+def update_member_list(request, agency_id):
+    """
+        웹전산 API에서 원장님 아이디에 해당하는 학생들을 불러온다.
+        불러온 리스트가 DB에 없다면 추가해준다.
+        페이지를 호출할때마다 매번 추가할 순 없으니 세션을 등록해주어 반복 실행을 막는다. """
+
+    # 세션이 등록 되어 있다면 나가기
+    if 'sync_member' in request.session:
+        print('already sync!')
+        pass
+
+    # 웹전산에서 정보 가져오기 -- JSON
+    url = "http://www.tongclass.co.kr/Class/api_member.aspx?ac=" + agency_id
     oper_url = urllib.request.urlopen(url)
     if oper_url.getcode() == 200:
         data = oper_url.read().decode(oper_url.headers.get_content_charset())
         json_data = json.loads(data)
-    else:
-        print("Error receiving data", oper_url.getcode())
-    return json_data
+        for row in json_data:
+            row_id = row['Id']
+            row_name = row['Mn']
+            # print(row_id + '/' + row_name)
+            # 회원이 없다면 등록시키기.
+            study_member = StudyMember.objects.filter(mcode=row_id)
+            if study_member:
+                if study_member[0].acode is None:
+                    study_member[0].acode = agency_id
+                    study_member.save()
+            else:
+                study_member = StudyMember(mcode=row_id, mname=row_name, acode=agency_id,
+                                           plan_code=Plan.objects.get(plan_code=2))
+                study_member.save()
+    # 세션 등록
+    request.session['sync_member'] = 'ok'
 
 
 def info(request, user_id=''):
-    if 'agency' in request.session:
-        aid = request.session['agency']
-        print('agency id : ' + aid)
-    else:
-        return HttpResponse('잘못된 접근입니다')
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
-    # 웹전산에서 정보 가져오기
-    url = "http://www.tongclass.co.kr/Class/api_member.aspx?ac=" + aid
-    json_data = get_json_url(url)
-
-    for row in json_data:
-        row_id = row['Id']
-        row_name = row['Mn']
-        #print(row_id + '/' + row_name)
-        # 회원이 없다면 등록시키기.
-        study_member = StudyMember.objects.filter(mcode=row_id)
-        if study_member:
-            if study_member[0].acode is None:
-                study_member[0].acode = aid
-                study_member.save()
-        else:
-            study_member = StudyMember(mcode=row_id, mname=row_name, acode=aid, plan_code=Plan.objects.get(plan_code=2))
-            study_member.save()
+    # 웹전산에서 회원 리스트를 갱신한다.
+    update_member_list(request, aid)
 
     is_select_level = False
     select_level_name = ''
@@ -177,7 +191,7 @@ def info(request, user_id=''):
             user.level_code = Level.objects.get(level_code=mem_level)
             user.plan_code = Plan.objects.get(plan_code=mem_plan)
             user.save()
-            return HttpResponseRedirect(reverse('manager:main', args=(user_id,)))
+            return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
 
         # 토픽 종료 또는 토픽 리셋 실행.
         if request.GET.get('process'):
@@ -186,17 +200,36 @@ def info(request, user_id=''):
             log = MemberTopicLog.objects.filter(id=process_id)
             if log:
                 log = log[0]
+                today = date.today()
+                year = today.strftime('%y')
+                month = today.strftime('%m')
+                day = today.strftime('%d')
+
                 if process == 'closed':
                     log.end_dt = datetime.now()
+                    finish_log = StepFinishLog()
+
+                    save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
+                                               dt_day=day, topic_code='C', step_code=None,
+                                               step_num=None, c_point=None, t_point=None,
+                                               answer=None, stage=None, step=None, plan_type=None,
+                                               study_code=None)
+                    save_topic.save()
 
                 elif process == 'reset':
                     log.start_dt = datetime.now()
                     log.end_dt = None
                     log.stage = 1
                     log.step = 1
+                    save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
+                                               dt_day=day, topic_code='R', step_code=None,
+                                               step_num=None, c_point=None, t_point=None,
+                                               answer=None, stage=None, step=None, plan_type=None,
+                                               study_code=None)
+                    save_topic.save()
                 log.save()
 
-                return HttpResponseRedirect(reverse('manager:main', args=(user_id,)))
+                return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
 
         level_list = Level.objects.all()
         select_level_name = str(user.level_code)
@@ -204,7 +237,6 @@ def info(request, user_id=''):
         plan_list = Plan.objects.all().order_by('-id')
         user_name = user.mname
         member_topic_log = MemberTopicLog.objects.filter(username=user_id).order_by('-id')
-
 
     else:
         user_id = ''
@@ -287,7 +319,6 @@ def main(request, user_id='', agency_id=''):
         user_name = user.mname
         member_topic_log = MemberTopicLog.objects.filter(username=user_id).order_by('-id')
 
-
     else:
         user_id = ''
 
@@ -307,44 +338,56 @@ def main(request, user_id='', agency_id=''):
 
 
 class WeekListView(ListView):
+    log_list = StepFinishLog.objects.all()
+    for log in log_list:
+        print(log.dt_day)
+
     model = StepFinishLog
     context_object_name = 'week_list'
     template_name = 'manager/week_list_dev.html'
     ordering = '-id'
 
+def test(request):
+    a = 'true'
+    if a is 'true':
+        return HttpResponse('lock')
+    log_list = StepFinishLog.objects.all()
+    for log in log_list:
+        day = int(log.dt_day) + 1
+        daystr = str(day)
+        print(log.dt_day + '/' + daystr)
 
-def daytest(request):
-    today = date.today()
-    year = today.strftime('%y')
-    month = today.strftime('%m')
-    day = today.strftime('%d')
-    print('year : ' + year)
-    print('month : ' + month)
-    print('day : ' + day)
-    return HttpResponse('year : ' + year)
+        log.dt_day = daystr
+        #log.plan_type = 1
+        log.save()
+    return HttpResponse('hey')
 
 
 def week(request):
-    if 'agency' in request.session:
-        aid = request.session['agency']
-        #print('agency id : ' + aid)
-    else:
-        return HttpResponse('잘못된 접근입니다')
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
+    # 웹전산에서 회원 리스트를 갱신한다.
+    update_member_list(request, aid)
+
+    # 시작일을 가져온다. 없다면 오늘이 시작일
     if request.GET.get('start_dt'):
         start_dt = request.GET.get('start_dt')
     else:
         start_dt = date.today()
 
+    # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
     days = []
     loop = 6
     for n in range(7):
         seek = loop - n
         day = start_dt - timedelta(seek)
-        day_str = day.strftime('%m.%d') + getDay(day.weekday())
+        day_str = day.strftime('%m.%d') + get_day(day.weekday())
         # print(day_str.strip()[-1])
         days.append(day_str)
 
+    # 모든 학생에 대해 7일간 학습 데이터 가져오기
     member_list = StudyMember.objects.filter(acode=aid)
     # 01 모든 학생을 가져온다.
     for member in member_list:
@@ -354,57 +397,62 @@ def week(request):
         for dt in range(7):
             seek = loop - dt
             day = start_dt - timedelta(seek)
-            day_str = day.strftime('%m.%d') + getDay(day.weekday())
+            day_str = day.strftime('%m.%d') + get_day(day.weekday())
             yy = day.strftime('%y')
             mm = day.strftime('%m')
             dd = day.strftime('%d')
-
+            append_data_list = []
             # 03 날짜당 학생의 데이터를 추출해본다.
-            stepFinishLog = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd)
-            study_data = {}
-            if stepFinishLog:
-                study_data['st'] = ''
-                study_data['st1'] = ''
-                study_data['st2'] = ''
-                study_data['st3'] = ''
-                color_str = "gray"  # or blue
-                for log in stepFinishLog:
-                    # 04 stage별로 마지막까지 학습을 했다면 st-blue, 그렇지 않으면 st-gray
-                    if log.stage == 1:
-                        if log.step == 2:
-                            color_str = "blue"
-                    elif log.stage == 2:
-                        if log.step == 2:
-                            color_str = "blue"
-                    elif log.stage == 3:
-                        if log.step == 3:
-                            if log.step_num == "7":
-                                color_str = "blue"
+            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by('-id')
 
-                    # study_data = 'st' + str(log.stage) + '-' + color_str
-                    study_data['st'] = 'st' + str(log.stage)
-                    study_data['st' + str(log.stage)] = 'st' + str(log.stage)
-                    study_data['color'] = color_str
-                    study_data['color' + str(log.stage)] = color_str
-                    # print(study_data)
+            if log_list:
+                log_data = {}
+                prev_log = {}
+                prev_log['text'] = 'st'
+                prev_log['color'] = 'black'
+                prev_log['stage'] = 0
+                prev_log['step'] = 0
+                for log in log_list:
+                    #print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+                    log_data = {}
+                    log_data['stage'] = log.stage
+                    log_data['step'] = log.step
+                    log_data['text'] = 'st' + str(log.stage)
+                    log_data['color'] = 'colorGray'
+                    if log.plan_type == 2:
+                        log_data['text'] = str(log.step)
+                        log_data['color'] = 'colorGreen'
+                        append_data_list.insert(0, log_data)
+                    elif log.topic_code == 'C':
+                        log_data['text'] = 'C'
+                        log_data['color'] = 'colorIndigo'
+                        append_data_list.insert(0, log_data)
+                    elif log.topic_code == 'R':
+                        log_data['text'] = 'R'
+                        log_data['color'] = 'colorRed'
+                        append_data_list.insert(0, log_data)
+                    else:
+                        if log.stage == 1 and log.step == 2:
+                            log_data['color'] = 'colorBlue'
+                        if log.stage == 2 and log.step == 2:
+                            log_data['color'] = 'colorBlue'
+                        if log.stage == 3 and log.step == 3 and log.step_num == "7":
+                            log_data['color'] = 'colorBlue'
+
+                        if prev_log['stage'] != log_data['stage']:
+                            append_data_list.insert(0, log_data)
+
+                    prev_log['stage'] = log_data['stage']
 
             else:
-                study_data['st'] = '.'
-            # print(day_str.strip()[-1])
-            # print(dt)
-            # member['day' + dt] = str(day_str)
-            member.days.append(study_data)
-        if member.mname == "전소현":
-            print(member.mname)
-            print(member.days[0])
-            print(member.days[1])
-            print(member.days[2])
-            print(member.days[3])
-            print(member.days[4])
-            print(member.days[5])
-            print(member.days[6])
+                log_data = {}
+                log_data['color'] = ''
+                log_data['text'] = '.'
+                append_data_list.append(log_data)
 
-    # SELECT "study_info_stepfinishlog"."id", "study_info_stepfinishlog"."username", "study_info_stepfinishlog"."dt_year", "study_info_stepfinishlog"."dt_month", "study_info_stepfinishlog"."dt_day", "study_info_stepfinishlog"."topic_code", "study_info_stepfinishlog"."step_code", "study_info_stepfinishlog"."step_num", "study_info_stepfinishlog"."c_point", "study_info_stepfinishlog"."t_point", "study_info_stepfinishlog"."answer", "study_info_stepfinishlog"."finish_dt", "study_info_stepfinishlog"."stage", "study_info_stepfinishlog"."step" FROM "study_info_stepfinishlog" WHERE ("study_info_stepfinishlog"."dt_day" = 19 AND "study_info_stepfinishlog"."dt_month" = 05 AND "study_info_stepfinishlog"."dt_year" = 22 AND "study_info_stepfinishlog"."username" = 전소현)
+
+            # member마다 7일간 데이터 저장.
+            member.days.append(append_data_list)
 
     context = {
         'start_dt': start_dt,
@@ -414,7 +462,7 @@ def week(request):
     return render(request, 'manager/week.html', context)
 
 
-def getDay(num):
+def get_day(num):
     switcher = {0: "월", 1: "화", 2: "수", 3: "목", 4: "금", 5: "토", 6: "일"}
     return switcher.get(num, "Please enter number between 1-7")
 

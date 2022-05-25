@@ -32,10 +32,13 @@ class StepFinishLog(models.Model):
     finish_dt = models.DateTimeField(auto_now=True, null=True)
     stage = models.IntegerField(max_length=3, null=True, blank=True)
     step = models.IntegerField(max_length=3, null=True, blank=True)
+    plan_type = models.IntegerField(max_length=10, null=True, blank=True)
+    study_code = models.IntegerField(max_length=10, null=True, blank=True)
+
 
     def __str__(self):
         qset = Topic.objects.filter(topic_code=self.topic_code)
-        return self.username + ' / <' + str(qset[0]) + '> stage: ' + str(self.stage) + ' / step: ' + str(self.step) + ')'
+        return self.username + ' / ' + self.dt_month + '-' + self.dt_day + ' / <' + str(qset[0]) + '> stage: ' + str(self.stage) + ' / step: ' + str(self.step) + ')'
 
 
 class StepTimeLog(models.Model):

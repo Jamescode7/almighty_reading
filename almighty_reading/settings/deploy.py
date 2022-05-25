@@ -28,7 +28,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://www.almightyreading.shop']
+CSRF_TRUSTED_ORIGINS = ['https://www.readoly.co.kr']
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

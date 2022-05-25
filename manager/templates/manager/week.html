@@ -33,25 +33,75 @@ td{
 .stageClear{
     background:blue;
     border-radius:50%;
-    height: 26px;
-    width: 26px;
-    line-height: 26px;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
     display: inline-block;
     text-align: center;
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
-
-.stepClear{
+.colorGreen{
+    background:green;
+    border-radius:50%;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorBlue{
+    background:blue;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorGray{
     background:gray;
     border-radius:50%;
-    height: 26px;
-    width: 26px;
-    line-height: 26px;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
     display: inline-block;
     text-align: center;
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+}
+.colorRed{
+    background:red;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorIndigo{
+    background:indigo;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorNone{
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #000000;
+    font-size: 0.8rem;
 }
 
 </style>
@@ -93,10 +143,15 @@ td{
             <!-- ============================================================== -->
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
-                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">일일학습현황</h4>
+                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12" >
+                        <h4 class="page-title" style="float:left; padding-right: 40px;">일일학습현황 </h4>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorBlue">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 완료&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGray">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 학습중&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGreen">0</span> <span style="line-height: 17px; vertical-align: center;">자유학습 스텝&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorRed">R</span> <span style="line-height: 17px; vertical-align: center;">리셋&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorIndigo">C</span> <span style="line-height: 17px; vertical-align: center;">종료&nbsp;&nbsp;&nbsp; </span>
                     </div>
-                    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+                    <div class="col-lg-3 col-sm-4 col-md-4 col-xs-12">
                         <div class="d-md-flex">
                             <ol class="breadcrumb ms-auto">
                                 <li><a href="#" class="fw-normal">Dashboard</a></li>
@@ -131,8 +186,6 @@ td{
                                             {% for day in days %}
                                                 <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0 {% if day|last == '토' or day|last == '일' %} fontred {% endif %}">
                                                     {{day}}
-
-
                                                 </th>
                                             {% endfor %}
                                         </tr>
@@ -146,18 +199,12 @@ td{
                                             <td style="{%if member.level_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}"></td>
                                             {% for day in member.days %}
                                                 <td style="">
-                                                    {% if day.st1 %}
-                                                        <span class="{% if day.color1 == 'blue' %} stageClear {% elif day.color1 == 'gray' %} stepClear {% endif %}">{{ day.st1 }}</span>
-                                                    {% endif %}
-                                                    {% if day.st2 %}
-                                                        <span class="{% if day.color2 == 'blue' %} stageClear {% elif day.color2 == 'gray' %} stepClear {% endif %}">{{ day.st2 }}</span>
-                                                    {% endif %}
-                                                    {% if day.st3 %}
-                                                        <span class="{% if day.color3 == 'blue' %} stageClear {% elif day.color3 == 'gray' %} stepClear {% endif %}">{{ day.st3 }}</span>
-                                                    {% endif %}
-                                                    {% if day.st == '.' %}
-                                                        <span class="">{{ day.st }}</span>
-                                                    {% endif %}
+                                                    {% for row in day %}
+                                                        <span class="{{ row.color }}">{{ row.text }}</span>
+                                                        {% if forloop.counter|divisibleby:3 %}
+                                                            <br>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </td>
                                             {% endfor %}
                                         </tr>

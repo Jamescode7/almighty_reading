@@ -59,8 +59,8 @@
             <a href="?type=kor&random={{random}}" ><button>한글</button></a>
             <a href="?type=both&random={{random}}" ><button>영어+한글</button></a>
             &nbsp;|&nbsp;
-            <a href="?type={{both}}&random=normal" ><button>순서대로</button></a>
-            <a href="?type={{both}}&random=random" ><button>섞어서</button></a>
+            <a href="?type={{reading_type}}&random=normal" ><button>순서대로</button></a>
+            <a href="?type={{reading_type}}&random=random" ><button>섞어서</button></a>
         </div>
         <div class="container-fluid">
             <div class="row">
@@ -98,9 +98,9 @@
             {% for sentence in sentence_list %}
             <tr>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd" >{% if both == 'kor' %} &nbsp; {% else %} {{ sentence.eng }} {% endif %}</td>
+                <td class="tbd" >{% if reading_type == 'kor' %} &nbsp; {% else %} {{ sentence.eng }} {% endif %}</td>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd">{% if both == 'eng' %} &nbsp; {% else %} {{ sentence.kor }} {% endif %}</td>
+                <td class="tbd">{% if reading_type == 'eng' %} &nbsp; {% else %} {{ sentence.kor }} {% endif %}</td>
             </tr>
             {% endfor %}
         </table>

@@ -105,6 +105,7 @@ def common_test(request):
     plan_type = "2"  # 2이면 자유학습, 1이면 플랜학습
     stage = 1
     step = 1
+    study_code = 0
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
@@ -113,6 +114,8 @@ def common_test(request):
             mem_level = str(user.level_code.level_code)
         if user.plan_code:
             plan_type = str(user.plan_code.plan_code)
+        if user.current_study:
+            study_code = str(user.current_study)
 
     topic_log = get_topic_log(mcode)
     if topic_log:
@@ -132,6 +135,7 @@ def common_test(request):
         "LevelLimit": mem_level,
         "Stage": stage,
         "Step": step,
+        "StudyCode": study_code
     }
     return JsonResponse(data)
 
@@ -143,7 +147,7 @@ def common_test(request):
 ###################################################
 
 
-def levelToDicionary(level, idx):
+def level_to_dicionary(level, idx):
     dic = {}
     dic["idx"] = str(idx + 1)
     dic["Lcode"] = str(level.level_code)
@@ -155,7 +159,7 @@ def levelToDicionary(level, idx):
     return dic
 
 
-def themeToDicionary(theme, idx):
+def theme_to_dicionary(theme, idx):
     dic = {}
     dic["idx"] = str(idx + 1)
     dic["Tcode"] = str(theme.theme_code)
@@ -171,21 +175,21 @@ def themeToDicionary(theme, idx):
     return dic
 
 
-def levelThemeLoad(request):
+def level_theme_load(request):
     # Get level
     level = Level.objects.all()
-    tempDic = []
+    temp_dic = []
     for n in range(len(level)):
-        tempDic.append(levelToDicionary(level[n], n))
-    level = tempDic
+        temp_dic.append(level_to_dicionary(level[n], n))
+    level = temp_dic
 
     # Get theme
     theme = Theme.objects.all()
-    tempDic = []
+    temp_dic = []
     for n in range(len(theme)):
-        tempDic.append(themeToDicionary(theme[n], n))
+        temp_dic.append(theme_to_dicionary(theme[n], n))
 
-    theme = tempDic
+    theme = temp_dic
     data = {
         "LevelGroup": level,
         "ThemeGroup": theme,
@@ -193,25 +197,25 @@ def levelThemeLoad(request):
     return JsonResponse(data)
 
 
-def topicToDicionary(topic, idx):
-    dic = {}
-    dic["idx"] = str(idx + 1)
-    dic["Pcode"] = str(topic.topic_code)
-    dic["Tcode"] = str(topic.theme_code)
-    dic["Pname"] = topic.topic_name
-    dic["PreValue"] = str(topic.pre_value) or ""
-    dic["UseYn"] = str(topic.use_yn)
-    dic["IndexOrder"] = str(topic.ord)
+def topic_to_dicionary(topic, idx):
+    dic = {
+        "idx": str(idx + 1),
+        "Pcode": str(topic.topic_code),
+        "Tcode": str(topic.theme_code),
+        "Pname": topic.topic_name,
+        "PreValue": str(topic.pre_value) or "",
+        "UseYn": str(topic.use_yn),
+        "IndexOrder": str(topic.ord)}
     return dic
 
 
-def themeTopicLoad(request):
+def theme_topic_load(request):
     # https://cem.mrzero.kr/rodata/ca/ThemeTopicLoad?Time=1716041&Mcode=26533&Tcode=110&Keyword=
     theme_code = request.GET.get('Tcode')
     topic = Topic.objects.filter(theme_code=theme_code)
     tempDic = []
     for n in range(len(topic)):
-        tempDic.append(topicToDicionary(topic[n], n))
+        tempDic.append(topic_to_dicionary(topic[n], n))
     topic = tempDic
     data = {
         "TopicGroup": topic,
@@ -219,7 +223,7 @@ def themeTopicLoad(request):
     return JsonResponse(data)
 
 
-def topicSelectSave(request):
+def topic_select_save(request):
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
     level_code = request.GET.get('Lcode')
@@ -238,53 +242,53 @@ def topicSelectSave(request):
                                 stage=1, step=1)
     save_topic.save()
 
-    return HttpResponse('1')
+    return HttpResponse('save_log_id' + str(save_topic.id))
 
 
-def wordToDicionary(word, idx):
-    dic = {}
-    dic["idx"] = str(idx + 1)
-    dic["Wcode"] = str(word.word_code)
-    dic["Pcode"] = str(word.topic_code)
-    dic["PageNum"] = str(word.page_num)
-    dic["Num"] = str(word.num)
-    dic["Eng"] = str(word.eng)
-    dic["Kor"] = str(word.kor)
-    dic["DicEng"] = str(word.dic_eng)
-    dic["DicKor"] = str(word.dic_kor)
-    dic["Sound"] = str(word.sound)
-    dic["UseYN"] = str(word.use_yn)
+def word_to_dicionary(word, idx):
+    dic = {
+        "idx": str(idx + 1),
+        "Wcode": str(word.word_code),
+        "Pcode": str(word.topic_code),
+        "PageNum": str(word.page_num),
+        "Num": str(word.num),
+        "Eng": str(word.eng),
+        "Kor": str(word.kor),
+        "DicEng": str(word.dic_eng),
+        "DicKor": str(word.dic_kor),
+        "Sound": str(word.sound),
+        "UseYN": str(word.use_yn)}
     return dic
 
 
-def wrtWordToDicionary(word):
-    dic = {}
-    dic["Kor"] = str(word.kor)
-    dic["Eng"] = str(word.eng)
-    dic["Sound"] = "http://cem.mrzero.kr/data/SentSound/" + str(word.sound)
+def wrt_word_to_dicionary(word):
+    dic = {
+        "Kor": str(word.kor),
+        "Eng": str(word.eng),
+        "Sound": "http://cem.mrzero.kr/data/SentSound/" + str(word.sound)}
     return dic
 
 
-def wrtMoonToDicionary(topic, idx):
-    dic = {}
-    dic["idx"] = str(idx + 1)
-    dic["Rcode"] = str(topic.reading_code)
-    dic["Pcode"] = str(topic.topic_code)
-    dic["PageNum"] = str(topic.page_num)
-    dic["ParaNum"] = str(topic.para_num)
-    dic["Eng"] = str(topic.eng)
-    dic["Kor"] = str(topic.kor)
+def wrt_moon_to_dicionary(topic, idx):
+    dic = {
+        "idx": str(idx + 1),
+        "Rcode": str(topic.reading_code),
+        "Pcode": str(topic.topic_code),
+        "PageNum": str(topic.page_num),
+        "ParaNum": str(topic.para_num),
+        "Eng": str(topic.eng),
+        "Kor": str(topic.kor)}
     return dic
 
 
-def topicMainLoad(request):
+def topic_main_load(request):
     # https://cem.mrzero.kr/rodata/ca/TopicMainLoad?Time=3415193&Mcode=26533&FlashCode=529647&Pcode=364
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
     topic = WrtMoon.objects.filter(topic_code=topic_code)
     tempDic = []
     for n in range(len(topic)):
-        tempDic.append(wrtMoonToDicionary(topic[n], n))
+        tempDic.append(wrt_moon_to_dicionary(topic[n], n))
     topic = tempDic
 
     Jimoon = {"Jimoon": topic}
@@ -292,7 +296,7 @@ def topicMainLoad(request):
     word = Word.objects.filter(topic_code=topic_code)
     tempWord = []
     for n in range(len(word)):
-        tempWord.append(wordToDicionary(word[n], n))
+        tempWord.append(word_to_dicionary(word[n], n))
     word = tempWord
     WordBook = {"WordBook": word}
 
@@ -310,14 +314,14 @@ def topicMainLoad(request):
 
 
 def spkSentToDicionary(spkSent):
-    dic = {}
-    dic["Kor"] = str(spkSent.kor)
-    dic["Eng"] = str(spkSent.eng)
-    dic["Sound"] = 'http://fmn2.tongclass.com/reading/data/SentSound/' + str(spkSent.sound)
+    dic = {
+        "Kor": str(spkSent.kor),
+        "Eng": str(spkSent.eng),
+        "Sound": 'http://fmn2.tongclass.com/reading/data/SentSound/' + str(spkSent.sound)}
     return dic
 
 
-def speakSentLoad(request):
+def speak_sent_load(request):
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
     spkSent = SpkSent.objects.filter(topic_code=topic_code)
@@ -333,14 +337,14 @@ def speakSentLoad(request):
     return JsonResponse(data)
 
 
-def writeWordLoad(request):
+def write_word_load(request):
     # https://cem.mrzero.kr/rodata/ca/WriteWordLoad?Time=4768614&Mcode=26533&Pcode=364
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
     wrtWord = WrtWord.objects.filter(topic_code=topic_code)
     tempDic = []
     for n in range(len(wrtWord)):
-        tempDic.append(wrtWordToDicionary(wrtWord[n]))
+        tempDic.append(wrt_word_to_dicionary(wrtWord[n]))
     wrtWord = tempDic
 
     data = {
@@ -368,7 +372,7 @@ def examToDicionary(exam, idx):
     return dic
 
 
-def compLoad(request):
+def comp_load(request):
     # https://cem.mrzero.kr/rodata/ca/CompLoad?Time=5301995&Mcode=26533&Pcode=364
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
@@ -388,7 +392,7 @@ def compLoad(request):
 
 
 # 오답노트, 현재 빈 값을 리턴해줌. App에선 사용x
-def oXnoteLoad(request):
+def ox_note_load(request):
     # https://cem.mrzero.kr/rodata/ca/OXnoteLoad?Time=5564776&Mcode=26533&Pcode=364
     mcode = request.GET.get('Mcode')
     pcode = request.GET.get('Pcode')
@@ -396,7 +400,7 @@ def oXnoteLoad(request):
     return JsonResponse(data)
 
 
-def stepFinishSave(request):
+def step_finish_save(request):
     # https://cem.mrzero.kr/rodata/ca/StepFinishSave?Time=5169391&Mcode=26533&FlashCode=529647&Pcode=364&StepCode=P09&StepNum=0&Cpoint=0&Tpoint=0&Ans=null&StudyTime=24
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
@@ -409,6 +413,9 @@ def stepFinishSave(request):
     tpoint = request.GET.get('Tpoint')
     ans = request.GET.get('Ans')
     studyTime = request.GET.get('StudyTime')
+    study_code = request.GET.get('StudyCode')
+    get_plan = request.GET.get('Plan')
+
     plan_type = 0
     is_finish_today = False
     is_finish_topic = False
@@ -421,7 +428,7 @@ def stepFinishSave(request):
     save_topic = StepFinishLog(username=mcode, dt_year=year, dt_month=month,
                                dt_day=day, topic_code=topic_code, step_code=step_code,
                                step_num=str(q_num), c_point=cpoint, t_point=tpoint,
-                               answer=ans, stage=stage, step=step)
+                               answer=ans, stage=stage, step=step, plan_type=get_plan, study_code=study_code)
     save_topic.save()
 
     # Next Step, Stage, Plan
@@ -464,6 +471,8 @@ def stepFinishSave(request):
                 if q_num == 0:
                     is_finish_topic = True
                     topic_log.end_dt = datetime.now()
+                    user.current_study = 0
+                    user.save()
                 else:
                     q_num += 1
     elif plan_type == '2':  # 자유학습
@@ -486,7 +495,7 @@ def stepFinishSave(request):
     return JsonResponse(data)
 
 
-def stepTimeSave(request):
+def step_time_save(request):
     # https://cem.mrzero.kr/rodata/ca/StepTimeSave?Time=46989&Mcode=27462&Pcode=4136&FlashCode=410816&StudyTime=0&StepCode=P01
     mcode = request.GET.get('Mcode')
     topic_code = request.GET.get('Pcode')
