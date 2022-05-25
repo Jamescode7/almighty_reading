@@ -515,7 +515,7 @@ def test(request):
 
 
 def test2(request):
-    a = 'true'
+    a = 'trude'
     if a == 'true':
         return HttpResponse('lock')
 
