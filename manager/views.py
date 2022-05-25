@@ -13,7 +13,7 @@ from django.views import View
 from django.views.generic import ListView
 
 from common_value.models import AppVersion
-from library.models import Level, Topic, SpkSent, Theme, Exam
+from library.models import Level, Topic, SpkSent, Theme, Exam, Word
 from manager.models import Plan, MemberTopicLog
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog
@@ -360,20 +360,7 @@ class WeekListView(ListView):
     ordering = '-id'
 
 
-def test(request):
-    a = 'true'
-    if a == 'true':
-        return HttpResponse('lock')
-    log_list = StepFinishLog.objects.all()
-    for log in log_list:
-        day = int(log.dt_day) + 1
-        daystr = str(day)
-        print(log.dt_day + '/' + daystr)
 
-        log.dt_day = daystr
-        #log.plan_type = 1
-        log.save()
-    return HttpResponse('hey')
 
 
 def week(request):
@@ -506,3 +493,36 @@ def basic_table(request):
 
 def profile(request):
     return render(request, 'manager/profile.html')
+
+
+
+
+def test(request):
+    a = 'true'
+    if a == 'true':
+        return HttpResponse('lock')
+    log_list = StepFinishLog.objects.all()
+    for log in log_list:
+        day = int(log.dt_day) + 1
+        daystr = str(day)
+        print(log.dt_day + '/' + daystr)
+
+        log.dt_day = daystr
+        #log.plan_type = 1
+        log.save()
+    return HttpResponse('hey')
+
+
+
+def test2(request):
+    a = 'true'
+    if a == 'true':
+        return HttpResponse('lock')
+
+    try:
+        record = Word.objects.all()
+        record.delete()
+    except:
+        return HttpResponse("Record doesn't exists")
+
+    return HttpResponse('hey')
