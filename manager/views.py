@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
 
+from common_value.models import AppVersion
 from library.models import Level, Topic, SpkSent, Theme, Exam
 from manager.models import Plan, MemberTopicLog
 from member_info.models import StudyMember
@@ -28,6 +29,9 @@ def comprehension(request, topic_code=''):
 
 
 def print_page(request):
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
     level_code = ''
     theme_code = ''
     theme_list = []
@@ -122,10 +126,11 @@ def update_member_list(request, agency_id):
         페이지를 호출할때마다 매번 추가할 순 없으니 세션을 등록해주어 반복 실행을 막는다. """
 
     # 세션이 등록 되어 있다면 나가기
-    if 'sync_member' in request.session:
+    if 'sync_member3' in request.session:
         print('already sync!')
         pass
-
+    else:
+        print('going down!')
     # 웹전산에서 정보 가져오기 -- JSON
     url = "http://www.tongclass.co.kr/Class/api_member.aspx?ac=" + agency_id
     oper_url = urllib.request.urlopen(url)
@@ -146,8 +151,19 @@ def update_member_list(request, agency_id):
                 study_member = StudyMember(mcode=row_id, mname=row_name, acode=agency_id,
                                            plan_code=Plan.objects.get(plan_code=2))
                 study_member.save()
+
+    # 웹전산에서 학원 이름 가져오기 -- JSON
+    url = "http://www.tongclass.co.kr/Class/api_agency_name.aspx?ac=" + agency_id
+    oper_url = urllib.request.urlopen(url)
+    if oper_url.getcode() == 200:
+        data = oper_url.read().decode(oper_url.headers.get_content_charset())
+        json_data = json.loads(data)
+        aname = json_data['Mn']
+        print('a name : ' + aname)
+        request.session['aname'] = aname
+
     # 세션 등록
-    request.session['sync_member'] = 'ok'
+    request.session['sync_member3'] = 'ok'
 
 
 def info(request, user_id=''):
@@ -338,18 +354,15 @@ def main(request, user_id='', agency_id=''):
 
 
 class WeekListView(ListView):
-    log_list = StepFinishLog.objects.all()
-    for log in log_list:
-        print(log.dt_day)
-
     model = StepFinishLog
     context_object_name = 'week_list'
     template_name = 'manager/week_list_dev.html'
     ordering = '-id'
 
+
 def test(request):
     a = 'true'
-    if a is 'true':
+    if a == 'true':
         return HttpResponse('lock')
     log_list = StepFinishLog.objects.all()
     for log in log_list:
@@ -461,6 +474,22 @@ def week(request):
     }
     return render(request, 'manager/week.html', context)
 
+
+def downapp(request):
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    ver = AppVersion.objects.filter().order_by('-id')
+    ver = ver[0]
+    url = ver.download_url
+    runtime_win = 'http://www.vocafmn.co.kr/Upload/AttachFile/ar_update/AdobeAIR.exe'
+    runtime_mac = 'https://airsdk.harman.com/assets/downloads/AdobeAIR.dmg'
+    context = {
+        'url': url,
+        'win': runtime_win,
+        'mac': runtime_mac
+    }
+    return render(request, 'manager/downapp.html', context)
 
 def get_day(num):
     switcher = {0: "월", 1: "화", 2: "수", 3: "목", 4: "금", 5: "토", 6: "일"}

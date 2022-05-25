@@ -39,7 +39,7 @@
                 <li>
                     <a class="profile-pic" href="#">
                         <img src="{% static 'plugins/images/users/cem_logo.png' %}" alt="user-img" width="36"
-                            class="img-circle"><span class="text-white font-medium">메타어학원</span></a>
+                            class="img-circle"><span class="text-white font-medium">{{ request.session.aname }}</span></a>
                 </li>
                 <!-- ============================================================== -->
                 <!-- User profile and search -->
