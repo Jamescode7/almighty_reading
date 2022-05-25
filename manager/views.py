@@ -478,6 +478,7 @@ def downapp(request):
     }
     return render(request, 'manager/downapp.html', context)
 
+
 def get_day(num):
     switcher = {0: "월", 1: "화", 2: "수", 3: "목", 4: "금", 5: "토", 6: "일"}
     return switcher.get(num, "Please enter number between 1-7")
@@ -493,8 +494,6 @@ def basic_table(request):
 
 def profile(request):
     return render(request, 'manager/profile.html')
-
-
 
 
 def test(request):
@@ -513,9 +512,8 @@ def test(request):
     return HttpResponse('hey')
 
 
-
 def test2(request):
-    a = 'trude'
+    a = 'true'
     if a == 'true':
         return HttpResponse('lock')
 
