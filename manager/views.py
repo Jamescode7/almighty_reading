@@ -420,23 +420,27 @@ def week(request):
                     log_data['text'] = 'st' + str(log.stage)
                     log_data['color'] = 'colorGray'
                     if log.plan_type == 2:
+                        # ////////// 자 유 학 습 /////////////////////////////////////////////
                         log_data['text'] = str(log.step)
                         log_data['color'] = 'colorGreen'
                         append_data_list.insert(0, log_data)
                     elif log.topic_code == 'C':
+                        # //////////  종 료 /////////////////////////////////////////////
                         log_data['text'] = 'C'
                         log_data['color'] = 'colorIndigo'
                         append_data_list.insert(0, log_data)
                     elif log.topic_code == 'R':
+                        # ////////// 리 셋 /////////////////////////////////////////////
                         log_data['text'] = 'R'
                         log_data['color'] = 'colorRed'
                         append_data_list.insert(0, log_data)
                     else:
+                        # ////////// 완 전 학 습 /////////////////////////////////////////////
                         if log.stage == 1 and log.step == 2:
                             log_data['color'] = 'colorBlue'
                         if log.stage == 2 and log.step == 2:
                             log_data['color'] = 'colorBlue'
-                        if log.stage == 3 and log.step == 3 and log.step_num == "7":
+                        if log.stage == 3 and log.step == 3 and log.step_num == "0":
                             log_data['color'] = 'colorBlue'
 
                         if prev_log['stage'] != log_data['stage']:
