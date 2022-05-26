@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export.admin import ImportExportMixin
 
 # Register your models here.
-from common_value.models import AppVersion, CommonCode
+from common_value.models import AppVersion, CommonCode, EtcValue
 
 
 class AppVersionAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -13,5 +13,10 @@ class CommonCodeAdmin(ImportExportMixin, admin.ModelAdmin):
     pass
 
 
+class EtcValueAdmin(ImportExportMixin, admin.ModelAdmin):
+    pass
+
+
 admin.site.register(AppVersion, AppVersionAdmin)
 admin.site.register(CommonCode, CommonCodeAdmin)
+admin.site.register(EtcValue, EtcValueAdmin)

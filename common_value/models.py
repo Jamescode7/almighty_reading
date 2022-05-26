@@ -25,3 +25,7 @@ class CommonCode(models.Model):
     def __str__(self):
         return self.code + '(' + self.code_name + ')'
 
+
+class EtcValue(models.Model):
+    etc_name = models.CharField(max_length=50, null=True, blank=True)
+    etc_value = models.CharField(max_length=50, null=True, blank=True)
