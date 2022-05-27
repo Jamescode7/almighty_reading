@@ -5,19 +5,6 @@ from django.db import models
 from library.models import Topic
 
 
-class TopicLog(models.Model):
-    username = models.CharField(max_length=25)
-    topic_code = models.CharField(max_length=5)
-    select_dt = models.DateTimeField(auto_now=True, null=True)
-    start_dt = models.DateTimeField(null=True, blank=True)
-    end_dt = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        qset = Topic.objects.filter(topic_code=self.topic_code)
-        #print(qset[0])
-        return self.username + '-' + str(qset[0]) + '(' + str(self.topic_code) + ')'
-
-
 class StepFinishLog(models.Model):
     username = models.CharField(max_length=25, null=True, blank=True)
     dt_year = models.CharField(max_length=3, null=True, blank=True)
@@ -34,7 +21,6 @@ class StepFinishLog(models.Model):
     step = models.IntegerField(max_length=3, null=True, blank=True)
     plan_type = models.IntegerField(max_length=10, null=True, blank=True)
     study_code = models.IntegerField(max_length=10, null=True, blank=True)
-
 
     def __str__(self):
         qset = Topic.objects.filter(topic_code=self.topic_code)

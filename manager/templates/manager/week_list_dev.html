@@ -277,6 +277,25 @@
                         </div>
                     </div>
                 </div>
+                <div style="text-align: center; margin: 1rem 0;">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary rounded-pill">
+                        prev
+                    </a>
+                    {% endif %}
+                     {% for n in "x"|rjust:paginator.num_pages %}
+                         <a href="?page={{ forloop.counter }}" class="btn btn-secondary rounded-pill active">
+                            {{ forloop.counter }}
+                         </a>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary rounded-pill">
+                        next
+                    </a>
+                    {% endif %}
+
+                </div>
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->
                 <!-- ============================================================== -->

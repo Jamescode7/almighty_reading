@@ -6,15 +6,15 @@ from import_export.admin import ImportExportMixin
 from member_info.models import TestMember, StudyMember
 
 
+@admin.register(StudyMember)
 class StudyMemberAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
+    list_display = ['id', 'mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study']
+    list_display_links = ['id']
+    list_editable = ['mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study']
 
 
+@admin.register(TestMember)
 class TestMemberAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
-
-
-admin.site.register(StudyMember, StudyMemberAdmin)
-admin.site.register(TestMember, TestMemberAdmin)
-
-
+    list_display = ['id', 'mcode', 'mname', 'mtype', 'acode', 'plan_code', 'level_code']
+    list_display_links = ['id']
+    list_editable = ['mcode', 'mname', 'mtype', 'acode', 'plan_code', 'level_code']

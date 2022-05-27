@@ -358,9 +358,7 @@ class WeekListView(ListView):
     context_object_name = 'week_list'
     template_name = 'manager/week_list_dev.html'
     ordering = '-id'
-
-
-
+    paginate_by = 20
 
 
 def week(request):

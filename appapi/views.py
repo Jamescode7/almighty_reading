@@ -14,7 +14,7 @@ from datetime import date, timedelta, datetime
 from library.models import Topic, WrtMoon, Word, SpkSent, Level, Theme, WrtWord, Exam
 from manager.models import MemberTopicLog, Plan
 from member_info.models import StudyMember
-from study_info.models import TopicLog, StepFinishLog, StepTimeLog
+from study_info.models import StepFinishLog, StepTimeLog
 
 
 def version_dic(version):
@@ -434,8 +434,11 @@ def step_finish_save(request):
     # Next Step, Stage, Plan
     topic_log = get_topic_log(mcode)
     if topic_log:
-        step = topic_log.step
-        stage = topic_log.stage
+        # 자유학습에서는 스텝을 DB에서 가져오지 않고 받아오는 것을 그대로 사용한다.
+        # 그렇기에 그 외 완전학습들에서는 아래 로직으로 DB에서 가져온 step값을 적용한다.
+        if plan_type != 2:
+            step = topic_log.step
+            stage = topic_log.stage
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:

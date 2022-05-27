@@ -3,22 +3,19 @@ from django.contrib import admin
 # Register your models here.
 from import_export.admin import ImportExportMixin
 
-from manager.models import MemberLevelManage, Plan, MemberPlanManage, MemberTopicLog
+from manager.models import Plan, MemberTopicLog
 
 
-class MemberLevelManageAdmin(ImportExportMixin, admin.ModelAdmin ):
-    pass
+@admin.register(Plan)
+class PlanAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['id', 'plan_code', 'plan_name']
+    list_display_links = ['id']
+    list_editable = ['plan_code', 'plan_name']
 
-class PlanAdmin(ImportExportMixin, admin.ModelAdmin ):
-    pass
 
-class MemberPlanManageAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
-
+@admin.register(MemberTopicLog)
 class MemberTopicLogAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
+    list_display = ['username', 'topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
+    list_display_links = ['username']
+    list_editable = ['topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
 
-admin.site.register(MemberLevelManage, MemberLevelManageAdmin)
-admin.site.register(Plan, PlanAdmin)
-admin.site.register(MemberPlanManage, MemberPlanManageAdmin)
-admin.site.register(MemberTopicLog, MemberTopicLogAdmin)

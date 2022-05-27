@@ -4,14 +4,6 @@ from django.db import models
 from library.models import Level, Topic
 
 
-class MemberLevelManage(models.Model):
-    username = models.CharField(max_length=25, null=True, blank=True)
-    level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True) #models.IntegerField(max_length=3, null=True, blank=True)
-
-    def __str__(self):
-        return self.username + '-' + str(self.level_code)
-
-
 class Plan(models.Model):
     plan_code = models.IntegerField(max_length=3, null=True, blank=True)
     plan_name = models.CharField(max_length=25, null=True, blank=True)
@@ -24,12 +16,8 @@ class Plan(models.Model):
         return self.plan_name
 
 
-class MemberPlanManage(models.Model):
-    username = models.CharField(max_length=25, null=True, blank=True)
-    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True) #models.IntegerField(max_length=3, null=True, blank=True)
-
-    def __str__(self):
-        return self.username + '-' + str(self.plan_code)
+class PlanFlow(models.Model):
+    plan_code = models.IntegerField(max_length=3, null=True, blank=True)
 
 
 class MemberTopicLog(models.Model):

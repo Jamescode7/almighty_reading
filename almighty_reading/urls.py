@@ -24,7 +24,7 @@ from study_info.views import bin_response
 
 urlpatterns = [
     path('', lambda request: redirect('manager/info/', permanent=False)),
-    path('admin/', admin.site.urls),
+    path('ad/adm/admin/', admin.site.urls),
     path('member_info/', include('member_info.urls')),
     path('library/', include('library.urls')),
     path('common_value/', include('common_value.urls')),
