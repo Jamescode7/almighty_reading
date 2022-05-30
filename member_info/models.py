@@ -10,7 +10,7 @@ class TestMember(models.Model):
     mname = models.CharField(max_length=10, null=True)
     mtype = models.CharField(max_length=10, null=True)
     acode = models.CharField(max_length=10, null=True)
-    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True)
+    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True, default=2)
     level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
@@ -25,7 +25,7 @@ class StudyMember(models.Model):
     # 학원 (agency) 코드
     acode = models.CharField(max_length=10, null=True)
     # 기본값 자유 = 2,   완전학습 = 1
-    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True)
+    plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True, default=2)
     # level_code는 Level Model에 코드를 가지고 있지만. 그 용도는 레벨 제한이다.
     level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True)
     current_study = models.IntegerField(max_length=10, null=True, blank=True)

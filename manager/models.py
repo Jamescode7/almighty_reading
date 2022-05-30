@@ -1,23 +1,23 @@
 from django.db import models
 
 # Create your models here.
+from common_value.models import Step
 from library.models import Level, Topic
 
 
 class Plan(models.Model):
     plan_code = models.IntegerField(max_length=3, null=True, blank=True)
     plan_name = models.CharField(max_length=25, null=True, blank=True)
-    stage1 = models.CharField(max_length=25, null=True, blank=True)
-    stage2 = models.CharField(max_length=25, null=True, blank=True)
-    stage3 = models.CharField(max_length=25, null=True, blank=True)
-    stage4 = models.CharField(max_length=25, null=True, blank=True)
 
     def __str__(self):
         return self.plan_name
 
 
-class PlanFlow(models.Model):
-    plan_code = models.IntegerField(max_length=3, null=True, blank=True)
+class PlanDetail(models.Model):
+    plan_code = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
+    seq = models.IntegerField(max_length=2, null=True, blank=True)
+    stage = models.IntegerField(max_length=1, null=True, blank=True)
+    step = models.ForeignKey(Step, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class MemberTopicLog(models.Model):

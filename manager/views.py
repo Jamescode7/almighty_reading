@@ -14,7 +14,7 @@ from django.views.generic import ListView
 
 from common_value.models import AppVersion
 from library.models import Level, Topic, SpkSent, Theme, Exam, Word
-from manager.models import Plan, MemberTopicLog
+from manager.models import MemberTopicLog, Plan
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog
 
