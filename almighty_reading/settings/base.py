@@ -20,7 +20,7 @@ from django.urls import reverse_lazy
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 
 # Application definition

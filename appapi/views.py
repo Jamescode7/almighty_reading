@@ -436,9 +436,12 @@ def step_finish_save(request):
     if topic_log:
         # 자유학습에서는 스텝을 DB에서 가져오지 않고 받아오는 것을 그대로 사용한다.
         # 그렇기에 그 외 완전학습들에서는 아래 로직으로 DB에서 가져온 step값을 적용한다.
-        if plan_type != 2:
+        if get_plan != '2':
             step = topic_log.step
             stage = topic_log.stage
+            print('here plan != 2, step : ' + str(step))
+        else:
+            print('here plan 2, step : ' + str(step))
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
@@ -479,6 +482,7 @@ def step_finish_save(request):
                 else:
                     q_num += 1
     elif plan_type == '2':  # 자유학습
+        step = int(step)
         step += 1
         if step == 7:
             step = 1

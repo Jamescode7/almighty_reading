@@ -134,14 +134,13 @@ td{
         <!-- ============================================================== -->
         <!-- Topbar header - style you can find in pages.scss -->
         <!-- ============================================================== -->
-        {% include 'topbar_manager.html' %}
+
         <!-- ============================================================== -->
         <!-- End Topbar header -->
         <!-- ============================================================== -->
         <!-- ============================================================== -->
         <!-- Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
-        {% include 'left-sidebar_manager.html' %}
         <!-- ============================================================== -->
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
@@ -154,21 +153,13 @@ td{
             <!-- ============================================================== -->
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
-                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12" >
-                        <h4 class="page-title" style="float:left; padding-right: 40px;">일일학습현황 </h4>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
                         <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGray">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 학습중&nbsp;&nbsp;&nbsp; </span>
                         <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorBlue">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 완료&nbsp;&nbsp;&nbsp; </span>
-                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGreen">0</span> <span style="line-height: 17px; vertical-align: center;">자유학습 스텝&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGreen">0</span> <span style="line-height: 17px; vertical-align: center;">자유학습 스텝&nbsp;&nbsp;&nbsp; </span><br/>
                         <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorForestGreen">Q</span> <span style="line-height: 17px; vertical-align: center;">자유학습 문제풀이&nbsp;&nbsp;&nbsp; </span>
                         <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorRed">R</span> <span style="line-height: 17px; vertical-align: center;">리셋&nbsp;&nbsp;&nbsp; </span>
                         <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorIndigo">C</span> <span style="line-height: 17px; vertical-align: center;">종료&nbsp;&nbsp;&nbsp; </span>
-                    </div>
-                    <div class="col-lg-3 col-sm-4 col-md-4 col-xs-12">
-                        <div class="d-md-flex">
-                            <ol class="breadcrumb ms-auto">
-                                <li><a href="#" class="fw-normal">Dashboard</a></li>
-                            </ol>
-                        </div>
                     </div>
                 </div>
                 <!-- /.col-lg-12 -->
@@ -186,64 +177,38 @@ td{
                 <!-- ============================================================== -->
                 <div class="row">
                     <div class="col-sm-12" >
-                        <a href="{% url 'manager:week' prev_dt=prev_week %}"> <button type="button" class="btn btn-primary" > 이전 7일</button></a>
-                        <a href="{% url 'manager:week' prev_dt=next_week %}"> <button type="button" class="btn btn-primary" > 다음 7일</button></a>
-                        <a href="{% url 'manager:week' prev_dt=0 %}"> <button type="button" class="btn btn-dark" > 오늘</button></a>
-                        <br><br>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12" >
                         <div class="white-box">
                             <div class="table-responsive" style="height:700px; overflow: auto;">
-                                <table class="table text-nowrap" style="">
+                                <table class="" style="width:400px;" >
                                     <thead>
                                         <tr>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=id&desc={{isDesc}}">#</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mname&desc={{isDesc}}">이름</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">아이디</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">&nbsp;&nbsp;&nbsp;</a></th>
-                                            {% for day in days %}
-                                                <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0 {% if day|last == '토' or day|last == '일' %} fontred {% endif %}">
-                                                    {{day}}
-                                                </th>
-                                            {% endfor %}
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">#</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">이름 : {{ mname }}</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">아이디 : {{ mcode }}</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"> </th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">
+                                               [ {{ yy }}/{{ mm }}/{{ dd }} ]
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">
+                                                &nbsp;&nbsp;
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for member in member_list %}
                                         <tr class="colored" >
-                                            <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
-                                            <td>{{ member.mname }}</td>
-                                            <td style="color:#aaaaaa">{{ member.mcode }}</td>
-                                            <td style="{%if member.level_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}"></td>
-                                            {% for day in member.days %}
+                                               <td colspan="6" style="text-align: left;">
+                                                        {% for row in row_list %}
+                                                            <span class="{{ row.color }}">{{ row.text }}</span>
 
-                                                <td style="">
-                                                    {% for row in day %}
-
-                                                    {% if day|length > 1 and forloop.first%}
-                                                    <a href="javascript:window.open('../day?mname={{ member.mname }}&mcode={{ member.mcode }}&yy={{ row.yy }}&mm={{ row.mm }}&dd={{ row.dd }}', '{{ member.mcode }}{{ row.dd }}', 'width=500px, height=600px' );">
-                                                    {% endif %}
-                                                        {% if forloop.counter <= 6 %}
-                                                            {% if forloop.counter == 6 %}
-                                                                …<span class="{{ row.color }}">∞</span>
-                                                            {% else %}
-                                                                <span class="{{ row.color }}">{{ row.text }}</span>
-                                                            {% endif %}
-                                                            {% if forloop.counter|divisibleby:3 %}
-                                                                <br>
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    {% if day|length > 1 and forloop.last %}
-                                                    </a>
-                                                    {% endif %}
-                                                    {% endfor %}
-                                                </td>
-
-                                            {% endfor %}
+                                                        {% endfor %}
+                                                    </td>
                                         </tr>
-                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>

@@ -22,9 +22,6 @@ class StepFinishLog(models.Model):
     plan_type = models.IntegerField(max_length=10, null=True, blank=True)
     study_code = models.IntegerField(max_length=10, null=True, blank=True)
 
-    def __str__(self):
-        qset = Topic.objects.filter(topic_code=self.topic_code)
-        return self.username + ' / ' + self.dt_month + '-' + self.dt_day + ' / <' + str(qset[0]) + '> stage: ' + str(self.stage) + ' / step: ' + str(self.step) + ')'
 
 
 class StepTimeLog(models.Model):

@@ -24,7 +24,7 @@ def comprehension(request, topic_code=''):
         return HttpResponse('잘못된 접근입니다(topic code)')
 
     exam_info = Exam.objects.filter(topic_code=topic_code)
-    context = { 'exam_info': exam_info}
+    context = {'exam_info': exam_info}
     return render(request, 'manager/comprehension.html', context)
 
 
@@ -139,6 +139,7 @@ def update_member_list(request, agency_id):
         json_data = json.loads(data)
         for row in json_data:
             row_id = row['Id']
+            row_id = str(row_id).lower()
             row_name = row['Mn']
             # print(row_id + '/' + row_name)
             # 회원이 없다면 등록시키기.
@@ -361,7 +362,7 @@ class WeekListView(ListView):
     paginate_by = 20
 
 
-def week(request):
+def week(request, prev_dt=0):
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
     aid = get_aid(request)
     if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
@@ -369,18 +370,14 @@ def week(request):
     # 웹전산에서 회원 리스트를 갱신한다.
     update_member_list(request, aid)
 
-    # 시작일을 가져온다. 없다면 오늘이 시작일
-    if request.GET.get('start_dt'):
-        start_dt = request.GET.get('start_dt')
-    else:
-        start_dt = date.today()
+    start_dt = date.today()
 
     # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
     days = []
     loop = 6
     for n in range(7):
         seek = loop - n
-        day = start_dt - timedelta(seek)
+        day = start_dt - timedelta(seek + prev_dt)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
         # print(day_str.strip()[-1])
         days.append(day_str)
@@ -391,20 +388,24 @@ def week(request):
     for member in member_list:
         member.days = []
         loop = 6
+
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
         for dt in range(7):
             seek = loop - dt
-            day = start_dt - timedelta(seek)
+            day = start_dt - timedelta(seek + prev_dt)
             day_str = day.strftime('%m.%d') + get_day(day.weekday())
             yy = day.strftime('%y')
             mm = day.strftime('%m')
             dd = day.strftime('%d')
             append_data_list = []
+
             # 03 날짜당 학생의 데이터를 추출해본다.
             log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by('-id')
-
             if log_list:
                 log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
                 prev_log = {}
                 prev_log['text'] = 'st'
                 prev_log['color'] = 'black'
@@ -413,15 +414,27 @@ def week(request):
                 for log in log_list:
                     #print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
                     log_data = {}
+                    log_data['yy'] = yy
+                    log_data['mm'] = mm
+                    log_data['dd'] = dd
                     log_data['stage'] = log.stage
                     log_data['step'] = log.step
                     log_data['text'] = 'st' + str(log.stage)
                     log_data['color'] = 'colorGray'
                     if log.plan_type == 2:
                         # ////////// 자 유 학 습 /////////////////////////////////////////////
-                        log_data['text'] = str(log.step)
-                        log_data['color'] = 'colorGreen'
-                        append_data_list.insert(0, log_data)
+                        if log.step == 7 or log.step_num != '0':
+                            # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
+                            log_data['text'] = 'Q'
+                            log_data['color'] = 'colorForestGreen'
+                            if prev_log['text'] != 'Q':
+                                append_data_list.insert(0, log_data)
+                                prev_log['text'] = 'Q'
+                        else:
+                            # 그 외 스텝일 때
+                            log_data['text'] = str(log.step)
+                            log_data['color'] = 'colorGreen'
+                            append_data_list.insert(0, log_data)
                     elif log.topic_code == 'C':
                         # //////////  종 료 /////////////////////////////////////////////
                         log_data['text'] = 'C'
@@ -448,6 +461,9 @@ def week(request):
 
             else:
                 log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
                 log_data['color'] = ''
                 log_data['text'] = '.'
                 append_data_list.append(log_data)
@@ -456,12 +472,93 @@ def week(request):
             # member마다 7일간 데이터 저장.
             member.days.append(append_data_list)
 
+    prev_week = prev_dt + 7
+    next_week = prev_dt - 7
+    if next_week < 0:
+        next_week = 0
     context = {
+        'prev_week': prev_week,
+        'next_week': next_week,
+        'arg': prev_dt,
         'start_dt': start_dt,
         'days': days,
         'member_list': member_list,
     }
     return render(request, 'manager/week.html', context)
+
+
+def day(request):
+    mname = request.GET.get('mname')
+    mcode = request.GET.get('mcode')
+    yy = request.GET.get('yy')
+    mm = request.GET.get('mm')
+    dd = request.GET.get('dd')
+
+    log_list = StepFinishLog.objects.filter(username=mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by(
+        '-id')
+    if log_list:
+        append_data_list = []
+        log_data = {}
+        prev_log = {}
+        prev_log['text'] = 'st'
+        prev_log['color'] = 'black'
+        prev_log['stage'] = 0
+        prev_log['step'] = 0
+        for log in log_list:
+            # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+            log_data = {}
+            log_data['stage'] = log.stage
+            log_data['step'] = log.step
+            log_data['text'] = 'st' + str(log.stage)
+            log_data['color'] = 'colorGray'
+            if log.plan_type == 2:
+                # ////////// 자 유 학 습 /////////////////////////////////////////////
+                if log.step == 7 or log.step_num != '0':
+                    # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
+                    log_data['text'] = 'Q'
+                    log_data['color'] = 'colorForestGreen'
+                    if prev_log['text'] != 'Q':
+                        append_data_list.insert(0, log_data)
+                        prev_log['text'] = 'Q'
+                else:
+                    # 그 외 스텝일 때
+                    log_data['text'] = str(log.step)
+                    log_data['color'] = 'colorGreen'
+                    append_data_list.insert(0, log_data)
+            elif log.topic_code == 'C':
+                # //////////  종 료 /////////////////////////////////////////////
+                log_data['text'] = 'C'
+                log_data['color'] = 'colorIndigo'
+                append_data_list.insert(0, log_data)
+            elif log.topic_code == 'R':
+                # ////////// 리 셋 /////////////////////////////////////////////
+                log_data['text'] = 'R'
+                log_data['color'] = 'colorRed'
+                append_data_list.insert(0, log_data)
+            else:
+                # ////////// 완 전 학 습 /////////////////////////////////////////////
+                if log.stage == 1 and log.step == 2:
+                    log_data['color'] = 'colorBlue'
+                if log.stage == 2 and log.step == 2:
+                    log_data['color'] = 'colorBlue'
+                if log.stage == 3 and log.step == 3 and log.step_num == "0":
+                    log_data['color'] = 'colorBlue'
+
+                if prev_log['stage'] != log_data['stage']:
+                    append_data_list.insert(0, log_data)
+
+            prev_log['stage'] = log_data['stage']
+
+    context = {
+        'mname': mname,
+        'mcode': mcode,
+        'yy': yy,
+        'mm': mm,
+        'dd': dd,
+        'row_list': append_data_list,
+    }
+    return render(request, 'manager/day.html', context)
+
 
 
 def downapp(request):

@@ -3,7 +3,7 @@ from django.urls import path, re_path
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, main, profile, interpretation,\
     comprehension, week, print_page, answer_page, WeekListView, info, agency, test, \
-    downapp, test2
+    downapp, test2, day
 
 app_name = "manager"
 
@@ -21,6 +21,9 @@ urlpatterns = [
     path('agency/<str:agency_id>', agency, name='agency'),
 
     path('week/', week, name='week'),
+    path('week/<int:prev_dt>', week, name='week'),
+
+    path('day/', day, name='day'),
 
     path('download/', downapp, name='downapp'),
 
