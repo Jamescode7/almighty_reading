@@ -2,8 +2,9 @@ FROM python:3.9.0
 
 WORKDIR /home/
 
-RUN echo "django_ar_image35"
-RUN echo "django_ar_image35"
+RUN echo "django_ar_image36"
+RUN echo "django_ar_image36"
+RUN echo "django_ar_image36"
 
 RUN git clone https://github.com/Jamescode7/almighty_reading.git
 
