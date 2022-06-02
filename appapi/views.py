@@ -12,7 +12,7 @@ from datetime import date, timedelta, datetime
 #
 ###################################################
 from library.models import Topic, WrtMoon, Word, SpkSent, Level, Theme, WrtWord, Exam
-from manager.models import MemberTopicLog, Plan
+from manager.models import MemberTopicLog, Plan, PlanDetail
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog, StepTimeLog
 
@@ -106,6 +106,8 @@ def common_test(request):
     stage = 1
     step = 1
     study_code = 0
+    step_code = 0
+    step_code_name = ''
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
@@ -117,16 +119,23 @@ def common_test(request):
         if user.current_study:
             study_code = str(user.current_study)
 
-    topic_log = get_topic_log(mcode)
-    if topic_log:
-        level_code = topic_log.level_code.level_code
-        topic_code = topic_log.topic_code.topic_code
-        stage = topic_log.stage
-        step = topic_log.step
+    if study_code != 0:
+        topic_log = MemberTopicLog.objects.get(username=mcode, id=study_code)
+        if topic_log:
+            level_code = topic_log.level_code.level_code
+            topic_code = topic_log.topic_code.topic_code
+            stage = topic_log.stage
+            step = topic_log.step
+
+            plan_detail = PlanDetail.objects.get(stage=stage, seq=step, plan_code=plan_type)
+            if plan_detail:
+                step_code = plan_detail.step.step_code
+                step_code_name = plan_detail.step.step_name
 
     if plan_type == "2":
         stage = 1
         step = 1  # 플랜 타입이 자유학습이라면 무조건 스텝과 스테이지는 1로..
+
 
     data = {
         "Lcode": level_code,
@@ -135,7 +144,10 @@ def common_test(request):
         "LevelLimit": mem_level,
         "Stage": stage,
         "Step": step,
-        "StudyCode": study_code
+        "StepCode": step_code,
+        "StepCodeName": step_code_name,
+        "StudyCode": study_code,
+
     }
     return JsonResponse(data)
 
@@ -241,8 +253,13 @@ def topic_select_save(request):
     save_topic = MemberTopicLog(username=mcode, topic_code=topic_code, level_code=level_code, start_dt=datetime.now(),
                                 stage=1, step=1)
     save_topic.save()
+    study_code = save_topic.id
 
-    return HttpResponse('save_log_id' + str(save_topic.id))
+    save_study_code = StudyMember.objects.get(mcode=mcode)
+    save_study_code.current_study = study_code
+    save_study_code.save()
+
+    return HttpResponse('save_log_id' + str(study_code))
 
 
 def word_to_dicionary(word, idx):
@@ -400,105 +417,168 @@ def ox_note_load(request):
     return JsonResponse(data)
 
 
+def get_next_step(get_plan, get_stage, get_step):
+    plan_detail = PlanDetail.objects.filter(plan_code=get_plan, stage=get_stage).order_by('seq')
+    # print('@@@@@@@@@@@@ g e t _ n e x t _ s t e p @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    return_plan_stage = 0
+    return_plan_step = 0
+    return_app_step = 0
+    return_app_step_name = ''
+    return_q_num = 0
+    for row in plan_detail:
+        # print('-----------------')
+        # print('(' + str(row.seq) + ')')
+        # print(' ---next stage: ' + str(row.stage))
+        # print(' ---next step : ' + str(row.seq))
+        # print(' ---next app step : ' + str(row.step.step_code))
+        # print(' ---next app step name : ' + str(row.step.step_name))
+        if int(get_step) < row.seq:
+            # print('!!!! b r e a k - - h e r e!!')
+            return_plan_stage = str(row.stage)
+            return_plan_step = str(row.seq)
+            return_app_step = str(row.step.step_code)
+            return_app_step_name = str(row.step.step_name)
+            if return_app_step == "6":
+                return_q_num = 1
+            break
+
+    data = {
+        "return_plan_stage": return_plan_stage,
+        "return_plan_step": return_plan_step,
+        "return_app_step": return_app_step,
+        "return_app_step_name": return_app_step_name,
+        "return_q_num": return_q_num,
+    }
+    return data
+
+
 def step_finish_save(request):
-    # https://cem.mrzero.kr/rodata/ca/StepFinishSave?Time=5169391&Mcode=26533&FlashCode=529647&Pcode=364&StepCode=P09&StepNum=0&Cpoint=0&Tpoint=0&Ans=null&StudyTime=24
-    mcode = request.GET.get('Mcode')
-    topic_code = request.GET.get('Pcode')
-    step_code = request.GET.get('StepCode')
-    q_num = request.GET.get('StepNum')
-    stage = request.GET.get('Stage')
-    step = request.GET.get('Step')
+    '''http://127.0.0.1:8080/api/StepFinishSave/?
+    Time=55502&
+    Mcode=bsp02&        Pcode=76&       StepCode=P01&
+    StepNum=0&      Stage=1&        Step=4&
+    Cpoint=0&       Tpoint=0&       Ans=null&
+    StudyCode=30&       Plan=2&     StudyTime=32
+    '''
 
-    cpoint = request.GET.get('Cpoint')
-    tpoint = request.GET.get('Tpoint')
-    ans = request.GET.get('Ans')
-    studyTime = request.GET.get('StudyTime')
-    study_code = request.GET.get('StudyCode')
-    get_plan = request.GET.get('Plan')
-
-    plan_type = 0
     is_finish_today = False
     is_finish_topic = False
+    return_data = {
+        "return_plan_stage": 0,
+        "return_plan_step": 0,
+        "return_app_step": 0,
+        "return_app_step_name": '',
+        "return_q_num": 0,
+    }
+
+    get_mcode = request.GET.get('Mcode')
+    get_topic_code = request.GET.get('Pcode')
+    get_step_code = request.GET.get('StepCode')
+    get_q_num = request.GET.get('Qnum')
+    get_plan = request.GET.get('Plan')
+    get_stage = request.GET.get('Stage')
+    get_step = request.GET.get('Step')
+    get_cpoint = request.GET.get('Cpoint')
+    get_tpoint = request.GET.get('Tpoint')
+    get_ans = request.GET.get('Ans')
+    # studyTime = request.GET.get('StudyTime')
+    get_study_code = request.GET.get('StudyCode')
+
+    # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    # print('### get data')
+    # print('<' + Plan.objects.get(plan_code=get_plan).plan_name + '>')
+    # print('stage : ' + get_stage)
+    # print('step  : ' + get_step)
+    # print('q_num : ' + get_q_num)
 
     today = date.today()
     year = today.strftime('%y')
     month = today.strftime('%m')
     day = today.strftime('%d')
 
-    save_topic = StepFinishLog(username=mcode, dt_year=year, dt_month=month,
-                               dt_day=day, topic_code=topic_code, step_code=step_code,
-                               step_num=str(q_num), c_point=cpoint, t_point=tpoint,
-                               answer=ans, stage=stage, step=step, plan_type=get_plan, study_code=study_code)
+    # 로그 저장.
+    save_topic = StepFinishLog(username=get_mcode, dt_year=year, dt_month=month,
+                               dt_day=day, topic_code=get_topic_code, step_code=get_step_code,
+                               step_num=str(get_q_num), c_point=get_cpoint, t_point=get_tpoint,
+                               answer=get_ans, stage=get_stage, step=get_step, plan_type=get_plan, study_code=get_study_code)
     save_topic.save()
 
-    # Next Step, Stage, Plan
-    topic_log = get_topic_log(mcode)
-    if topic_log:
-        # 자유학습에서는 스텝을 DB에서 가져오지 않고 받아오는 것을 그대로 사용한다.
-        # 그렇기에 그 외 완전학습들에서는 아래 로직으로 DB에서 가져온 step값을 적용한다.
-        if get_plan != '2':
-            step = topic_log.step
-            stage = topic_log.stage
-            print('here plan != 2, step : ' + str(step))
-        else:
-            print('here plan 2, step : ' + str(step))
+    # 각 변경할 수 있는 정보들 가져오기
+    topic_log = MemberTopicLog.objects.get(username=get_mcode, id=get_study_code)
+    user = StudyMember.objects.get(mcode=get_mcode)
 
-    user = StudyMember.objects.filter(mcode=mcode)
-    if user:
-        user = user[0]
-        if user.plan_code:
-            plan_type = str(user.plan_code.plan_code)
+    # 플랜과 스테이지에 해당하는 스텝 가져오기
+    return_data = get_next_step(get_plan, get_stage, get_step)
 
-    # Flow plan
-    #  <PLAN 1 - 완전학습>
-    #  첫 날 -Stage1 /1.듣고 따라하기-Step1 / 2.문장말하기-Step2
-    #  둘째날 -Stage2 /1. 문단말하기-Step1 / 2. 빈칸 채우기-Step2
-    #  셋째날 -Stage3 / 1. 직독직해-Step1 / 2. 문단말하기-Step2 / 3. 프로세스 2의 문제 풀이-Step3
+    # 아무것도 안나온다면 오늘 학습할 것이 끝났다는 것이다.
+    if return_data['return_app_step_name'] == '':
+        # print('오늘 학습 끝!')
+        is_finish_today = True
 
-    print('=============')
-    print('plan : ' + plan_type)
-    print('stage : ' + str(stage))
-    print('step : ' + str(step))
-    print('q_num : ' + str(q_num))
-    print('------->>')
-    if plan_type == '1':  # 완전학습
-        if stage == 1 or stage == 2:
-            if step < 2:
-                step += 1
-            else:
-                stage += 1
-                step = 1
+        # 다음에 접속했을때 다음날 학습할 리스트가 있는지 가져온다.
+        # print('다음날 학습할 것이 있나요?')
+        check_next_stage = int(get_stage) + 1
+        check_next_stage = str(check_next_stage)
+        return_data = get_next_step(get_plan, check_next_stage, 0)
+
+        # 아무것도 안나온다면 내일 학습할 것도 없으므로 플랜이 끝났다는 것이다.
+        # 어쩌면 문제풀이 스텝인 경우-
+        if return_data['return_app_step_name'] == '':
+            # print('이 플랜의 마지막에 왔습니다!')
+            # print('문제 풀이 번호 : ' + get_q_num)
+            # print('-----------------')
+
+            return_data['return_q_num'] = int(get_q_num) + 1
+            return_data['return_plan_stage'] = str(get_stage)
+            return_data['return_plan_step'] = str(get_step)
+            return_data['return_app_step'] = "6"
+            return_data['return_app_step_name'] = "문제 풀이"
+            if get_q_num == '0':
+                return_data['return_q_num'] = 0
                 is_finish_today = True
-        elif stage == 3:
-            if step < 3:
-                step += 1
-            elif step == 3:
-                q_num = int(q_num)
-                if q_num == 0:
-                    is_finish_topic = True
-                    topic_log.end_dt = datetime.now()
-                    user.current_study = 0
-                    user.save()
-                else:
-                    q_num += 1
-    elif plan_type == '2':  # 자유학습
-        step = int(step)
-        step += 1
-        if step == 7:
-            step = 1
+                is_finish_topic = True
+                return_data['return_app_step_name'] = "토픽 학습 끝"
+                topic_log.end_dt = datetime.now()
+                user.current_study = 0
+                user.save()
+            elif get_q_num == '8':
+                return_data['return_q_num'] = 0
+                is_finish_today = False
+                is_finish_topic = False
+            else:
+                is_finish_today = False
+                is_finish_topic = False
 
-    topic_log.stage = stage
-    topic_log.step = step
-    topic_log.save()
-    print('stage : ' + str(stage))
-    print('step : ' + str(step))
+            # print(' ---next stage: ' + return_data['return_plan_stage'])
+            # print(' ---next step : ' + return_data['return_plan_step'])
+            # print(' ---next app step : ' + return_data['return_app_step'])
+            # print(' ---next app step name : ' + return_data['return_app_step_name'])
+
+    # print('-----------------')
+    # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
     data = {
-        "Stage": stage,
-        "Step": step,
+        "Stage": return_data['return_plan_stage'],
+        "Step": return_data['return_plan_step'],
+        "StepCode": return_data['return_app_step'],
+        "StepCodeName": return_data['return_app_step_name'],
         "FinishToday": is_finish_today,
         "FinishTopic": is_finish_topic,
-        "Q_Num": q_num,
+        "Q_Num": return_data['return_q_num'],
+        "StudyCode": get_study_code,
     }
+
+    # print('save check(before) :' + str(topic_log.stage))
+    # print('save check(before) :' + str(topic_log.step))
+    topic_log.stage = return_data['return_plan_stage']
+    topic_log.step = return_data['return_plan_step']
+    # print('save check(after) :' + str(topic_log.stage))
+    # print('save check(after) :' + str(topic_log.step))
+    topic_log.save()
+    if is_finish_today:
+        save_topic.finish_today = 1
+        save_topic.save()
+
     return JsonResponse(data)
 
 

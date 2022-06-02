@@ -14,7 +14,7 @@ from django.views.generic import ListView
 
 from common_value.models import AppVersion
 from library.models import Level, Topic, SpkSent, Theme, Exam, Word
-from manager.models import MemberTopicLog, Plan
+from manager.models import MemberTopicLog, Plan, PlanDetail
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog
 
@@ -222,6 +222,8 @@ def info(request, user_id=''):
                 month = today.strftime('%m')
                 day = today.strftime('%d')
 
+                user = StudyMember.objects.get(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 현재 학습을 해당 로그 아이디를 바라보게 한다.
+
                 if process == 'closed':
                     log.end_dt = datetime.now()
                     finish_log = StepFinishLog()
@@ -232,6 +234,7 @@ def info(request, user_id=''):
                                                answer=None, stage=None, step=None, plan_type=None,
                                                study_code=None)
                     save_topic.save()
+                    user.current_study = 0
 
                 elif process == 'reset':
                     log.start_dt = datetime.now()
@@ -244,7 +247,9 @@ def info(request, user_id=''):
                                                answer=None, stage=None, step=None, plan_type=None,
                                                study_code=None)
                     save_topic.save()
+                    user.current_study = log.id
                 log.save()
+                user.save()
 
                 return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
 
@@ -319,12 +324,16 @@ def main(request, user_id='', agency_id=''):
                 log = log[0]
                 if process == 'closed':
                     log.end_dt = datetime.now()
+                    user.current_study = 0
+                    user.save()
 
                 elif process == 'reset':
                     log.start_dt = datetime.now()
                     log.end_dt = None
                     log.stage = 1
                     log.step = 1
+                    user.current_study = log.id
+                    user.save()
                 log.save()
 
                 return HttpResponseRedirect(reverse('manager:main', args=(user_id,)))
@@ -446,12 +455,8 @@ def week(request, prev_dt=0):
                         log_data['color'] = 'colorRed'
                         append_data_list.insert(0, log_data)
                     else:
-                        # ////////// 완 전 학 습 /////////////////////////////////////////////
-                        if log.stage == 1 and log.step == 2:
-                            log_data['color'] = 'colorBlue'
-                        if log.stage == 2 and log.step == 2:
-                            log_data['color'] = 'colorBlue'
-                        if log.stage == 3 and log.step == 3 and log.step_num == "0":
+                        # ////////// 완 전 학 습 ////////////////////////////////////////////
+                        if log.finish_today:
                             log_data['color'] = 'colorBlue'
 
                         if prev_log['stage'] != log_data['stage']:
@@ -537,11 +542,7 @@ def day(request):
                 append_data_list.insert(0, log_data)
             else:
                 # ////////// 완 전 학 습 /////////////////////////////////////////////
-                if log.stage == 1 and log.step == 2:
-                    log_data['color'] = 'colorBlue'
-                if log.stage == 2 and log.step == 2:
-                    log_data['color'] = 'colorBlue'
-                if log.stage == 3 and log.step == 3 and log.step_num == "0":
+                if log.finish_today:
                     log_data['color'] = 'colorBlue'
 
                 if prev_log['stage'] != log_data['stage']:

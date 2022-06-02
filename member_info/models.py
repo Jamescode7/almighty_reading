@@ -28,6 +28,7 @@ class StudyMember(models.Model):
     plan_code = models.ForeignKey(Plan, on_delete=models.PROTECT, null=True, blank=True, default=2)
     # level_code는 Level Model에 코드를 가지고 있지만. 그 용도는 레벨 제한이다.
     level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True)
-    current_study = models.IntegerField(max_length=10, null=True, blank=True)
+    current_study = models.IntegerField(null=True, blank=True)
+
     def __str__(self):
         return '(' + str(self.mcode) + ')' + str(self.mname) + '(' + str(self.mtype) + ')'

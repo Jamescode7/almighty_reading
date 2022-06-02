@@ -22,7 +22,7 @@ class PlanAdmin(ImportExportMixin, admin.ModelAdmin):
 
 @admin.register(MemberTopicLog)
 class MemberTopicLogAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['username', 'topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
+    list_display = ['id', 'username', 'topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
     list_display_links = ['username']
     list_editable = ['topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
 

@@ -17,9 +17,9 @@ class CommonCode(models.Model):
     code_name = models.CharField(max_length=50, null=True)
     up_code = models.CharField(max_length=10, null=True)
     code_value = models.CharField(max_length=50, null=True)
-    ord = models.IntegerField(max_length=3, null=True)
+    ord = models.IntegerField(null=True)
     remark = models.CharField(max_length=100, null=True)
-    mcode = models.IntegerField(max_length=10, null=True)
+    mcode = models.IntegerField(null=True)
     code_date = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
@@ -27,14 +27,12 @@ class CommonCode(models.Model):
 
 
 class Step(models.Model):
-    step_code = models.IntegerField(max_length=2, default=0)
-    app_idx = models.IntegerField(max_length=2, default=0)
+    step_code = models.IntegerField(default=0)
+    app_idx = models.IntegerField(default=0)
     step_name = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return '(' + str(self.app_idx) + ') ' + self.step_name
-
-
 
 
 class EtcValue(models.Model):
