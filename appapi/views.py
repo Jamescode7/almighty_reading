@@ -102,18 +102,21 @@ def common_test(request):
     topic_code = "0"
 
     mem_level = "0"
+    mem_level_name = ""
     plan_type = "2"  # 2이면 자유학습, 1이면 플랜학습
     stage = 1
     step = 1
     study_code = 0
     step_code = 0
     step_code_name = ''
+    clear_list = []
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
         user = user[0]
         if user.level_code:
             mem_level = str(user.level_code.level_code)
+            mem_level_name = user.level_code.level_name
         if user.plan_code:
             plan_type = str(user.plan_code.plan_code)
         if user.current_study:
@@ -136,17 +139,27 @@ def common_test(request):
         stage = 1
         step = 1  # 플랜 타입이 자유학습이라면 무조건 스텝과 스테이지는 1로..
 
+    if level_code == "0" and topic_code == "0":
+        print('라이브러리를 골라야 합니다.')
+        history = MemberTopicLog.objects.filter(username=mcode).order_by('-topic_code')
+        for row in history:
+            # print(str(row))
+            clear_list.append(row.topic_code.topic_code)
+
+
 
     data = {
         "Lcode": level_code,
         "Pcode": topic_code,
         "PlanType": plan_type,
         "LevelLimit": mem_level,
+        "LevelLimitName": mem_level_name,
         "Stage": stage,
         "Step": step,
         "StepCode": step_code,
         "StepCodeName": step_code_name,
         "StudyCode": study_code,
+        "ClearList": clear_list
 
     }
     return JsonResponse(data)

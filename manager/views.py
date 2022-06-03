@@ -222,12 +222,10 @@ def info(request, user_id=''):
                 month = today.strftime('%m')
                 day = today.strftime('%d')
 
-                user = StudyMember.objects.get(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 현재 학습을 해당 로그 아이디를 바라보게 한다.
+                user = StudyMember.objects.get(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 상황에 따라 0
 
                 if process == 'closed':
                     log.end_dt = datetime.now()
-                    finish_log = StepFinishLog()
-
                     save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
                                                dt_day=day, topic_code='C', step_code=None,
                                                step_num=None, c_point=None, t_point=None,
@@ -235,21 +233,14 @@ def info(request, user_id=''):
                                                study_code=None)
                     save_topic.save()
                     user.current_study = 0
+                    log.save()
+                    user.save()
 
                 elif process == 'reset':
-                    log.start_dt = datetime.now()
-                    log.end_dt = None
-                    log.stage = 1
-                    log.step = 1
-                    save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
-                                               dt_day=day, topic_code='R', step_code=None,
-                                               step_num=None, c_point=None, t_point=None,
-                                               answer=None, stage=None, step=None, plan_type=None,
-                                               study_code=None)
-                    save_topic.save()
-                    user.current_study = log.id
-                log.save()
-                user.save()
+                    if log.id == user.current_study:
+                        user.current_study = 0
+                        user.save()
+                    log.delete()
 
                 return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
 
@@ -561,7 +552,6 @@ def day(request):
     return render(request, 'manager/day.html', context)
 
 
-
 def downapp(request):
     aid = get_aid(request)
     if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
@@ -584,6 +574,38 @@ def get_day(num):
     return switcher.get(num, "Please enter number between 1-7")
 
 
+def plan_info(request):
+    plan_list = Plan.objects.all()
+    prev_stage = 0
+    all_plan = []
+    for plan in plan_list:
+        new_plan = {}
+        new_plan['name'] = plan.plan_name
+        stage_info = {}
+        stage_list = []
+        new_plan['stage_info'] = stage_info
+        stage_info['stage_list'] = stage_list
+
+        # print('<' + plan.plan_name + '>')
+        detail_list = PlanDetail.objects.filter(plan_code=plan.plan_code)
+        for detail in detail_list:
+            if prev_stage != detail.stage:
+                # print('=stage ' + str(detail.stage) + '=')
+                stage_list.append('=stage ' + str(detail.stage) + '=')
+                step_list = []
+                stage_info['step_list'] = step_list
+            # print('--step' + str(detail.seq) + ' : ' + str(detail.step))
+            step_list.append(str(detail.seq) + ' : ' + str(detail.step))
+            prev_stage = detail.stage
+        # print('____')
+
+        all_plan.append(new_plan)
+    context = {
+        'all_plan': all_plan
+    }
+    return render(request, 'manager/plan_list.html', context)
+
+
 def dashboard(request):
     return render(request, 'manager/dashboard.html')
 
@@ -596,31 +618,3 @@ def profile(request):
     return render(request, 'manager/profile.html')
 
 
-def test(request):
-    a = 'true'
-    if a == 'true':
-        return HttpResponse('lock')
-    log_list = StepFinishLog.objects.all()
-    for log in log_list:
-        day = int(log.dt_day) + 1
-        daystr = str(day)
-        print(log.dt_day + '/' + daystr)
-
-        log.dt_day = daystr
-        #log.plan_type = 1
-        log.save()
-    return HttpResponse('hey')
-
-
-def test2(request):
-    a = 'true'
-    if a == 'true':
-        return HttpResponse('lock')
-
-    try:
-        record = Word.objects.all()
-        record.delete()
-    except:
-        return HttpResponse("Record doesn't exists")
-
-    return HttpResponse('hey')

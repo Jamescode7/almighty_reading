@@ -2,8 +2,8 @@ from django.urls import path, re_path
 
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, main, profile, interpretation,\
-    comprehension, week, print_page, answer_page, WeekListView, info, agency, test, \
-    downapp, test2, day
+    comprehension, week, print_page, answer_page, WeekListView, info, agency,  \
+    downapp, day, plan_info
 
 app_name = "manager"
 
@@ -27,11 +27,11 @@ urlpatterns = [
 
     path('download/', downapp, name='downapp'),
 
+    path('plan_info/', plan_info, name='plan_info'),
+
 
     #dev check
     path('week_dev/', WeekListView.as_view(), name='week_dev'),
-    path('test/', test, name='test'),
-    path('test2/', test2, name='test2'),
 
     #paper
     path('interpretation/', interpretation, name='interpretation'),
