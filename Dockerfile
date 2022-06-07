@@ -2,7 +2,8 @@ FROM python:3.9.0
 
 WORKDIR /home/
 
-RUN echo "django_ar_image43"
+RUN echo "django_ar_image40"
+RUN echo "django_ar_image40"
 
 RUN git clone https://github.com/Jamescode7/almighty_reading.git
 
@@ -14,7 +15,7 @@ RUN pip install gunicorn
 
 RUN pip install mysqlclient
 
-RUN echo "REMEMBER 43"
+RUN echo "REMEMBER 40"
 
 EXPOSE 8000
 
