@@ -8,9 +8,9 @@ from manager.models import MemberTopicLog, Plan, PlanDetail
 
 @admin.register(Plan)
 class PlanAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'plan_code', 'plan_name']
+    list_display = ['id', 'plan_code', 'plan_name', 'seq']
     list_display_links = ['id']
-    list_editable = ['plan_code', 'plan_name']
+    list_editable = ['plan_code', 'plan_name', 'seq']
 
 
 @admin.register(PlanDetail)

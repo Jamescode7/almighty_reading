@@ -8,6 +8,7 @@ from library.models import Level, Topic
 class Plan(models.Model):
     plan_code = models.IntegerField(null=True, blank=True)
     plan_name = models.CharField(max_length=25, null=True, blank=True)
+    seq = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.plan_name

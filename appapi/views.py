@@ -17,47 +17,44 @@ from member_info.models import StudyMember
 from study_info.models import StepFinishLog, StepTimeLog
 
 
-def version_dic(version):
-    dic = {}
-    dic["app_version"] = str(version.app_version)
-    dic["download_url"] = version.download_url or ""
-    dic["create_at"] = version.create_at
-    return dic
-
-
 def flash_version_check(request):
     ver = AppVersion.objects.filter().order_by('-create_at')[:1]
-    ver = version_dic(ver[0])
-    return JsonResponse(ver)
+    ver = ver[0]
+    dic = {
+        "app_version": str(ver.app_version),
+        "download_url": ver.download_url or "",
+        "create_at": ver.create_at
+    }
+    return JsonResponse(dic)
 
 
 def user_info_load(request):
-    # https://cem.mrzero.kr/rodata/ca/UserInfoLoad?Password=hello&UserID=cem&dummy=1650007104221
-    password = request.GET.get('Password')
-    user_id = request.GET.get('UserID')
-    user_name = request.GET.get('UserName')
-    print('Password : ' + password)
-    print('UserID : ' + user_id)
-    print('user_name : ' + user_name)
     mcode = 'userid'
 
-    if user_id is not None and password is not None:
-        if User.objects.filter(username=user_id):
+    if request.GET.get('UserID') and request.GET.get('Password'):
+        password = request.GET.get('Password')
+        user_id = request.GET.get('UserID')
+        user_name = request.GET.get('UserName')
+        # print('Password : ' + password)
+        # print('UserID : ' + user_id)
+        # print('user_name : ' + user_name)
+
+        get_user = User.objects.filter(username=user_id)
+        if get_user:
+            get_user = get_user[0]
             mcode = user_id
         else:
             mcode = user_id
-
-            # User에 저장. User의 username에 ID를 고유하게 사용한다.
+            print('!!!!!user is none!!!!!!! save!')
+            print('!! id is :' + user_id )
             user = User.objects.create_user(user_id, '', password)
             user.save()
 
-            # StudyMember에서도 저장.
+        get_study_member = StudyMember.objects.filter(mcode=user_id)
+        if get_study_member is None:
+            get_study_member = get_study_member[0]
             save_study_member = StudyMember(mcode=mcode, mname=user_name, plan_code=Plan.objects.get(plan_code=2))
             save_study_member.save()
-
-
-    level_code = 0
-    topic_code = 0
 
     info = {
         "Mcode": mcode,
@@ -87,11 +84,7 @@ def user_info_load(request):
     return JsonResponse(data)
 
 
-def get_topic_log(user_name):
-    topic_log = MemberTopicLog.objects.filter(username=user_name, end_dt=None).order_by('-id')
-    if topic_log:
-        topic_log = topic_log[0]
-        return topic_log
+
 
 
 def common_test(request):
@@ -214,7 +207,7 @@ def theme_to_dicionary(theme, idx):
 
 def level_theme_load(request):
     # Get level
-    level = Level.objects.all()
+    level = Level.objects.filter(show_level__gte=2)
     temp_dic = []
     for n in range(len(level)):
         temp_dic.append(level_to_dicionary(level[n], n))
@@ -269,10 +262,10 @@ def topic_select_save(request):
     level_code = Level.objects.get(level_code=level_code)
 
     # 기존에 다 하지 못한 토픽이 있엇다면 종료 처리.
-    topic_log = get_topic_log(mcode)
-    if topic_log:
-        topic_log.end_dt = datetime.now()
-        topic_log.save()
+    topic_list = MemberTopicLog.objects.filter(username=mcode, end_dt=None)
+    for topic in topic_list:
+        topic.end_dt = datetime.now()
+        topic.save()
 
     # 새로운 토픽 저장.
     save_topic = MemberTopicLog(username=mcode, topic_code=topic_code, level_code=level_code, start_dt=datetime.now(),
@@ -280,9 +273,11 @@ def topic_select_save(request):
     save_topic.save()
     study_code = save_topic.id
 
-    save_study_code = StudyMember.objects.get(mcode=mcode)
-    save_study_code.current_study = study_code
-    save_study_code.save()
+    save_study_code = StudyMember.objects.filter(mcode=mcode)
+    if save_study_code:
+        save_study_code = save_study_code[0]
+        save_study_code.current_study = study_code
+        save_study_code.save()
 
     return HttpResponse('save_log_id' + str(study_code))
 
@@ -530,7 +525,9 @@ def step_finish_save(request):
 
     # 각 변경할 수 있는 정보들 가져오기
     topic_log = MemberTopicLog.objects.get(username=get_mcode, id=get_study_code)
-    user = StudyMember.objects.get(mcode=get_mcode)
+    user = StudyMember.objects.filter(mcode=get_mcode)
+    if user:
+        user = user[0]
 
     # 플랜과 스테이지에 해당하는 스텝 가져오기
     return_data = get_next_step(get_plan, get_stage, get_step)

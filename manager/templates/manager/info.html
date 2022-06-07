@@ -97,13 +97,22 @@ tr.colored:hover td{
                                             <th class="border-top-0"><a href="?order_by=plan_code&desc={{isDesc}}">플랜</a></th>
                                         </tr>
                                     </thead>
+                                    <!--
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+
+                                    / 원 / 생 / 리 / 스 / 트
+
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    -->
                                     <tbody>
                                         {% for member in member_list %}
                                         <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:info' user_id=member.mcode %}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
                                             <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
                                             <td>{{ member.mname }}</td>
                                             <td style="color:#aaaaaa">{{ member.mcode }}</td>
-                                            <td style="{%if member.level_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.level_code == NONE %} 선택없음 {% else %} {{ member.level_code }} {% endif %}</td>
+                                            <td style="{%if member.level_code.level_code == 200 %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.level_code == NONE %} 선택없음 {% else %} {{ member.level_code }} {% endif %}</td>
                                             <td style="{%if member.plan_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.plan_code == NONE %} 자유학습 {% else %} {{ member.plan_code }} {% endif %}</td>
                                         </tr>
                                         {% endfor %}
@@ -131,7 +140,6 @@ tr.colored:hover td{
                                             <th class="border-top-0">
                                                 <div class="border-bottom">
                                                     <select name="mem_level" class="shadow-none p-0 border-0 form-control-line">
-                                                        <option {% if is_select_level == False %} selected{% endif %}>선택없음</option>
                                                         {% for level in level_list %}
                                                             <option {% if level.level_name == select_level_name %} selected{% endif %} value="{{ level.level_code }}">
                                                                 {{ level.level_name }}
@@ -162,8 +170,14 @@ tr.colored:hover td{
                         </div>
 
                         <div class="white-box">
-                            <h3 class="box-title">학습 이력 </h3>
-                            <p class="text-muted">전체 토픽수 <code>{{ member_topic_log|length }}</code></p>
+                            <p class="text-muted">
+                                <span style="padding-right:10px; font-size: 1.15rem; color: black;">학습 이력</span>
+                                <span>전체 토픽수 <code>{{ member_topic_log|length }}</code></span>
+                                <a style="padding-left: 20px;">
+                                    {% if user_id %}
+                                        <button class="btn btn-facebook" style="border-radius: 40px" onclick="window.open('{% url 'manager:reportcard' mcode=user_id %}', 'reportcard', 'width=900px, height=1000px' );">레포트카드 출력</button></a>
+                                    {% endif %}
+                            </p>
                             <div class="table-responsive">
                                 <form name="topicForm" method="get" action="" onsubmit="return validateForm();" >
                                 <table class="table text-nowrap">
@@ -262,12 +276,6 @@ tr.colored:hover td{
 
         function validateForm()
         {
-            var mem_level = document.forms["memForm"]["mem_level"].value;
-            if( mem_level == '선택없음' )
-            {
-                alert( '레벨을 선택해주세요' );
-                return false;
-            }
             return true;
         }
 

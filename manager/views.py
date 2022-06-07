@@ -99,6 +99,38 @@ def interpretation(request, topic_code=''):
     return render(request, 'manager/interpretation.html', context)
 
 
+def reportcard(request, mcode=''):
+    if mcode == '':
+        return HttpResponse('잘못된 접근입니다 (topic code)')
+
+    user_name = ''
+    study_start_day = ''
+    study_end_day = ''
+    level_name = ''
+    member = StudyMember.objects.filter(mcode=mcode)
+    if member:
+        member = member[0]
+        user_name = member.mname
+        level_name = member.level_code
+
+    topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
+    first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
+    study_start_day = first_topic.start_dt
+    last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
+    study_end_day = last_topic.end_dt
+
+    context = {
+        'user_name': user_name,
+        'level_name': level_name,
+        'topic_list': topic_list,
+        'study_start_day': study_start_day,  # eng, kor, eng+kor
+        'study_end_day': study_end_day,
+    }
+    return render(request, 'manager/reportcard.html', context)
+
+
+
+
 def get_aid(request):
     if 'agency' in request.session:
         aid = request.session['agency']
@@ -145,8 +177,9 @@ def update_member_list(request, agency_id):
             # 회원이 없다면 등록시키기.
             study_member = StudyMember.objects.filter(mcode=row_id)
             if study_member:
-                if study_member[0].acode is None:
-                    study_member[0].acode = agency_id
+                study_member = study_member[0]
+                if study_member.acode is None:
+                    study_member.acode = agency_id
                     study_member.save()
             else:
                 study_member = StudyMember(mcode=row_id, mname=row_name, acode=agency_id,
@@ -195,59 +228,62 @@ def info(request, user_id=''):
             desc = '-'
 
     member_list = StudyMember.objects.filter(acode=aid).order_by(desc + order_by)
+    for member in member_list:
+        if member.level_code is None:
+            member.level_code = Level.objects.get(level_code=200)
 
-    user = StudyMember.objects.filter(mcode=user_id)
-    if user:
-        is_select_level = True
-        user = user[0]
+    if user_id != '':
+        user = StudyMember.objects.filter(mcode=user_id)
+        if user:
+            user = user[0]
+            is_select_level = True
 
-        # 플랜이나 레벨제한을 바꿨을때 실행.
-        if request.GET.get('mem_level'):
-            mem_level = request.GET.get('mem_level')
-            mem_plan = request.GET.get('mem_plan')
-            user.level_code = Level.objects.get(level_code=mem_level)
-            user.plan_code = Plan.objects.get(plan_code=mem_plan)
-            user.save()
-            return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
-
-        # 토픽 종료 또는 토픽 리셋 실행.
-        if request.GET.get('process'):
-            process = request.GET.get('process')
-            process_id = request.GET.get('process_id')
-            log = MemberTopicLog.objects.filter(id=process_id)
-            if log:
-                log = log[0]
-                today = date.today()
-                year = today.strftime('%y')
-                month = today.strftime('%m')
-                day = today.strftime('%d')
-
-                user = StudyMember.objects.get(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 상황에 따라 0
-
-                if process == 'closed':
-                    log.end_dt = datetime.now()
-                    save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
-                                               dt_day=day, topic_code='C', step_code=None,
-                                               step_num=None, c_point=None, t_point=None,
-                                               answer=None, stage=None, step=None, plan_type=None,
-                                               study_code=None)
-                    save_topic.save()
-                    user.current_study = 0
-                    log.save()
-                    user.save()
-
-                elif process == 'reset':
-                    if log.id == user.current_study:
-                        user.current_study = 0
-                        user.save()
-                    log.delete()
-
+            # 플랜이나 레벨제한을 바꿨을때 실행.
+            if request.GET.get('mem_level'):
+                mem_level = request.GET.get('mem_level')
+                mem_plan = request.GET.get('mem_plan')
+                user.level_code = Level.objects.get(level_code=mem_level)
+                user.plan_code = Plan.objects.get(plan_code=mem_plan)
+                user.save()
                 return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
 
-        level_list = Level.objects.all()
+            # 토픽 종료 또는 토픽 리셋 실행.
+            if request.GET.get('process'):
+                process = request.GET.get('process')
+                process_id = request.GET.get('process_id')
+                log = MemberTopicLog.objects.get(id=process_id)
+                if log:
+                    today = date.today()
+                    year = today.strftime('%y')
+                    month = today.strftime('%m')
+                    day = today.strftime('%d')
+
+                    user = StudyMember.objects.filter(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 상황에 따라 0
+                    user = user[0]
+                    if process == 'closed':
+                        log.end_dt = datetime.now()
+                        save_topic = StepFinishLog(username=user_id, dt_year=year, dt_month=month,
+                                                   dt_day=day, topic_code='C', step_code=None,
+                                                   step_num=None, c_point=None, t_point=None,
+                                                   answer=None, stage=None, step=None, plan_type=None,
+                                                   study_code=None)
+                        save_topic.save()
+                        user.current_study = 0
+                        log.save()
+                        user.save()
+
+                    elif process == 'reset':
+                        if log.id == user.current_study:
+                            user.current_study = 0
+                            user.save()
+                        log.delete()
+
+                    return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
+
+        level_list = Level.objects.filter(show_level__gte=1).order_by('index_order')
         select_level_name = str(user.level_code)
         select_plan_name = str(user.plan_code)
-        plan_list = Plan.objects.all().order_by('-id')
+        plan_list = Plan.objects.all().order_by('seq')
         user_name = user.mname
         member_topic_log = MemberTopicLog.objects.filter(username=user_id).order_by('-id')
 
@@ -294,8 +330,8 @@ def main(request, user_id='', agency_id=''):
 
     user = StudyMember.objects.filter(mcode=user_id)
     if user:
-        is_select_level = True
         user = user[0]
+        is_select_level = True
 
         # 플랜이나 레벨제한을 바꿨을때 실행.
         if request.GET.get('mem_level'):
@@ -310,9 +346,8 @@ def main(request, user_id='', agency_id=''):
         if request.GET.get('process'):
             process = request.GET.get('process')
             process_id = request.GET.get('process_id')
-            log = MemberTopicLog.objects.filter(id=process_id)
+            log = MemberTopicLog.objects.get(id=process_id)
             if log:
-                log = log[0]
                 if process == 'closed':
                     log.end_dt = datetime.now()
                     user.current_study = 0

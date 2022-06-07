@@ -10,6 +10,7 @@ class Level(models.Model):
     use_yn = models.CharField(max_length=1, null=True, blank=True)
     index_order = models.IntegerField(null=True, blank=True)
     total = models.IntegerField(null=True, blank=True)
+    show_level = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.level_name

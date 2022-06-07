@@ -8,9 +8,9 @@ from library.models import Level, Theme, Topic, Word, WrtMoon, WrtWord, Reading,
 
 @admin.register(Level)
 class LevelAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'level_code', 'level_name', 'memo', 'use_yn', 'index_order', 'total']
+    list_display = ['id', 'level_code', 'level_name', 'memo', 'use_yn', 'index_order', 'total', 'show_level']
     list_display_links = ['id']
-    list_editable = ['level_code', 'level_name', 'memo', 'use_yn', 'index_order', 'total']
+    list_editable = ['level_code', 'level_name', 'memo', 'use_yn', 'index_order', 'total', 'show_level']
 
 
 @admin.register(Theme)

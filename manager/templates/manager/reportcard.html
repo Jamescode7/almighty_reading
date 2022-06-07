@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+
+<style>
+
+.subtitle{
+    margin-top:40px;
+}
+
+.tb{
+    border-collapse: collapse;
+    border: 1px solid #adadad;
+
+    text-align:center;
+    font-size:0.85rem;
+}
+
+.ttitle{
+    padding:0.4rem;
+}
+
+.tbd{
+    padding:0.4rem;
+    text-align:left;
+
+}
+
+
+
+
+
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html, body {
+    width: 210mm;
+    height: 297mm;
+  }
+   .noprint{
+       display:none;
+   }
+}
+
+</style>
+<script>
+    function printPage(){
+        window.print();
+    }
+</script>
+<body>
+    <table width="90%" style="margin-left:auto; margin-right:auto;">
+        <tr><td>
+        <div id="ctrlArea" class="noprint">
+            <button onclick="printPage()">Print this page</button>
+            <!--
+            <a href="?type=eng&random={{random}}" ><button>영어</button></a>
+            <a href="?type=kor&random={{random}}" ><button>한글</button></a>
+            <a href="?type=both&random={{random}}" ><button>영어+한글</button></a>
+            &nbsp;|&nbsp;
+            <a href="?type={{reading_type}}&random=normal" ><button>순서대로</button></a>
+            <a href="?type={{reading_type}}&random=random" ><button>섞어서</button></a>
+            -->
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="white-box">
+                        <div style="">
+                            <h1 class="" style="text-align:center; margin-bottom:0px;">올리 Report Card</h1>
+                            <p class="page-title" style="font-weight: 400; font-size:1.3rem; text-align:center; margin-top:0px" ></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p>1. 학생정보</p>
+        <table class="tb" border="1" width="100%" align="center"  >
+            <tr>
+                <td class="tbd" width="10%" >이름</td>
+                <td class="tbd" width="40%" >{{ user_name }}</td>
+                <td class="tbd" width="10%" >학년</td>
+                <td class="tbd" width="40%" ></td>
+            </tr>
+            <tr>
+                <td class="tbd" width="10%" >학습기간</td>
+                <td class="tbd" width="40%" >{{ study_start_day|date:"m.d" }}~{{ study_end_day|date:"m.d" }}</td>
+                <td class="tbd" width="10%" >Level</td>
+                <td class="tbd" width="40%" >{{ level_name }}</td>
+            </tr>
+        </table>
+
+        <p class="subtitle">2. 학습정보</p>
+        <table class="tb" border="1" width="100%" align="center"  >
+            <tr>
+                <td class="ttitle" width="50%" >토픽명</td>
+                <td class="ttitle" width="25%" >시작일</td>
+                <td class="ttitle" width="25%" >종료일</td>
+            </tr>
+            {% for topic in topic_list %}
+            <tr>
+                <td class="" height="30px" >{{ topic.topic_code }}</td>
+                <td class="">{{ topic.start_dt|date:"m/d" }}</td>
+                <td class="">{{ topic.end_dt|date:"m/d" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p class="subtitle">메모</p>
+        <table class="tb" border="1" width="100%" align="center"  >
+            <tr>
+                <td class="" height="200px" ></td>
+            </tr>
+        </table>
+        <p class="subtitle" style="float: right;">
+            <span>원장 :</span>
+            <span style="padding-left: 130px">(확인)</span>
+        </p>
+        </td></tr>
+        <tr>
+    </table>
+</body>
+
+</html>

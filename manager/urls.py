@@ -3,7 +3,7 @@ from django.urls import path, re_path
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, main, profile, interpretation,\
     comprehension, week, print_page, answer_page, WeekListView, info, agency,  \
-    downapp, day, plan_info
+    downapp, day, plan_info, reportcard
 
 app_name = "manager"
 
@@ -39,6 +39,9 @@ urlpatterns = [
 
     path('comprehension/', comprehension, name='comprehension'),
     path('comprehension/<str:topic_code>', comprehension, name='comprehension'),
+
+    path('reportcard/', reportcard, name='reportcard'),
+    path('reportcard/<str:mcode>', reportcard, name='reportcard'),
 
     path('print/', print_page, name='print'),
 
