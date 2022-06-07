@@ -99,7 +99,11 @@ def common_test(request):
     mcode = request.GET.get('Mcode')
 
     level_code = "0"
+    level_name = ''
+    theme_name = ''
     topic_code = "0"
+    topic_name = ''
+
 
     mem_level = "0"
     mem_level_name = ""
@@ -126,7 +130,12 @@ def common_test(request):
         topic_log = MemberTopicLog.objects.get(username=mcode, id=study_code)
         if topic_log:
             level_code = topic_log.level_code.level_code
+            level_name = topic_log.level_code.level_name
             topic_code = topic_log.topic_code.topic_code
+            topic_name = topic_log.topic_code.topic_name
+
+            theme_code = Topic.objects.get(topic_code=topic_code).theme_code
+            theme_name = Theme.objects.get(theme_code=theme_code).theme_name
             stage = topic_log.stage
             step = topic_log.step
 
@@ -139,13 +148,15 @@ def common_test(request):
         stage = 1
         step = 1  # 플랜 타입이 자유학습이라면 무조건 스텝과 스테이지는 1로..
 
+    topic_nav = ''
     if level_code == "0" and topic_code == "0":
-        print('라이브러리를 골라야 합니다.')
+        # print('라이브러리를 골라야 합니다.')
         history = MemberTopicLog.objects.filter(username=mcode).order_by('-topic_code')
         for row in history:
             # print(str(row))
             clear_list.append(row.topic_code.topic_code)
-
+    else:
+        topic_nav = level_name + '>' + theme_name + '>' + topic_name
 
 
     data = {
@@ -159,7 +170,8 @@ def common_test(request):
         "StepCode": step_code,
         "StepCodeName": step_code_name,
         "StudyCode": study_code,
-        "ClearList": clear_list
+        "ClearList": clear_list,
+        "TopicNav": topic_nav
 
     }
     return JsonResponse(data)
