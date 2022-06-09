@@ -72,18 +72,18 @@ def comprehension(request, topic_code=''):
             row.answer = 'X'
 
         if user_answer_len > cnt:
-            # print('exam.answer : ' + row.answer)
-            # print('user.answer : ' + answer_list[cnt])
+            print('exam.answer : ' + row.answer)
+            print('user.answer : ' + answer_list[cnt])
             row.user = answer_list[cnt]
             # print('===================')
         cnt += 1
-    is_user_answer = 1
+
     context = {
         'id': id,
         'mcode': mcode,
         'exam_info': exam_info,
         'para_list': para_list,
-        'ctrl_answer': ctrl_answer,
+        'ctrl_answer': str(ctrl_answer),
         'ctrl_user': ctrl_user,
         'is_user_answer': is_user_answer,
         'answer_list': answer_list
