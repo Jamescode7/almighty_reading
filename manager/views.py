@@ -67,11 +67,14 @@ def comprehension(request, topic_code=''):
             row.answer = 'O'
         if row.answer == 'F':
             row.answer = 'X'
-        print(row.answer)
-        print(answer_list[cnt])
-        row.user = answer_list[cnt]
-        print('===================')
-        cnt += 1
+
+        #if answer_list.count >= 0 and answer_list.count <= cnt:
+            # print(row.answer)
+            # print(answer_list[cnt])
+        #    row.user = answer_list[cnt]
+            # print('===================')
+        #cnt += 1
+    is_user_answer = 0
     context = {
         'id': id,
         'mcode': mcode,
