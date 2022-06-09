@@ -32,6 +32,7 @@ def comprehension(request, topic_code=''):
         ctrl_answer = int(request.GET.get('ctrl_answer'))
 
     is_user_answer = False
+    id=''
     mcode = ''
     answer_list = []
     if request.GET.get('mcode'):
