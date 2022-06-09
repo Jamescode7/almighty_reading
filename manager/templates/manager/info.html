@@ -160,6 +160,7 @@ tr.colored:hover td{
                                                         {% endfor %}
                                                     </select>
                                                     <button type="submit" class="btn btn-primary">변경</button>
+                                                    <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;" onclick="window.open('{% url 'manager:plan_view' %}', 'plan_view', 'width=900px, height=1000px' );">플랜보기</button>
                                                 </div>
                                             </th>
                                         </tr>
@@ -175,7 +176,9 @@ tr.colored:hover td{
                                 <span>전체 토픽수 <code>{{ member_topic_log|length }}</code></span>
                                 <a style="padding-left: 20px;">
                                     {% if user_id %}
+                                        {% if member_topic_log|length > 0 %}
                                         <button class="btn btn-facebook" style="border-radius: 40px" onclick="window.open('{% url 'manager:reportcard' mcode=user_id %}', 'reportcard', 'width=900px, height=1000px' );">레포트카드 출력</button></a>
+                                        {% endif %}
                                     {% endif %}
                             </p>
                             <div class="table-responsive">
@@ -188,7 +191,6 @@ tr.colored:hover td{
                                             <th class="border-top-0">토픽레벨</th>
                                             <th class="border-top-0">시작일</th>
                                             <th class="border-top-0">종료일</th>
-                                            <th class="border-top-0">문제</th>
                                             <th class="border-top-0">실전문제</th>
                                             <th class="border-top-0">동시통역</th>
                                             <th class="border-top-0">처리</th>
@@ -204,8 +206,7 @@ tr.colored:hover td{
                                             <td>{{ row.level_code }}</td>
                                             <td>{% if row.start_dt == None %}  {% else %} {{ row.start_dt|date:'y.m.d' }} {% endif %}</td>
                                             <td>{% if row.end_dt == None %}  {% else %} {{ row.end_dt|date:'y.m.d' }} {% endif %}</td>
-                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:answer' topic_code=row.topic_code.topic_code %}', 'answer', 'width=500px, height=600px' );">보기</button></td>
-                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=row.topic_code.topic_code %}', 'comprehension', 'width=900px, height=1000px' );">출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=row.topic_code.topic_code %}?id={{ row.id }}&mcode={{ user_id }}', 'comprehension', 'width=900px, height=1000px' );">출력</button></td>
                                             <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=row.topic_code.topic_code %}', 'interpretation', 'width=900px, height=1000px' );"> 출력</button></td>
                                             <td>
                                                 {% if row.end_dt == None %}

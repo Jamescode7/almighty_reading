@@ -13,7 +13,7 @@ from django.views import View
 from django.views.generic import ListView
 
 from common_value.models import AppVersion
-from library.models import Level, Topic, SpkSent, Theme, Exam, Word
+from library.models import Level, Topic, SpkSent, Theme, Exam, Word, Reading
 from manager.models import MemberTopicLog, Plan, PlanDetail
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog
@@ -23,8 +23,65 @@ def comprehension(request, topic_code=''):
     if topic_code == '':
         return HttpResponse('잘못된 접근입니다(topic code)')
 
+    ctrl_user = 0
+    if request.GET.get('ctrl_user'):
+        ctrl_user = request.GET.get('ctrl_user')
+
+    ctrl_answer = 1
+    if request.GET.get('ctrl_answer'):
+        ctrl_answer = int(request.GET.get('ctrl_answer'))
+
+    is_user_answer = False
+    mcode = ''
+    answer_list = []
+    if request.GET.get('mcode'):
+        mcode = request.GET.get('mcode')
+        id = request.GET.get('id')
+        answer_log = StepFinishLog.objects.filter(username=mcode, study_code=id, step_code='P10')
+        cnt = 0
+        for answer in answer_log:
+            cnt += 1
+            if answer.answer == 'T':
+                answer.answer = 'O'
+            if answer.answer == 'F':
+                answer.answer = 'X'
+            answer_list.append(answer.answer)
+            # print('answer : ' + str(answer.answer))
+            # print('==============' + str(cnt))
+        if cnt >= 7:
+            is_user_answer = True
+
+    para_list = Reading.objects.filter(topic_code=topic_code)
+    for para in para_list:
+        para.eng = para.eng.replace(']', '')
+        para.eng = para.eng.replace('{', '')
+        para.eng = para.eng.replace('[', '')
+        para.eng = para.eng.replace('}', '')
+        para.eng = para.eng.replace('^', '\n')
+
     exam_info = Exam.objects.filter(topic_code=topic_code)
-    context = {'exam_info': exam_info}
+    cnt = 0
+    for row in exam_info:
+        row.ask = row.ask.replace('^', '')
+        if row.answer == 'T':
+            row.answer = 'O'
+        if row.answer == 'F':
+            row.answer = 'X'
+        print(row.answer)
+        print(answer_list[cnt])
+        row.user = answer_list[cnt]
+        print('===================')
+        cnt += 1
+    context = {
+        'id': id,
+        'mcode': mcode,
+        'exam_info': exam_info,
+        'para_list': para_list,
+        'ctrl_answer': ctrl_answer,
+        'ctrl_user': ctrl_user,
+        'is_user_answer': is_user_answer,
+        'answer_list': answer_list
+    }
     return render(request, 'manager/comprehension.html', context)
 
 
@@ -73,6 +130,8 @@ def interpretation(request, topic_code=''):
     reading_type = 'both'  # eng, kor, both(eng+kor)
     if request.GET.get('type'):
         reading_type = request.GET.get('type')
+
+
 
     # 순차적 / 랜덤 표시
     is_random = 'normal'
@@ -607,6 +666,10 @@ def downapp(request):
 def get_day(num):
     switcher = {0: "월", 1: "화", 2: "수", 3: "목", 4: "금", 5: "토", 6: "일"}
     return switcher.get(num, "Please enter number between 1-7")
+
+
+def plan_view(request):
+    return render(request, 'manager/plan_view.html')
 
 
 def plan_info(request):

@@ -22,16 +22,21 @@
 .question
 {
     font-weight:600;
-    font-size:1.2rem;
-    margin-bottom: 10px;
+    font-size:0.95rem;
     vertical-align:top;
+    margin-bottom: 0px;
+    margin-top:0px;
+
 }
 .qlist
 {
     font-weight:300;
-    font-size:1.0rem;
-    margin-top: 10px;
+    font-size:0.85rem;
     vertical-align:text-top;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 td{
@@ -50,6 +55,12 @@ td{
         <tr><td>
         <div id="ctrlArea" class="noprint">
             <button onclick="printPage()">Print this page</button>
+            <a href="?id={{ id }}&mcode={{ mcode }}&ctrl_user={{ ctrl_user }}&ctrl_answer=1" ><button>하단정답 ON</button></a>
+            <a href="?id={{ id }}&mcode={{ mcode }}&ctrl_user={{ ctrl_user }}&ctrl_answer=0" ><button>하단정답 OFF</button></a>
+            {%  if is_user_answer %}
+                <a href="?id={{ id }}&mcode={{ mcode }}&ctrl_user=1&ctrl_answer={{ ctrl_answer }}" ><button>학생 정답 ON</button></a>
+                <a href="?id={{ id }}&mcode={{ mcode }}&ctrl_user=0&ctrl_answer={{ ctrl_answer }}" ><button>학생 정답 OFF</button></a>
+            {% endif %}
         </div>
         <div class="container-fluid">
             <div class="row">
@@ -63,35 +74,50 @@ td{
                 </div>
             </div>
         </div>
-            <table width="100%" style="padding-top:50px;">
-        {% for row in exam_info %}
-            {% if forloop.counter|divisibleby:2 %}
-                    <td width="45%">
-            {% else %}
-                <tr>
-                    <td width="45%">
-            {% endif %}
-                <p class="question">{{ forloop.counter }}. {{ row.ask }}</p>
-                <p class="qlist">{% if row.s1 != None %}&nbsp;&nbsp;(1) {{ row.s1 }} {% else %}&nbsp;&nbsp;( O )&nbsp;&nbsp;( X ) {% endif %} </p>
-                <p class="qlist">{% if row.s2 != None %}&nbsp;&nbsp;(2) {{ row.s2 }} {% endif %} </p>
-                <p class="qlist">{% if row.s3 != None %}&nbsp;&nbsp;(3) {{ row.s3 }} {% endif %} </p>
-                <p class="qlist">{% if row.s4 != None %}&nbsp;&nbsp;(4) {{ row.s4 }} {% endif %} </p>
-                <p class="qlist">{% if row.s5 != None %}&nbsp;&nbsp;(5) {{ row.s5 }} {% endif %} </p>
-                <p class="qlist">&nbsp;</p>
-            {% if forloop.counter|divisibleby:2 %}
-                    </td>
-                </tr>
-            {% else %}
-                    </td>
-                <td width="5%"></td>
-
-
-            {% endif %}
-        {% endfor %}
+            <table width="100%" border="0" style="padding-top:50px;">
+            <tr>
+                <td>
+                    <table>
+                        {% for para in para_list %}
+                        <tr>
+                            <td style="padding-bottom:5px; line-height:140%" > {{para.eng|linebreaksbr}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td></td>
+                <td>
+                    <table border="0">
+                        {% for row in exam_info %}
+                        <tr>
+                            <td style="padding-bottom: 10px;">
+                                <p class="question">{{ forloop.counter }}. {{ row.ask }}</p>
+                                <p class="qlist">{% if row.s1 != None %}&nbsp;&nbsp;(1) {{ row.s1 }} {% if ctrl_user == '1' and '1' == row.user %} 📝 {% endif %} {% else %}&nbsp;&nbsp;( O ){% if ctrl_user == '1' and 'O' == row.user %} 📝 {% endif %}&nbsp;&nbsp;( X ){% if ctrl_user == '1' and 'X' == row.user %} 📝 {% endif %} {% endif %} </p>
+                                <p class="qlist">{% if row.s2 != None %}&nbsp;&nbsp;(2) {{ row.s2 }} {% if ctrl_user == '1' and '2' == row.user %} 📝 {% endif %} {% endif %} </p>
+                                <p class="qlist">{% if row.s3 != None %}&nbsp;&nbsp;(3) {{ row.s3 }} {% if ctrl_user == '1' and '3' == row.user %} 📝 {% endif %} {% endif %} </p>
+                                <p class="qlist">{% if row.s4 != None %}&nbsp;&nbsp;(4) {{ row.s4 }} {% if ctrl_user == '1' and '4' == row.user %} 📝 {% endif %} {% endif %} </p>
+                                <p class="qlist">{% if row.s5 != None %}&nbsp;&nbsp;(5) {{ row.s5 }} {% if ctrl_user == '1' and '5' == row.user %} 📝 {% endif %} {% endif %} </p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td width="45%"></td>
+                <td width="1%"></td>
+                <td width="49%"></td>
+            </tr>
             </table>
         </td></tr>
     </table>
-
+    <div style="position:fixed; right:10px; bottom:10px; padding-left: 30px; font-size: 0.8rem; color: #595959">
+    {% if ctrl_answer == 1 %}
+        {% for row in exam_info %}
+            {{ forloop.counter }}.({{ row.answer }})&nbsp;&nbsp;
+        {% endfor %}
+    {% endif %}
+    </div>
 </body>
 
 </html>
