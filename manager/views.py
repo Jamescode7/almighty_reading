@@ -27,16 +27,33 @@ def comprehension(request, topic_code=''):
     if request.GET.get('ctrl_user'):
         ctrl_user = request.GET.get('ctrl_user')
 
-    ctrl_answer = 1
+    ctrl_answer = 0
     if request.GET.get('ctrl_answer'):
         ctrl_answer = int(request.GET.get('ctrl_answer'))
 
+    is_member = False
+    member_name = ''
+    topic_name = ''
     is_user_answer = False
     id = ''
     mcode = ''
     answer_list = []
     if request.GET.get('mcode'):
+
         mcode = request.GET.get('mcode')
+        # 학원생 이름 가져오기
+        member = StudyMember.objects.filter(mcode=mcode)
+        if member:
+            is_member = True
+            member = member[0]
+            member_name = member.mname
+
+        # 토픽 이름 가져오기
+        topic = Topic.objects.filter(topic_code=topic_code)
+        if topic:
+            topic = topic[0]
+            topic_name = topic.topic_name
+
         id = request.GET.get('id')
         answer_log = StepFinishLog.objects.filter(username=mcode, study_code=id, step_code='P10')
         cnt = 0
@@ -72,15 +89,18 @@ def comprehension(request, topic_code=''):
             row.answer = 'X'
 
         if user_answer_len > cnt:
-            print('exam.answer : ' + row.answer)
-            print('user.answer : ' + answer_list[cnt])
+            # print('exam.answer : ' + row.answer)
+            # print('user.answer : ' + answer_list[cnt])
             row.user = answer_list[cnt]
             # print('===================')
         cnt += 1
 
     context = {
+        'is_member': is_member,
         'id': id,
         'mcode': mcode,
+        'member_name': member_name,
+        'topic_name': topic_name,
         'exam_info': exam_info,
         'para_list': para_list,
         'ctrl_answer': str(ctrl_answer),
@@ -229,6 +249,8 @@ def update_member_list(request, agency_id):
     else:
         print('going down!')
     # 웹전산에서 정보 가져오기 -- JSON
+    # http://www.tongclass.co.kr/Class/api_member.aspx?ac=gyeong8890
+    # gyeong8890
     url = "http://www.tongclass.co.kr/Class/api_member.aspx?ac=" + agency_id
     oper_url = urllib.request.urlopen(url)
     if oper_url.getcode() == 200:
