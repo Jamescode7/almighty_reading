@@ -32,7 +32,7 @@ def comprehension(request, topic_code=''):
         ctrl_answer = int(request.GET.get('ctrl_answer'))
 
     is_user_answer = False
-    id=''
+    id = ''
     mcode = ''
     answer_list = []
     if request.GET.get('mcode'):
@@ -46,6 +46,7 @@ def comprehension(request, topic_code=''):
                 answer.answer = 'O'
             if answer.answer == 'F':
                 answer.answer = 'X'
+            #if cnt < 6:
             answer_list.append(answer.answer)
             # print('answer : ' + str(answer.answer))
             # print('==============' + str(cnt))
@@ -62,6 +63,7 @@ def comprehension(request, topic_code=''):
 
     exam_info = Exam.objects.filter(topic_code=topic_code)
     cnt = 0
+    user_answer_len = len(answer_list)
     for row in exam_info:
         row.ask = row.ask.replace('^', '')
         if row.answer == 'T':
@@ -69,13 +71,13 @@ def comprehension(request, topic_code=''):
         if row.answer == 'F':
             row.answer = 'X'
 
-        #if answer_list.count >= 0 and answer_list.count <= cnt:
-            # print(row.answer)
-            # print(answer_list[cnt])
-        #    row.user = answer_list[cnt]
+        if user_answer_len > cnt:
+            # print('exam.answer : ' + row.answer)
+            # print('user.answer : ' + answer_list[cnt])
+            row.user = answer_list[cnt]
             # print('===================')
-        #cnt += 1
-    is_user_answer = 0
+        cnt += 1
+    is_user_answer = 1
     context = {
         'id': id,
         'mcode': mcode,
