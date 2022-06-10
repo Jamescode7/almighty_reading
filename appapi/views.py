@@ -107,6 +107,7 @@ def common_test(request):
     step_code = 0
     step_code_name = ''
     clear_list = []
+    plan_name = ''
 
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
@@ -116,6 +117,7 @@ def common_test(request):
             mem_level_name = user.level_code.level_name
         if user.plan_code:
             plan_type = str(user.plan_code.plan_code)
+            plan_name = str(user.plan_code)
         if user.current_study:
             study_code = str(user.current_study)
 
@@ -156,6 +158,7 @@ def common_test(request):
         "Lcode": level_code,
         "Pcode": topic_code,
         "PlanType": plan_type,
+        "PlanName": plan_name,
         "LevelLimit": mem_level,
         "LevelLimitName": mem_level_name,
         "Stage": stage,
