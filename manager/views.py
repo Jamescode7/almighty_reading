@@ -249,9 +249,11 @@ def reportcard(request, mcode=''):
         topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id')
         # print(topic_list.query)
         first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('id').first()
-        study_start_day = first_topic.start_dt
+        if first_topic:
+            study_start_day = first_topic.start_dt
         last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id').first()
-        study_end_day = last_topic.end_dt
+        if last_topic:
+            study_end_day = last_topic.end_dt
     else:
         topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
         first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
