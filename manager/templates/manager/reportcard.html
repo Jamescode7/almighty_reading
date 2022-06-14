@@ -44,6 +44,14 @@
    }
 }
 
+
+
+textarea.autosize {
+    min-height: 80px;
+    width: 100%;
+}
+
+
 </style>
 <script>
     function printPage(){
@@ -54,7 +62,44 @@
     <table width="90%" style="margin-left:auto; margin-right:auto;">
         <tr><td>
         <div id="ctrlArea" class="noprint">
+
             <button onclick="printPage()">Print this page</button>
+            <span style="padding-left: 10px;">학습기간</span>
+            <span style="border: 1px solid #000000; padding: 5px 10px; border-radius: 10px; background-color: #efefef">
+                <select id="sm" name="sm" onchange="chageSM()" class="shadow-none p-0 border-0 ">
+                    {% for month in month_list %}
+                        <option {% if month == sm %}selected{% endif %} value="{{ month }}">
+                            {{ month }}
+                        </option>
+                    {% endfor %}
+                </select>
+                월
+                <select id="sd" name="sd" onchange="chageSD()" class="shadow-none p-0 border-0 ">
+                    {% for day in sd_list %}
+                        <option {% if day == sd %}selected{% endif %} value="{{ day }}">
+                            {{ day }}
+                        </option>
+                    {% endfor %}
+                </select>
+                일 ~
+                <select id="em" name="em" onchange="chageEM()" class="shadow-none p-0 border-0 ">
+                    {% for month in month_list %}
+                        <option {% if month == em %}selected{% endif %} value="{{ month }}">
+                            {{ month }}
+                        </option>
+                    {% endfor %}
+                </select>
+                월
+                <select id="ed" name="ed" onchange="chageED()" class="shadow-none p-0 border-0 ">
+                    {% for day in sd_list %}
+                        <option {% if day == ed %}selected{% endif %} value="{{ day }}">
+                            {{ day }}
+                        </option>
+                    {% endfor %}
+                </select>
+                일
+            </span>
+
             <!--
             <a href="?type=eng&random={{random}}" ><button>영어</button></a>
             <a href="?type=kor&random={{random}}" ><button>한글</button></a>
@@ -83,7 +128,7 @@
             <tr>
                 <td class="tbd" width="10%" >이름</td>
                 <td class="tbd" width="40%" >{{ user_name }}</td>
-                <td class="tbd" width="10%" >학년</td>
+                <td class="tbd" width="10%" ></td>
                 <td class="tbd" width="40%" ></td>
             </tr>
             <tr>
@@ -111,11 +156,7 @@
         </table>
 
         <p class="subtitle">메모</p>
-        <table class="tb" border="1" width="100%" align="center"  >
-            <tr>
-                <td class="" height="200px" ></td>
-            </tr>
-        </table>
+        <textarea class="autosize" onkeydown="resize(this)" onkeyup="resize(this)" placeholder=""></textarea>
         <p class="subtitle" style="float: right;">
             <span>원장 :</span>
             <span style="padding-left: 130px">(확인)</span>
@@ -124,5 +165,32 @@
         <tr>
     </table>
 </body>
+<script>
+function resize(obj) {
+  obj.style.height = "1px";
+  obj.style.height = (12+obj.scrollHeight)+"px";
+}
 
+function chageSM(){
+    const select_value = document.getElementById("sm");
+    const sm = select_value.options[select_value.selectedIndex].value;
+    location.href='?sm=' + sm + '&sd=' + {{ sd }} + '&em=' + {{ em }} + '&ed=' + {{ ed }} + '';
+}
+function chageSD(){
+    const select_value = document.getElementById("sd");
+    const sd = select_value.options[select_value.selectedIndex].value;
+    location.href='?sm=' + {{ sm }} + '&sd=' + sd + '&em=' + {{ em }} + '&ed=' + {{ ed }} + '';
+}
+function chageEM(){
+    const select_value = document.getElementById("em");
+    const em = select_value.options[select_value.selectedIndex].value;
+    location.href='?sm=' + {{ sm }} + '&sd=' + {{ sd }} + '&em=' + em + '&ed=' + {{ ed }} + '';
+}
+function chageED(){
+    const select_value = document.getElementById("ed");
+    const ed = select_value.options[select_value.selectedIndex].value;
+    location.href='?sm=' + {{ sm }} + '&sd=' + {{ sd }} + '&em={{ em }}' + '&ed=' + ed;
+}
+
+</script>
 </html>

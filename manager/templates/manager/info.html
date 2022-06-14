@@ -160,7 +160,7 @@ tr.colored:hover td{
                                                         {% endfor %}
                                                     </select>
                                                     <button type="submit" class="btn btn-primary">변경</button>
-                                                    <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;" onclick="window.open('{% url 'manager:plan_view' %}', 'plan_view', 'width=900px, height=1000px' );">플랜보기</button>
+                                                    <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;" onclick="window.open('{% url 'manager:plan_view' %}', 'plan_view', 'width=720px, height=1000px' );">플랜보기</button>
                                                 </div>
                                             </th>
                                         </tr>
@@ -274,7 +274,6 @@ tr.colored:hover td{
     <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
     <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
     <script>
-
         function validateForm()
         {
             return true;

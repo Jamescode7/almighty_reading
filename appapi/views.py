@@ -566,7 +566,7 @@ def step_finish_save(request):
                 topic_log.end_dt = datetime.now()
                 user.current_study = 0
                 user.save()
-            elif get_q_num == '8':
+            elif get_q_num == '10':
                 return_data['return_q_num'] = 0
                 is_finish_today = False
                 is_finish_topic = False

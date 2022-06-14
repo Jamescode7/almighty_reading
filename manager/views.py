@@ -1,6 +1,7 @@
 import random
 import urllib
 import json
+import calendar
 
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
@@ -67,7 +68,7 @@ def comprehension(request, topic_code=''):
             answer_list.append(answer.answer)
             # print('answer : ' + str(answer.answer))
             # print('==============' + str(cnt))
-        if cnt >= 7:
+        if cnt >= 1:
             is_user_answer = True
 
     para_list = Reading.objects.filter(topic_code=topic_code)
@@ -188,6 +189,43 @@ def reportcard(request, mcode=''):
     if mcode == '':
         return HttpResponse('잘못된 접근입니다 (topic code)')
 
+    month_list = []
+    sm = '' # start month
+    sd = '0' # start day
+    sd_list = []
+    em = '0' # end month
+    ed = '0' # end day
+    ed_list = []
+    now = datetime.now()
+
+    ctrl_day = ''
+    for x in range(1, 13):
+        month_list.append(str(x))
+
+    if request.GET.get('sm'):
+        sm = request.GET.get('sm')
+        year = now.year
+        get_month = calendar.monthrange(year, int(sm))
+        end_day = get_month[1] + 1
+        for y in range(1, end_day):
+            sd_list.append(str(y))
+
+    if request.GET.get('sd'):
+        sd = request.GET.get('sd')
+
+    if request.GET.get('em'):
+        em = request.GET.get('em')
+        year = now.year
+        if em != '0':
+            get_month = calendar.monthrange(year, int(em))
+            end_day = get_month[1] + 1
+            for y in range(1, end_day):
+                ed_list.append(str(y))
+
+    if request.GET.get('ed'):
+        ed = request.GET.get('ed')
+
+
     user_name = ''
     study_start_day = ''
     study_end_day = ''
@@ -198,13 +236,37 @@ def reportcard(request, mcode=''):
         user_name = member.mname
         level_name = member.level_code
 
-    topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
-    first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
-    study_start_day = first_topic.start_dt
-    last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
-    study_end_day = last_topic.end_dt
+    if sd != '0' and em != '0' and ed != '0':
+        print('ok, get data!')
+
+        start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
+        end_date = datetime(year, int(em), int(ed), 23, 59, 59)
+        #print('ed : ' + str(end_date.timetuple()))
+        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id')
+        # print(topic_list.query)
+        first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('id').first()
+        study_start_day = first_topic.start_dt
+        last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id').first()
+        study_end_day = last_topic.end_dt
+    else:
+        topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
+        first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
+        study_start_day = first_topic.start_dt
+        last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
+        study_end_day = last_topic.end_dt
 
     context = {
+        'month_list': month_list,
+        'sm': sm,
+        'sd_list': sd_list,
+        'sd': sd,
+
+        'em': em,
+        'ed_list': ed_list,
+        'ed': ed,
+
+        'ctrl_day': ctrl_day,
+
         'user_name': user_name,
         'level_name': level_name,
         'topic_list': topic_list,
