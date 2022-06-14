@@ -190,6 +190,7 @@ def reportcard(request, mcode=''):
         return HttpResponse('잘못된 접근입니다 (topic code)')
 
     month_list = []
+    day_list = []
     sm = '' # start month
     sd = '0' # start day
     sd_list = []
@@ -201,6 +202,9 @@ def reportcard(request, mcode=''):
     ctrl_day = ''
     for x in range(1, 13):
         month_list.append(str(x))
+
+    for x in range(1, 32):
+        day_list.append(str(x))
 
     if request.GET.get('sm'):
         sm = request.GET.get('sm')
@@ -257,12 +261,10 @@ def reportcard(request, mcode=''):
 
     context = {
         'month_list': month_list,
+        'day_list': day_list,
         'sm': sm,
-        'sd_list': sd_list,
         'sd': sd,
-
         'em': em,
-        'ed_list': ed_list,
         'ed': ed,
 
         'ctrl_day': ctrl_day,

@@ -66,7 +66,7 @@ textarea.autosize {
             <button onclick="printPage()">Print this page</button>
             <span style="padding-left: 10px;">학습기간</span>
             <span style="border: 1px solid #000000; padding: 5px 10px; border-radius: 10px; background-color: #efefef">
-                <select id="sm" name="sm" onchange="chageSM()" class="shadow-none p-0 border-0 ">
+                <select id="sm" name="sm" class="shadow-none p-0 border-0 ">
                     {% for month in month_list %}
                         <option {% if month == sm %}selected{% endif %} value="{{ month }}">
                             {{ month }}
@@ -74,15 +74,15 @@ textarea.autosize {
                     {% endfor %}
                 </select>
                 월
-                <select id="sd" name="sd" onchange="chageSD()" class="shadow-none p-0 border-0 ">
-                    {% for day in sd_list %}
+                <select id="sd" name="sd" class="shadow-none p-0 border-0 ">
+                    {% for day in day_list %}
                         <option {% if day == sd %}selected{% endif %} value="{{ day }}">
                             {{ day }}
                         </option>
                     {% endfor %}
                 </select>
                 일 ~
-                <select id="em" name="em" onchange="chageEM()" class="shadow-none p-0 border-0 ">
+                <select id="em" name="em" class="shadow-none p-0 border-0 ">
                     {% for month in month_list %}
                         <option {% if month == em %}selected{% endif %} value="{{ month }}">
                             {{ month }}
@@ -90,15 +90,17 @@ textarea.autosize {
                     {% endfor %}
                 </select>
                 월
-                <select id="ed" name="ed" onchange="chageED()" class="shadow-none p-0 border-0 ">
-                    {% for day in sd_list %}
+                <select id="ed" name="ed" class="shadow-none p-0 border-0 ">
+                    {% for day in day_list %}
                         <option {% if day == ed %}selected{% endif %} value="{{ day }}">
                             {{ day }}
                         </option>
                     {% endfor %}
                 </select>
                 일
+            <button style="padding: 0px 15px; margin:0px 10px; background-color: #06357a; color: #FFFFFF" class="btn btn-facebook" onclick="checkMonthAndDay()">검색</button>
             </span>
+
 
             <!--
             <a href="?type=eng&random={{random}}" ><button>영어</button></a>
@@ -171,25 +173,37 @@ function resize(obj) {
   obj.style.height = (12+obj.scrollHeight)+"px";
 }
 
-function chageSM(){
-    const select_value = document.getElementById("sm");
-    const sm = select_value.options[select_value.selectedIndex].value;
-    location.href='?sm=' + sm + '&sd=' + {{ sd }} + '&em=' + {{ em }} + '&ed=' + {{ ed }} + '';
-}
-function chageSD(){
-    const select_value = document.getElementById("sd");
-    const sd = select_value.options[select_value.selectedIndex].value;
-    location.href='?sm=' + {{ sm }} + '&sd=' + sd + '&em=' + {{ em }} + '&ed=' + {{ ed }} + '';
-}
-function chageEM(){
-    const select_value = document.getElementById("em");
-    const em = select_value.options[select_value.selectedIndex].value;
-    location.href='?sm=' + {{ sm }} + '&sd=' + {{ sd }} + '&em=' + em + '&ed=' + {{ ed }} + '';
-}
-function chageED(){
-    const select_value = document.getElementById("ed");
-    const ed = select_value.options[select_value.selectedIndex].value;
-    location.href='?sm=' + {{ sm }} + '&sd=' + {{ sd }} + '&em={{ em }}' + '&ed=' + ed;
+
+
+function checkMonthAndDay(){
+    const select_value_sm = document.getElementById("sm");
+    var sm = select_value_sm.options[select_value_sm.selectedIndex].value;
+
+    const select_value_sd = document.getElementById("sd");
+    var sd = select_value_sd.options[select_value_sd.selectedIndex].value;
+
+    const select_value_em = document.getElementById("em");
+    var em = select_value_em.options[select_value_em.selectedIndex].value;
+
+    const select_value_ed = document.getElementById("ed");
+    var ed = select_value_ed.options[select_value_ed.selectedIndex].value;
+
+    sm = parseInt(sm);
+    sd = parseInt(sd);
+    em = parseInt(em);
+    ed = parseInt(ed);
+
+    if( sm >= em ){
+        if( sm > em ) {
+            alert('종료일보다 시작일이 더 이전이어야 합니다.')
+            return false;
+        }
+        if( sd > ed ){
+            alert('종료일보다 시작일이 더 이전이어야 합니다. ')
+            return false;
+        }
+    }
+    location.href='?sm=' + sm + '&sd=' + sd + '&em=' + em + '&ed=' + ed + '';
 }
 
 </script>
