@@ -105,7 +105,7 @@ td{
                     <table>
                         {% for para in para_list %}
                         <tr>
-                            <td class="reading" style="padding-bottom:10px; line-height:130%" > {{para.eng|linebreaksbr}}</td>
+                            <td id="reading{{ forloop.counter0 }}" class="reading" style="padding-bottom:10px; line-height:130%" > {{para.eng|linebreaksbr}}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -182,4 +182,21 @@ td{
     </div>
 </body>
 
+<script>
+setTimeout( test, 1000);
+function test(){
+    //alert('test');
+    const len = {{ para_len }};
+    var total = 0;
+    for( var n = 0; n < len; n ++){
+        const td = document.getElementById("reading" + n);
+        total += td.clientHeight;
+        //alert('total : ' + total + '/ height : ' + td.clientHeight + '/ ' + td.innerText);
+        if( total >= 855 ){
+            td.innerText = '\n\n\n\n\n\n' + td.innerText;
+            return;
+        }
+    }
+}
+</script>
 </html>

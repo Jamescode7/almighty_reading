@@ -79,6 +79,7 @@ def comprehension(request, topic_code=''):
         para.eng = para.eng.replace('}', '')
         para.eng = para.eng.replace('^', '\n')
 
+    print(len(para_list))
     exam_info = Exam.objects.filter(topic_code=topic_code)
     cnt = 0
     user_answer_len = len(answer_list)
@@ -97,6 +98,7 @@ def comprehension(request, topic_code=''):
         cnt += 1
 
     context = {
+        'para_len':len(para_list),
         'is_member': is_member,
         'id': id,
         'mcode': mcode,
@@ -170,9 +172,23 @@ def interpretation(request, topic_code=''):
     level_info = Level.objects.get(level_code=theme_info.level_code)
 
     if is_random == 'normal':
-        sentence_list = SpkSent.objects.filter(topic_code=topic_code)
+        sentence_list = Reading.objects.filter(topic_code=topic_code)
     else:
-        sentence_list = SpkSent.objects.filter(topic_code=topic_code).order_by('?')
+        sentence_list = Reading.objects.filter(topic_code=topic_code).order_by('?')
+
+    for row in sentence_list:
+        row.eng = row.eng.replace('{', '')
+        row.eng = row.eng.replace('}', '')
+        row.eng = row.eng.replace('[', '')
+        row.eng = row.eng.replace(']', '')
+        row.eng = row.eng.replace('^', '')
+
+        row.kor = row.kor.replace('{', '')
+        row.kor = row.kor.replace('}', '')
+        row.kor = row.kor.replace('[', '')
+        row.kor = row.kor.replace(']', '')
+        row.kor = row.kor.replace('^', '')
+
 
     context = {
         'level_info': level_info,

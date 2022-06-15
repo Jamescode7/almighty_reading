@@ -111,8 +111,8 @@ tr.colored:hover td{
                                     <thead>
                                         <tr>
                                             <th class="border-top-0">토픽명</th>
-                                            <th class="border-top-0">동시통역</th>
-                                            <th class="border-top-0">실전문제</th>
+                                            <th class="border-top-0;">Comprehension</th>
+                                            <th class="border-top-0">Interpretation</th>
 
                                         </tr>
                                     </thead>
@@ -120,8 +120,8 @@ tr.colored:hover td{
                                         {% for topic in topic_list %}
                                         <tr>
                                             <td>{{ topic.topic_name }}</td>
-                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=topic.topic_code %}', '_new', 'width=900px, height=1000px' );"> 출력</button></td>
-                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=topic.topic_code %}', '_new', 'width=900px, height=1000px' );">출력</button></td>
+                                            <td align="center"><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=topic.topic_code %}', '_new', 'width=900px, height=1000px' );">출력</button></td>
+                                        <td  align="center"><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=topic.topic_code %}', '_new', 'width=900px, height=1000px' );"> 출력</button></td>
 
                                         </tr>
                                         {% endfor %}
