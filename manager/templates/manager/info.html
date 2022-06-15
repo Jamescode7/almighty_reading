@@ -207,7 +207,7 @@ tr.colored:hover td{
                                             <td>{% if row.start_dt == None %}  {% else %} {{ row.start_dt|date:'y.m.d' }} {% endif %}</td>
                                             <td>{% if row.end_dt == None %}  {% else %} {{ row.end_dt|date:'y.m.d' }} {% endif %}</td>
                                             <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:comprehension' topic_code=row.topic_code.topic_code %}?id={{ row.id }}&mcode={{ user_id }}', 'comprehension', 'width=900px, height=1000px' );">출력</button></td>
-                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=row.topic_code.topic_code %}', 'interpretation', 'width=900px, height=1000px' );"> 출력</button></td>
+                                            <td><button type="button" class="btn btn-outline-primary" onclick="window.open('{% url 'manager:interpretation' topic_code=row.topic_code.topic_code %}?user_name={{ user_name }}', 'interpretation', 'width=900px, height=1000px' );"> 출력</button></td>
                                             <td>
                                                 {% if row.end_dt == None %}
                                                     <button type="button" class="btn btn-outline-danger" onclick="processFinish({{  row.id }})">종료</button>

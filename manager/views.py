@@ -160,7 +160,11 @@ def interpretation(request, topic_code=''):
     if request.GET.get('type'):
         reading_type = request.GET.get('type')
 
-
+    is_name = False
+    user_name = ''
+    if request.GET.get('user_name'):
+        is_name = True
+        user_name = request.GET.get('user_name')
 
     # 순차적 / 랜덤 표시
     is_random = 'normal'
@@ -181,13 +185,13 @@ def interpretation(request, topic_code=''):
         row.eng = row.eng.replace('}', '')
         row.eng = row.eng.replace('[', '')
         row.eng = row.eng.replace(']', '')
-        row.eng = row.eng.replace('^', '')
+        row.eng = row.eng.replace('^', '\n')
 
         row.kor = row.kor.replace('{', '')
         row.kor = row.kor.replace('}', '')
         row.kor = row.kor.replace('[', '')
         row.kor = row.kor.replace(']', '')
-        row.kor = row.kor.replace('^', '')
+        row.kor = row.kor.replace('^', '\n')
 
 
     context = {
@@ -197,6 +201,8 @@ def interpretation(request, topic_code=''):
         'reading_type': reading_type,  # eng, kor, eng+kor
         'random': is_random,
         'sentence_list': sentence_list,
+        'is_name': is_name,
+        'user_name': user_name,
     }
     return render(request, 'manager/interpretation.html', context)
 

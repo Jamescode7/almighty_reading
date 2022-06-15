@@ -78,6 +78,12 @@
 
         <p>1. 토픽정보</p>
         <table class="tb" border="1" width="100%" align="center"  >
+            {% if is_name %}
+            <tr>
+                <td class="tbd" width="10%" >Name</td>
+                <td class="tbd" colspan="3" >{{ user_name }}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <td class="tbd" width="10%" >Level</td>
                 <td class="tbd" width="40%" >{{ level_info }}</td>
@@ -99,9 +105,9 @@
             {% for sentence in sentence_list %}
             <tr>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd" >{% if reading_type == 'kor' %} &nbsp; {% else %} {{ sentence.eng }} {% endif %}</td>
+                <td class="tbd" >{% if reading_type == 'kor' %} &nbsp; {% else %} {{ sentence.eng|linebreaks }} {% endif %}</td>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd">{% if reading_type == 'eng' %} &nbsp; {% else %} {{ sentence.kor }} {% endif %}</td>
+                <td class="tbd">{% if reading_type == 'eng' %} &nbsp; {% else %} {{ sentence.kor|linebreaks }} {% endif %}</td>
             </tr>
             {% endfor %}
         </table>
