@@ -163,8 +163,10 @@ def interpretation(request, topic_code=''):
     is_name = False
     user_name = ''
     if request.GET.get('user_name'):
-        is_name = True
         user_name = request.GET.get('user_name')
+        if user_name != '':
+            is_name = True
+
 
     # 순차적 / 랜덤 표시
     is_random = 'normal'

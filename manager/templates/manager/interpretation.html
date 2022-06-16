@@ -26,6 +26,10 @@
 
 }
 
+P{
+    margin:0px;
+}
+
 
 
 
@@ -55,12 +59,12 @@
         <tr><td>
         <div id="ctrlArea" class="noprint">
             <button onclick="printPage()">Print this page</button>
-            <a href="?type=eng&random={{random}}" ><button>영어</button></a>
-            <a href="?type=kor&random={{random}}" ><button>한글</button></a>
-            <a href="?type=both&random={{random}}" ><button>영어+한글</button></a>
+            <a href="?type=eng&random={{random}}&user_name={{ user_name }}" ><button>영어</button></a>
+            <a href="?type=kor&random={{random}}&user_name={{ user_name }}" ><button>한글</button></a>
+            <a href="?type=both&random={{random}}&user_name={{ user_name }}" ><button>영어+한글</button></a>
             &nbsp;|&nbsp;
-            <a href="?type={{reading_type}}&random=normal" ><button>순서대로</button></a>
-            <a href="?type={{reading_type}}&random=random" ><button>섞어서</button></a>
+            <a href="?type={{reading_type}}&random=normal&user_name={{ user_name }}" ><button>순서대로</button></a>
+            <a href="?type={{reading_type}}&random=random&user_name={{ user_name }}" ><button>섞어서</button></a>
         </div>
         <div class="container-fluid">
             <div class="row">
