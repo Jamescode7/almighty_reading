@@ -30,7 +30,7 @@ def main(request):
             bookcd_code = request.GET.get('bookcd')
             track_list = Dialog.objects.filter(name=step_code, book_cd=bookcd_code)
             for track in track_list:
-                track.mp3 = track.name + '_' + track.book_cd + '_' + str(track.track) + '.mp3'
+                track.mp3 = track.step + '_' + track.book_cd + '_' + str(track.track) + '.mp3'
 
     context = {
         'sound_path': 'http://fmn2.tongclass.com/reading_dialog/',

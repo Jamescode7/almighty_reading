@@ -19,6 +19,13 @@ tr.colored:hover td{
 
 }
 
+.onState{
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    color: #0e2259;
+
+}
 </style>
 <body>
     <!-- ============================================================== -->
@@ -45,7 +52,8 @@ tr.colored:hover td{
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">다이얼로그</h4>
+                        <img src="{% static 'plugins/images/cem_logo_square.png' %}" width="100px" alt="homepage" style="padding-left: 15px; padding-top: 10px;" />
+                        <span class="page-title" style="font-size: 1.5rem; padding-left: 20px; vertical-align: bottom">영어회화 음원</span>
                     </div>
                     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                         <div class="d-md-flex">
@@ -73,7 +81,7 @@ tr.colored:hover td{
                             <h3 class="box-title">교재<code>&nbsp</code></h3>
                             <div class="border-bottom"><br>
                                 {% for step in step_list %}
-                                <a href="?step={{ step }}"><p>{{ step }}</p></a>
+                                <a href="?step={{ step }}"><p class="{% if step == step_code %}onState{% endif %}">{{ step }}</p></a>
                                 {% endfor %}
                             </div>
                         </div>
@@ -84,19 +92,20 @@ tr.colored:hover td{
                             <h3 class="box-title">권 / CD <code>&nbsp</code></h3>
                             <div class="border-bottom"><br>
                                 {% for bookcd in bookcd_list %}
-                                <a href="?step={{step_code}}&bookcd={{ bookcd.value }}"><p>{{ bookcd.name }}</p></a>
+                                <a href="?step={{step_code}}&bookcd={{ bookcd.value }}"><p class="{% if bookcd.value == bookcd_code %}onState{% endif %}">{{ bookcd.name }}</p></a>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <div class="white-box">
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
                                             <th class="border-top-0">트랙</th>
+                                            <th class="border-top-0;">사운드</th>
 
                                         </tr>
                                     </thead>
@@ -112,6 +121,7 @@ tr.colored:hover td{
                             </div>
                         </div>
                     </div>
+
 
 
 
