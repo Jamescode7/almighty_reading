@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'import_export',
     'appapi',
     'manager',
+    'dialog',
 
 ]
 

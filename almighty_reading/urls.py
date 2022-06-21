@@ -31,4 +31,5 @@ urlpatterns = [
     path('study_info/', include('study_info.urls')),
     path('api/', include('appapi.urls')),
     path('manager/', include('manager.urls')),
+    path('dialog/', include('dialog.urls')),
 ]

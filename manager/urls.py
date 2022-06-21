@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, main, profile, interpretation,\
