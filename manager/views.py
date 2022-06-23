@@ -392,19 +392,22 @@ def info(request, user_id=''):
     level_list = []
     plan_list = []
     member_topic_log = []
-    is_desc = 1
-    desc = ''
+    desc = '0'
+    switch_desc = '1'
+    query_desc = ''
 
-    order_by = 'id'
-    if request.GET.get('order_by'):
-        order_by = request.GET.get('order_by')
-        if request.GET.get('desc') == '1':
-            is_desc = 0
+    order_by = 'mname'
+    if request.GET.get('desc'):
+        desc = request.GET.get('desc')
+        if desc == '1':
+            switch_desc = '0'
+            query_desc = '-'
         else:
-            is_desc = 1
-            desc = '-'
+            desc = '0'
+            switch_desc = '1'
+            query_desc = ''
 
-    member_list = StudyMember.objects.filter(acode=aid).order_by(desc + order_by)
+    member_list = StudyMember.objects.filter(acode=aid).order_by(query_desc + order_by)
     for member in member_list:
         if member.level_code is None:
             member.level_code = Level.objects.get(level_code=200)
@@ -468,7 +471,8 @@ def info(request, user_id=''):
         user_id = ''
 
     context = {
-        'isDesc': is_desc,
+        'desc': desc,
+        'switch_desc': switch_desc,
         'isSelectLevel': is_select_level,
         'select_level_name': select_level_name,
         'select_plan_name': select_plan_name,
@@ -594,8 +598,25 @@ def week(request, prev_dt=0):
         # print(day_str.strip()[-1])
         days.append(day_str)
 
+    desc = ''
+    order = 'mname'
+
+    switch_desc = '1'
+    query_desc = ''
+
+    order_by = 'mname'
+    if request.GET.get('desc'):
+        desc = request.GET.get('desc')
+        if desc == '1':
+            switch_desc = '0'
+            query_desc = '-'
+        else:
+            desc = '0'
+            switch_desc = '1'
+            query_desc = ''
+
     # 모든 학생에 대해 7일간 학습 데이터 가져오기
-    member_list = StudyMember.objects.filter(acode=aid)
+    member_list = StudyMember.objects.filter(acode=aid).order_by(query_desc + order)
     # 01 모든 학생을 가져온다.
     for member in member_list:
         member.days = []
@@ -685,6 +706,7 @@ def week(request, prev_dt=0):
     if next_week < 0:
         next_week = 0
     context = {
+        'switch_desc': switch_desc,
         'prev_week': prev_week,
         'next_week': next_week,
         'arg': prev_dt,

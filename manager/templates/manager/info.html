@@ -90,11 +90,11 @@ tr.colored:hover td{
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th class="border-top-0"><a href="?order_by=id&desc={{isDesc}}">#</a></th>
-                                            <th class="border-top-0"><a href="?order_by=mname&desc={{isDesc}}">이름</a></th>
-                                            <th class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">아이디</a></th>
-                                            <th class="border-top-0"><a href="?order_by=level_code&desc={{isDesc}}">레벨</a></th>
-                                            <th class="border-top-0"><a href="?order_by=plan_code&desc={{isDesc}}">플랜</a></th>
+                                            <th class="border-top-0">#</th>
+                                            <th class="border-top-0"><a href="?desc={{switch_desc}}">이름</a></th>
+                                            <th class="border-top-0">아이디</th>
+                                            <th class="border-top-0">레벨</th>
+                                            <th class="border-top-0">플랜</th>
                                         </tr>
                                     </thead>
                                     <!--
@@ -108,7 +108,7 @@ tr.colored:hover td{
                                     -->
                                     <tbody>
                                         {% for member in member_list %}
-                                        <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:info' user_id=member.mcode %}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
+                                        <tr class="colored" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}" onClick = "location.href='{% url 'manager:info' user_id=member.mcode %}?desc={{ desc }}'" onMouseOver = "window.status = '#' " onMouseOut = " window.status = '' ">
                                             <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
                                             <td>{{ member.mname }}</td>
                                             <td style="color:#aaaaaa">{{ member.mcode }}</td>

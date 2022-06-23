@@ -199,10 +199,10 @@ td{
                                 <table class="table text-nowrap" style="">
                                     <thead>
                                         <tr>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=id&desc={{isDesc}}">#</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mname&desc={{isDesc}}">이름</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">아이디</a></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?order_by=mcode&desc={{isDesc}}">&nbsp;&nbsp;&nbsp;</a></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">#</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?desc={{switch_desc}}">이름</a></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">아이디</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">&nbsp;&nbsp;&nbsp;</th>
                                             {% for day in days %}
                                                 <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0 {% if day|last == '토' or day|last == '일' %} fontred {% endif %}">
                                                     {{day}}
