@@ -222,7 +222,7 @@ td{
                                                 <td style="">
                                                     {% for row in day %}
 
-                                                    {% if day|length > 1 and forloop.first%}
+                                                    {% if day|length >= 1 and forloop.first%}
                                                     <a href="javascript:window.open('../day?mname={{ member.mname }}&mcode={{ member.mcode }}&yy={{ row.yy }}&mm={{ row.mm }}&dd={{ row.dd }}', '{{ member.mcode }}{{ row.dd }}', 'width=500px, height=600px' );">
                                                     {% endif %}
                                                         {% if forloop.counter <= 6 %}

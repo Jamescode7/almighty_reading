@@ -167,7 +167,6 @@ def interpretation(request, topic_code=''):
         if user_name != '':
             is_name = True
 
-
     # 순차적 / 랜덤 표시
     is_random = 'normal'
     if request.GET.get('random'):
@@ -486,90 +485,6 @@ def info(request, user_id=''):
     return render(request, 'manager/info.html', context)
 
 
-def main(request, user_id='', agency_id=''):
-    print('agency_id : ' + agency_id)
-    is_select_level = False
-    select_level_name = ''
-    select_plan_name = ''
-    user_name = ''
-    level_list = []
-    plan_list = []
-    member_topic_log = []
-    is_desc = 1
-    desc = ''
-
-    order_by = 'id'
-    if request.GET.get('order_by'):
-        order_by = request.GET.get('order_by')
-        if request.GET.get('desc') == '1':
-            is_desc = 0
-        else:
-            is_desc = 1
-            desc = '-'
-
-    member_list = StudyMember.objects.filter(acode='C72240').order_by(desc + order_by)
-
-    user = StudyMember.objects.filter(mcode=user_id)
-    if user:
-        user = user[0]
-        is_select_level = True
-
-        # 플랜이나 레벨제한을 바꿨을때 실행.
-        if request.GET.get('mem_level'):
-            mem_level = request.GET.get('mem_level')
-            mem_plan = request.GET.get('mem_plan')
-            user.level_code = Level.objects.get(level_code=mem_level)
-            user.plan_code = Plan.objects.get(plan_code=mem_plan)
-            user.save()
-            return HttpResponseRedirect(reverse('manager:main', args=(user_id,)))
-
-        # 토픽 종료 또는 토픽 리셋 실행.
-        if request.GET.get('process'):
-            process = request.GET.get('process')
-            process_id = request.GET.get('process_id')
-            log = MemberTopicLog.objects.get(id=process_id)
-            if log:
-                if process == 'closed':
-                    log.end_dt = datetime.now()
-                    user.current_study = 0
-                    user.save()
-
-                elif process == 'reset':
-                    log.start_dt = datetime.now()
-                    log.end_dt = None
-                    log.stage = 1
-                    log.step = 1
-                    user.current_study = log.id
-                    user.save()
-                log.save()
-
-                return HttpResponseRedirect(reverse('manager:main', args=(user_id,)))
-
-        level_list = Level.objects.all()
-        select_level_name = str(user.level_code)
-        select_plan_name = str(user.plan_code)
-        plan_list = Plan.objects.all().order_by('-id')
-        user_name = user.mname
-        member_topic_log = MemberTopicLog.objects.filter(username=user_id).order_by('-id')
-
-    else:
-        user_id = ''
-
-    context = {
-        'isDesc': is_desc,
-        'isSelectLevel': is_select_level,
-        'select_level_name': select_level_name,
-        'select_plan_name': select_plan_name,
-        'member_list': member_list,
-        'level_list': level_list,
-        'plan_list': plan_list,
-        'user_name': user_name,
-        'user_id': user_id,
-        'member_topic_log': member_topic_log,
-    }
-    return render(request, 'manager/main.html', context)
-
-
 class WeekListView(ListView):
     model = StepFinishLog
     context_object_name = 'week_list'
@@ -741,7 +656,10 @@ def day(request):
             log_data['step'] = log.step
             log_data['text'] = 'st' + str(log.stage)
             log_data['color'] = 'colorGray'
+            log_data['topic'] = ''
             if log.plan_type == 2:
+                topic = Topic.objects.filter(topic_code=log.topic_code)
+                log_data['topic'] = topic[0].topic_name
                 # ////////// 자 유 학 습 /////////////////////////////////////////////
                 if log.step == 7 or log.step_num != '0':
                     # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
@@ -766,6 +684,8 @@ def day(request):
                 log_data['color'] = 'colorRed'
                 append_data_list.insert(0, log_data)
             else:
+                topic = Topic.objects.filter(topic_code=log.topic_code)
+                log_data['topic'] = topic[0].topic_name
                 # ////////// 완 전 학 습 /////////////////////////////////////////////
                 if log.finish_today:
                     log_data['color'] = 'colorBlue'
@@ -856,3 +776,53 @@ def profile(request):
     return render(request, 'manager/profile.html')
 
 
+
+
+def call(request):
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    # 모든 학생을 리스트 비활성화 시킨다.
+    study_member = StudyMember.objects.filter(acode=aid)
+    if study_member:
+        for member in study_member:
+            member.list_enable = 0
+            member.save()
+
+    # 가져온 리스트에서 일치하는 학생들은 리스트를 활성화 시킨다.
+    url = "http://www.tongclass.co.kr/Class/api_member.aspx?ac=" + aid
+    oper_url = urllib.request.urlopen(url)
+    if oper_url.getcode() == 200:
+        data = oper_url.read().decode(oper_url.headers.get_content_charset())
+        json_data = json.loads(data)
+        for row in json_data:
+            row_id = row['Id']
+            row_id = str(row_id).lower()
+            row_name = row['Mn']
+            # print(row_id + '/' + row_name)
+            # 회원이 없다면 등록시키기.
+            study_member = StudyMember.objects.filter(mcode=row_id)
+            if study_member:
+                study_member = study_member[0]
+                if study_member.acode is None:
+                    study_member.acode = aid
+                study_member.list_enable = 1
+                study_member.save()
+            else:
+                # 가져온 리스트에서 없는 학생들은 추가를 해주며 활성화 시킨다.
+                study_member = StudyMember(mcode=row_id, mname=row_name, acode=aid,
+                                           plan_code=Plan.objects.get(plan_code=2), list_enable=1)
+                study_member.save()
+    # ok
+
+    # 웹전산에서 학원 이름 가져오기 -- JSON
+    url = "http://www.tongclass.co.kr/Class/api_agency_name.aspx?ac=" + aid
+    oper_url = urllib.request.urlopen(url)
+    if oper_url.getcode() == 200:
+        data = oper_url.read().decode(oper_url.headers.get_content_charset())
+        json_data = json.loads(data)
+        aname = json_data['Mn']
+        # print('a name : ' + aname)
+        request.session['aname'] = aname
+
+    return HttpResponse(aid)

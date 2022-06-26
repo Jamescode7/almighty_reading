@@ -7,7 +7,7 @@ from study_info.models import StepFinishLog, StepTimeLog
 
 @admin.register(StepFinishLog)
 class StepFinishLogAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'stage', 'step', 'step_num', 'dt_day', 'finish_today', 'plan_type', 'study_code']
+    list_display = ['id', 'username', 'stage', 'step', 'topic_code', 'step_num', 'dt_day', 'finish_today', 'plan_type', 'study_code']
     list_display_links = ['id']
     list_editable = ['stage', 'step', 'step_num', 'dt_day', 'finish_today', 'plan_type', 'study_code']
 

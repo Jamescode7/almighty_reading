@@ -8,9 +8,9 @@ from member_info.models import TestMember, StudyMember
 
 @admin.register(StudyMember)
 class StudyMemberAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study']
+    list_display = ['id', 'mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study', 'list_enable']
     list_display_links = ['id']
-    list_editable = ['mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study']
+    list_editable = ['mcode', 'mname', 'acode', 'plan_code', 'level_code', 'current_study', 'list_enable']
 
 
 @admin.register(TestMember)

@@ -21,9 +21,15 @@ tr.colored:hover td{
 
 th{
     text-align:center;
+    vertical-align: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #000000;
 }
 td{
     text-align: center;
+    height: 35px;
+    vertical-align: center;
 }
 
 .fontred{
@@ -108,11 +114,23 @@ td{
     font-size: 0.8rem;
 }
 .colorNone{
-    line-height: 23px;
+    line-height: 0px;
     display: inline-block;
     text-align: center;
     color: #000000;
     font-size: 0.8rem;
+}
+
+.meminfo{
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.topicinfo{
+    line-height: 0px;
+    padding-left: 20px;
+    text-align: left;
+
 }
 
 </style>
@@ -170,47 +188,33 @@ td{
             <!-- ============================================================== -->
             <!-- Container fluid  -->
             <!-- ============================================================== -->
-
             <div class="container-fluid">
                 <!-- ============================================================== -->
                 <!-- Start Page Content -->
                 <!-- ============================================================== -->
                 <div class="row">
+                    <span class="meminfo">이름 : {{ mname }} / 아이디 : {{ mcode }} / [ {{ yy }}/{{ mm }}/{{ dd }} ]</span>
                     <div class="col-sm-12" >
                         <div class="white-box">
                             <div class="table-responsive" style="height:700px; overflow: auto;">
                                 <table class="" style="width:400px;" >
-                                    <thead>
-                                        <tr>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">#</th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">이름 : {{ mname }}</th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">아이디 : {{ mcode }}</th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"> </th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">
-                                               [ {{ yy }}/{{ mm }}/{{ dd }} ]
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"></th>
-                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">
-                                                &nbsp;&nbsp;
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="colored" >
-                                               <td colspan="6" style="text-align: left;">
-                                                        {% for row in row_list %}
-                                                            <span class="{{ row.color }}">{{ row.text }}</span>
-
-                                                        {% endfor %}
-                                                    </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th class="topicinfo">Topic</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for row in row_list %}
+                                            <tr class="colored" >
+                                                <td style="text-align: center;"><p style="margin: 0px" class="{{ row.color }}">{{ row.text }}</p></td>
+                                                <td class="topicinfo">{{ row.topic }}</td>
+                                                <td class="">&nbsp;</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
                             </div>
                         </div>
                     </div>
