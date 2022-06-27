@@ -382,7 +382,8 @@ def info(request, user_id=''):
     if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
     # 웹전산에서 회원 리스트를 갱신한다.
-    update_member_list(request, aid)
+    # update_member_list(request, aid)
+    call(request)
 
     is_select_level = False
     select_level_name = ''
@@ -406,7 +407,7 @@ def info(request, user_id=''):
             switch_desc = '1'
             query_desc = ''
 
-    member_list = StudyMember.objects.filter(acode=aid).order_by(query_desc + order_by)
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order_by)
     for member in member_list:
         if member.level_code is None:
             member.level_code = Level.objects.get(level_code=200)
@@ -499,7 +500,8 @@ def week(request, prev_dt=0):
     if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
     # 웹전산에서 회원 리스트를 갱신한다.
-    update_member_list(request, aid)
+    # update_member_list(request, aid)
+    call(request)
 
     start_dt = date.today()
 
@@ -531,7 +533,7 @@ def week(request, prev_dt=0):
             query_desc = ''
 
     # 모든 학생에 대해 7일간 학습 데이터 가져오기
-    member_list = StudyMember.objects.filter(acode=aid).order_by(query_desc + order)
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
     # 01 모든 학생을 가져온다.
     for member in member_list:
         member.days = []
@@ -776,11 +778,8 @@ def profile(request):
     return render(request, 'manager/profile.html')
 
 
-
-
 def call(request):
     aid = get_aid(request)
-    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
     # 모든 학생을 리스트 비활성화 시킨다.
     study_member = StudyMember.objects.filter(acode=aid)
@@ -800,7 +799,7 @@ def call(request):
             row_id = str(row_id).lower()
             row_name = row['Mn']
             # print(row_id + '/' + row_name)
-            # 회원이 없다면 등록시키기.
+            # 리스트를 활성화, 학원이 비어 있다면 등록
             study_member = StudyMember.objects.filter(mcode=row_id)
             if study_member:
                 study_member = study_member[0]

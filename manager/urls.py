@@ -26,7 +26,7 @@ urlpatterns = [
     path('plan_info/', plan_info, name='plan_info'),
     path('plan_view/', plan_view, name='plan_view'),
 
-    path('call/', call, name='call'),
+    # path('call/', call, name='call'),
 
 
     #dev check
