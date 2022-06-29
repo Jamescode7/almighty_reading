@@ -267,8 +267,19 @@ def topic_select_save(request):
     # 기존에 다 하지 못한 토픽이 있엇다면 종료 처리.
     topic_list = MemberTopicLog.objects.filter(username=mcode, end_dt=None)
     for topic in topic_list:
-        topic.end_dt = datetime.now()
-        topic.save()
+        # 학습한 기록이 있다면 종료 처리, 기록이 없다면 데이터 삭제
+        check_finish_log = StepFinishLog.objects.filter(username=mcode, topic_code=topic.topic_code)
+        is_del = False
+        for log in check_finish_log:
+            is_del = True
+
+        if is_del is False:
+            # print('데이터 없음, 이전 로그 삭제')
+            topic.delete()
+        else:
+            # print('있음, 종료 날짜 찍히도록')
+            topic.end_dt = datetime.now()
+            topic.save()
 
     # 새로운 토픽 저장.
     save_topic = MemberTopicLog(username=mcode, topic_code=topic_code, level_code=level_code, start_dt=datetime.now(),

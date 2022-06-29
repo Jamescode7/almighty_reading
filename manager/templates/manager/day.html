@@ -200,16 +200,18 @@ td{
                                 <table class="" style="width:400px;" >
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th class="topicinfo">Level-Theme</th>
                                                 <th class="topicinfo">Topic</th>
+                                                <th>#</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in row_list %}
                                             <tr class="colored" >
-                                                <td style="text-align: center;"><p style="margin: 0px" class="{{ row.color }}">{{ row.text }}</p></td>
+                                                <td class="topicinfo">{{ row.level }}-{{ row.theme }}</td>
                                                 <td class="topicinfo">{{ row.topic }}</td>
+                                                <td style="text-align: center;"><p style="margin: 0px" class="{{ row.color }}">{{ row.text }}</p></td>
                                                 <td class="">&nbsp;</td>
                                             </tr>
                                         {% endfor %}

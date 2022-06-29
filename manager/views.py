@@ -661,6 +661,10 @@ def day(request):
             log_data['topic'] = ''
             if log.plan_type == 2:
                 topic = Topic.objects.filter(topic_code=log.topic_code)
+                theme = Theme.objects.filter(theme_code=topic[0].theme_code)
+                level = Level.objects.filter(level_code=theme[0].level_code)
+                log_data['level'] = level[0].level_name
+                log_data['theme'] = theme[0].theme_name
                 log_data['topic'] = topic[0].topic_name
                 # ////////// 자 유 학 습 /////////////////////////////////////////////
                 if log.step == 7 or log.step_num != '0':
@@ -687,6 +691,10 @@ def day(request):
                 append_data_list.insert(0, log_data)
             else:
                 topic = Topic.objects.filter(topic_code=log.topic_code)
+                theme = Theme.objects.filter(theme_code=topic[0].theme_code)
+                level = Level.objects.filter(level_code=theme[0].level_code)
+                log_data['level'] = level[0].level_name
+                log_data['theme'] = theme[0].theme_name
                 log_data['topic'] = topic[0].topic_name
                 # ////////// 완 전 학 습 /////////////////////////////////////////////
                 if log.finish_today:
