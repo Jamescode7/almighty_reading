@@ -127,9 +127,12 @@ td{
 }
 
 .topicinfo{
-    line-height: 0px;
+    line-height: 1rem;
     padding-left: 20px;
     text-align: left;
+    border-bottom: 1px solid #dadada;
+    padding-top: 8px;
+    padding-bottom: 8px;
 
 }
 
@@ -196,23 +199,21 @@ td{
                     <span class="meminfo">이름 : {{ mname }} / 아이디 : {{ mcode }} / [ {{ yy }}/{{ mm }}/{{ dd }} ]</span>
                     <div class="col-sm-12" >
                         <div class="white-box">
-                            <div class="table-responsive" style="height:700px; overflow: auto;">
-                                <table class="" style="width:400px;" >
+                            <div class="table-responsive" style="width:100%; height:700px; overflow: auto;">
+                                <table class="" >
                                         <thead>
                                             <tr>
-                                                <th class="topicinfo">Level-Theme</th>
-                                                <th class="topicinfo">Topic</th>
+                                                <th class="">Level-Theme</th>
+                                                <th class="">Topic</th>
                                                 <th>#</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in row_list %}
                                             <tr class="colored" >
-                                                <td class="topicinfo">{{ row.level }}-{{ row.theme }}</td>
+                                                <td class="topicinfo" style="color: #090909"><b>{{ row.level }}-{{ row.theme }}</b></td>
                                                 <td class="topicinfo">{{ row.topic }}</td>
-                                                <td style="text-align: center;"><p style="margin: 0px" class="{{ row.color }}">{{ row.text }}</p></td>
-                                                <td class="">&nbsp;</td>
+                                                <td class="topicinfo" style="text-align: center;"><p style="margin: 0px" class="{{ row.color }}">{{ row.text }}</p></td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>
