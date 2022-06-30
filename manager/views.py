@@ -303,6 +303,114 @@ def reportcard(request, mcode=''):
     return render(request, 'manager/reportcard.html', context)
 
 
+def reportall(request):
+    aid = get_aid(request)
+    month_list = []
+    day_list = []
+    sm = ''  # start month
+    sd = '0'  # start day
+    sd_list = []
+    em = '0'  # end month
+    ed = '0'  # end day
+    ed_list = []
+    now = datetime.now()
+    ctrl_day = ''
+    for x in range(1, 13):
+        month_list.append(str(x))
+
+    for x in range(1, 32):
+        day_list.append(str(x))
+
+    if request.GET.get('sm'):
+        sm = request.GET.get('sm')
+        year = now.year
+        get_month = calendar.monthrange(year, int(sm))
+        end_day = get_month[1] + 1
+        for y in range(1, end_day):
+            sd_list.append(str(y))
+
+    if request.GET.get('sd'):
+        sd = request.GET.get('sd')
+
+    if request.GET.get('em'):
+        em = request.GET.get('em')
+        year = now.year
+        if em != '0':
+            get_month = calendar.monthrange(year, int(em))
+            end_day = get_month[1] + 1
+            for y in range(1, end_day):
+                ed_list.append(str(y))
+
+    if request.GET.get('ed'):
+        ed = request.GET.get('ed')
+
+    report_list = []
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by('mname')
+    make_cnt = 0
+    continue_cnt = 0
+    for member in member_list:
+        report = {}
+        print('loop! ')
+        make_cnt += 1
+        mcode = member.mcode
+
+        report['user_name'] = ''
+        report['study_start_day'] = ''
+        report['study_end_day'] = ''
+        report['level_name'] = ''
+
+        member = StudyMember.objects.filter(mcode=mcode)
+        if member:
+            member = member[0]
+            report['user_name'] = member.mname
+            report['level_name'] = member.level_code
+        print('>>> here2')
+        if sd != '0' and em != '0' and ed != '0':
+            print('>>> here3-1')
+            print('ok, get data!')
+
+            start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
+            end_date = datetime(year, int(em), int(ed), 23, 59, 59)
+            # print('ed : ' + str(end_date.timetuple()))
+            report['topic_list'] = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                       end_dt__lt=end_date).order_by('-id')
+            # print(topic_list.query)
+            first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                        end_dt__lt=end_date).order_by('id').first()
+            if first_topic:
+                report['study_start_day'] = first_topic.start_dt
+            last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                       end_dt__lt=end_date).order_by('-id').first()
+            if last_topic:
+                report['study_end_day'] = last_topic.end_dt
+        else:
+            print('>>> here3-2')
+            report['topic_list'] = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
+            first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
+            if first_topic is None:
+                continue_cnt += 1
+                continue
+            report['study_start_day'] = first_topic.start_dt
+            last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
+            report['study_end_day'] = last_topic.end_dt
+
+        print('apeend')
+        report_list.append(report)
+        print(str(len(report_list)))
+
+    print('make_cnt : ' + str(make_cnt))
+    print('continue_cnt : ' + str(continue_cnt))
+    context = {
+        'month_list': month_list,
+        'day_list': day_list,
+        'sm': sm,
+        'sd': sd,
+        'em': em,
+        'ed': ed,
+        'ctrl_day': ctrl_day,
+        'report_list': report_list,
+    }
+    return render(request, 'manager/reportcardall.html', context)
 
 
 def get_aid(request):
