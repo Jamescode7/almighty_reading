@@ -3,7 +3,8 @@ from django.db import models
 
 from library.models import Level
 from manager.models import Plan
-
+from import_export import fields, resources
+from import_export.widgets import ForeignKeyWidget
 
 class TestMember(models.Model):
     mcode = models.CharField(max_length=10, null=True)
@@ -15,6 +16,8 @@ class TestMember(models.Model):
 
     def __str__(self):
         return '(' + str(self.mcode) + ')' + str(self.mname) + '(' + str(self.mtype) + ')'
+
+
 
 
 class StudyMember(models.Model):
