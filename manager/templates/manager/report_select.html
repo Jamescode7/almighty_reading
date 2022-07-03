@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+{% include 'head_manager.html' %}
+
+<style>
+
+tr.colored:nth-child(even){
+
+}
+
+tr.colored:nth-child(odd){
+}
+
+tr.colored:hover td{
+
+  background-color:#cdcdcd !important;
+
+  color:#303f39 !important;
+
+}
+
+.roundbtn{
+    margin-bottom: 10px;
+    border-radius: 30px;
+}
+
+</style>
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        {% include 'topbar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        {% include 'left-sidebar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <h4 class="page-title">레포트카드 일괄출력</h4>
+                    </div>
+                    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+                        <div class="d-md-flex">
+                            <ol class="breadcrumb ms-auto">
+                                <li><a href="#" class="fw-normal">Dashboard</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!--<form method="post" target="_new" action="{% url 'manager:reportall' %}" enctype="multipart/form-data">-->
+                    <form id="memberForm">
+                        <div class="white-box">
+                            <button type="button" class="btn btn-primary roundbtn" onclick="allCheck(true)">전체선택</button></a>
+                            <button type="button" class="btn btn-facebook roundbtn" onclick="allCheck(false)">전체해제</button></a>
+                            <span style="padding-left: 20px;">&nbsp;</span>#총 <span id="textCnt" style="font-weight: bold; color:#ff0084;">0</span>명이 선택되었습니다.
+                            <button type="submit" class="btn btn-success roundbtn" >레포트카드 출력</button></a>
+                            <!--<button type="submit" class="btn btn-success roundbtn" onclick="window.open('{% url 'manager:reportall' %}', 'reportcard', 'width=900px, height=1000px' );">레포트카드 출력</button></a>-->
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0"><input type="checkbox"onclick="toggleAll()" id="topchk" value="yyy"></th>
+                                            <th class="border-top-0"><a href="?desc={{switch_desc}}">이름</a></th>
+                                            <th class="border-top-0">아이디</th>
+                                            <th class="border-top-0">레벨</th>
+                                            <th class="border-top-0">플랜</th>
+                                        </tr>
+                                    </thead>
+                                    <!--
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+
+                                    / 원 / 생 / 리 / 스 / 트
+
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    ! ! ! ! ! ! ! ! ! ! ! ! !  ! ! ! ! ! ! ! ! !
+                                    -->
+                                    <tbody>
+                                        {% for member in member_list %}
+                                        <tr class="colored"onclick="checkSet({{ forloop.counter0 }})" style = "cursor:pointer; {% if member.mcode == user_id %} background-color:#dfdfdf {% endif %}">
+                                            <td style="color:#aaaaaa;"><input type="checkbox"onclick=" checkSet({{ forloop.counter0 }})" name="check_list" id="checker{{ forloop.counter0 }}" value="{{ member.mcode }}"></td>
+                                            <td>{{ member.mname }}</td>
+                                            <td style="color:#aaaaaa">{{ member.mcode }}</td>
+                                            <td style="{%if member.level_code.level_code == 200 %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.level_code == NONE %} 선택없음 {% else %} {{ member.level_code }} {% endif %}</td>
+                                            <td style="{%if member.plan_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}">{%if member.plan_code == NONE %} 자유학습 {% else %} {{ member.plan_code }} {% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'footer_manager.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app-style-switcher.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'js/custom.js' %}"></script>
+    <!--This page JavaScript -->
+    <!--chartis chart-->
+    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
+    <script>
+        var totalCnt = parseInt({{ total_cnt }});
+        function validateForm()
+        {
+            return true;
+        }
+
+        function processFinish(id)
+        {
+            document.forms["topicForm"]["process"].value = "closed";
+            document.forms["topicForm"]["process_id"].value = "" + id;
+            document.forms["topicForm"].submit();
+        }
+
+        function processReset(id)
+        {
+            document.forms["topicForm"]["process"].value = "reset";
+            document.forms["topicForm"]["process_id"].value = "" + id;
+            document.forms["topicForm"].submit();
+        }
+
+        function checkSet(cnt)
+        {
+            var checkbox = document.getElementById('checker' + cnt);
+            isCheck = checkbox.checked;
+            isCheck = !isCheck;
+            checkbox.checked = isCheck;
+            checkCount();
+        }
+        function checkCount(){
+            var cnt = 0;
+            var checkbox;
+            for( var n = 0; n < totalCnt; n++)
+            {
+                checkbox = document.getElementById('checker' + n);
+                isCheck = checkbox.checked;
+                if(isCheck) cnt++;
+            }
+            //console.log(cnt);
+            document.getElementById("textCnt").innerHTML="" + cnt + "";
+        }
+        function toggleAll()
+        {
+            var checkbox = document.getElementById('topchk');
+            if(checkbox.checked) allCheck(true);
+            else allCheck(false);
+        }
+        function allCheck(setCheck)
+        {
+            var checkbox;
+            for( var n = 0; n < totalCnt; n++)
+            {
+                checkbox = document.getElementById('checker' + n);
+                checkbox.checked = setCheck;
+            }
+            checkCount();
+            checkbox = document.getElementById('topchk');
+            checkbox.checked = setCheck;
+        }
+
+
+        $(document).ready(function() {
+        $('#memberForm').submit(function() {
+            window.open('', 'reportall', 'width=900px,height=1000px');
+            this.action = '{% url 'manager:reportall' %}'
+            this.method = 'GET';
+            this.target = 'reportall';
+        });
+    });
+    </script>
+
+</body>
+
+</html>

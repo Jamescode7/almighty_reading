@@ -17,7 +17,10 @@ def main(request):
 
     if request.GET.get('step'):
         step_code = request.GET.get('step')
-        all_list = Dialog.objects.filter(name=step_code)
+        if step_code == 'Freeway S2':
+            all_list = Dialog.objects.filter(name=step_code).order_by('book_cd')
+        else:
+            all_list = Dialog.objects.filter(name=step_code)
         all_list = all_list.values_list('book_cd', flat=True).distinct()
         for row in all_list:
             book_cd = {}

@@ -3,7 +3,7 @@ from django.urls import path
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, profile, interpretation,\
     comprehension, week, print_page, answer_page, WeekListView, info, agency,  \
-    downapp, day, plan_info, reportcard, plan_view, reportall
+    downapp, day, plan_info, reportcard, plan_view, reportall, reportSelect, test, test2
 
 app_name = "manager"
 
@@ -43,6 +43,7 @@ urlpatterns = [
     path('reportcard/<str:mcode>', reportcard, name='reportcard'),
 
     path('reportall/', reportall, name='reportall'),
+    path('report_select/', reportSelect, name='report_select'),
 
     path('print/', print_page, name='print'),
 
@@ -54,4 +55,8 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('basic_table/', basic_table, name='basic_table'),
     path('profile/', profile, name='profile'),
+
+
+    path('test/', test, name='test'),
+    path('test2/', test2, name='test2'),
 ]

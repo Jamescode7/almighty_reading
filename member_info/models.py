@@ -33,6 +33,8 @@ class StudyMember(models.Model):
     level_code = models.ForeignKey(Level, on_delete=models.PROTECT, null=True, blank=True)
     current_study = models.IntegerField(null=True, blank=True)
     list_enable = models.IntegerField(null=True, blank=True)
+    # 체크박스-레포트카드 일괄출력을 사용하는 용도
+    is_check = models.IntegerField(null=True, blank=True, default=0)
 
     def __str__(self):
         return '(' + str(self.mcode) + ')' + str(self.mname) + '(' + str(self.mtype) + ')'

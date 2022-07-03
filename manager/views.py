@@ -9,6 +9,8 @@ from django.shortcuts import render
 from datetime import date, timedelta, datetime
 
 # Create your views here.
+from django.template import RequestContext
+from django.template.loader import get_template
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
@@ -302,9 +304,80 @@ def reportcard(request, mcode=''):
     }
     return render(request, 'manager/reportcard.html', context)
 
+def reportSelect(request):
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    # 웹전산에서 회원 리스트를 갱신한다.
+    # update_member_list(request, aid)
+    call(request)
+
+    is_select_level = False
+    select_level_name = ''
+    select_plan_name = ''
+    user_name = ''
+    level_list = []
+    plan_list = []
+    desc = '0'
+    switch_desc = '1'
+    query_desc = ''
+
+    order_by = 'mname'
+    if request.GET.get('desc'):
+        desc = request.GET.get('desc')
+        if desc == '1':
+            switch_desc = '0'
+            query_desc = '-'
+        else:
+            desc = '0'
+            switch_desc = '1'
+            query_desc = ''
+
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order_by)
+    total_cnt = len(member_list)
+    for member in member_list:
+        if member.level_code is None:
+            member.level_code = Level.objects.get(level_code=200)
+
+        level_list = Level.objects.filter(show_level__gte=1).order_by('index_order')
+        plan_list = Plan.objects.all().order_by('seq')
+
+    else:
+        user_id = ''
+
+    context = {
+        'desc': desc,
+        'switch_desc': switch_desc,
+        'isSelectLevel': is_select_level,
+        'select_level_name': select_level_name,
+        'select_plan_name': select_plan_name,
+        'member_list': member_list,
+        'level_list': level_list,
+        'plan_list': plan_list,
+        'user_name': user_name,
+        'user_id': user_id,
+        'total_cnt': total_cnt
+    }
+    return render(request, 'manager/report_select.html', context)
+
 
 def reportall(request):
     aid = get_aid(request)
+    if request.GET.getlist('check_list'):
+        # acode에 해당하는 모든 원생의 리스트를 비활성화
+        all_member = StudyMember.objects.filter(acode=aid)
+        for member in all_member:
+            member.is_check = 0
+            member.save()
+        # 이전에 체크박스를 체크한 리스트들의 list를 활성화
+        check_mem_list = request.GET.getlist('check_list')
+        for check_mem in check_mem_list:
+            member = StudyMember.objects.filter(mcode=check_mem)
+            member = member[0]
+            member.is_check = 1
+            member.save()
+
     month_list = []
     day_list = []
     sm = ''  # start month
@@ -345,12 +418,13 @@ def reportall(request):
         ed = request.GET.get('ed')
 
     report_list = []
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by('mname')
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
     make_cnt = 0
     continue_cnt = 0
     for member in member_list:
+    # for check_mem in check_mem_list:
         report = {}
-        print('loop! ')
+        # print('loop! ')
         make_cnt += 1
         mcode = member.mcode
 
@@ -364,10 +438,10 @@ def reportall(request):
             member = member[0]
             report['user_name'] = member.mname
             report['level_name'] = member.level_code
-        print('>>> here2')
+        # print('>>> here2')
         if sd != '0' and em != '0' and ed != '0':
-            print('>>> here3-1')
-            print('ok, get data!')
+            # print('>>> here3-1')
+            # print('ok, get data!')
 
             start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
             end_date = datetime(year, int(em), int(ed), 23, 59, 59)
@@ -384,7 +458,7 @@ def reportall(request):
             if last_topic:
                 report['study_end_day'] = last_topic.end_dt
         else:
-            print('>>> here3-2')
+            # print('>>> here3-2')
             report['topic_list'] = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
             first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
             if first_topic is None:
@@ -394,12 +468,13 @@ def reportall(request):
             last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
             report['study_end_day'] = last_topic.end_dt
 
-        print('apeend')
+        # print('apeend')
         report_list.append(report)
-        print(str(len(report_list)))
+        # print(str(len(report_list)))
 
-    print('make_cnt : ' + str(make_cnt))
-    print('continue_cnt : ' + str(continue_cnt))
+    # print('make_cnt : ' + str(make_cnt))
+    # print('continue_cnt : ' + str(continue_cnt))
+    # print(check_mem_list)
     context = {
         'month_list': month_list,
         'day_list': day_list,
@@ -941,3 +1016,24 @@ def call(request):
         request.session['aname'] = aname
 
     return HttpResponse(aid)
+
+
+def test(request):
+    context = {
+        'user': 'aa',
+    }
+    return render(request, 'manager/test.html', context)
+
+
+def test2(request):
+    name = request.GET.get('name')
+    # request.GET.get('mname')
+    age = request.GET.get('age')
+
+    template = get_template('manager/test2.html')
+
+    context = {
+        'name': name,
+        'age': age,
+    }
+    return render(request, 'manager/test2.html', context)
