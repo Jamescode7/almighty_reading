@@ -57,6 +57,6 @@ urlpatterns = [
     path('profile/', profile, name='profile'),
 
 
-    path('test/', test, name='test'),
-    path('test2/', test2, name='test2'),
+    # path('test/', test, name='test'),
+    # path('test2/', test2, name='test2'),
 ]
