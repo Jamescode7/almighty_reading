@@ -6,7 +6,7 @@ from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportMixin
 
 from library.models import Topic, Level
-from manager.models import MemberTopicLog, Plan, PlanDetail
+from manager.models import MemberTopicLog, Plan, PlanDetail, ReportCardMemo
 
 
 @admin.register(Plan)
@@ -45,3 +45,10 @@ class MemberTopicLogAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ['username']
     list_editable = ['topic_code', 'level_code', 'start_dt', 'end_dt', 'stage', 'step']
     resource_class = MemberTopicLogResource
+
+
+@admin.register(ReportCardMemo)
+class ReportCardMemoAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['id', 'seq', 'visible', 'title', 'memo']
+    list_display_links = ['id']
+    list_editable = ['seq', 'visible', 'title', 'memo']

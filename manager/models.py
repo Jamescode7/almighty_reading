@@ -32,3 +32,13 @@ class MemberTopicLog(models.Model):
 
     def __str__(self):
         return self.username + '/' + str(self.topic_code) + '/' + str(self.level_code) + '/' + str(self.start_dt) + '/' + str(self.end_dt)
+
+
+class ReportCardMemo(models.Model):
+    seq = models.IntegerField(null=True, blank=True)
+    visible = models.IntegerField(null=True, blank=True, default=1)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    memo = models.CharField(max_length=500, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.seq) + '/' + self.title

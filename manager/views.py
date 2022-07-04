@@ -17,7 +17,7 @@ from django.views.generic import ListView
 
 from common_value.models import AppVersion
 from library.models import Level, Topic, SpkSent, Theme, Exam, Word, Reading
-from manager.models import MemberTopicLog, Plan, PlanDetail
+from manager.models import MemberTopicLog, Plan, PlanDetail, ReportCardMemo
 from member_info.models import StudyMember
 from study_info.models import StepFinishLog
 
@@ -42,7 +42,6 @@ def comprehension(request, topic_code=''):
     mcode = ''
     answer_list = []
     if request.GET.get('mcode'):
-
         mcode = request.GET.get('mcode')
         # 학원생 이름 가져오기
         member = StudyMember.objects.filter(mcode=mcode)
@@ -286,7 +285,12 @@ def reportcard(request, mcode=''):
         last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
         study_end_day = last_topic.end_dt
 
+    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
+    for memo in memo_list:
+        memo.memo = memo.memo.replace('ㅇㅇ', user_name)
+
     context = {
+        'memo_list': memo_list,
         'month_list': month_list,
         'day_list': day_list,
         'sm': sm,
@@ -303,6 +307,7 @@ def reportcard(request, mcode=''):
         'study_end_day': study_end_day,
     }
     return render(request, 'manager/reportcard.html', context)
+
 
 def reportSelect(request):
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
