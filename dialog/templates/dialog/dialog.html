@@ -113,7 +113,8 @@ tr.colored:hover td{
                                         {% for track in track_list %}
                                         <tr>
                                             <td>트랙{{ forloop.counter }}</td>
-                                            <td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
+                                            <!--<td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>-->
+                                        <td><a href="javascript:openPlayer({{ forloop.counter0 }})"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -180,8 +181,13 @@ tr.colored:hover td{
     {
         if( this.audio ) this.audio.pause();
         url = '{{ sound_path }}' + snd;
+        //console.log(url);
         this.audio = new Audio(url);
         this.audio.play();
+    }
+    function openPlayer(idx)
+    {
+        window.open('{% url 'dialog:audio' %}?step_code={{ step_code }}&bookcd_code={{ bookcd_code }}&track_idx=' + idx, 'audioPlayer', 'width=500px height=1000px');
     }
     </script>
 </body>

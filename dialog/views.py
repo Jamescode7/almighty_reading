@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from dialog.models import Dialog
@@ -44,3 +45,27 @@ def main(request):
         'track_list': track_list,
     }
     return render(request, 'dialog/dialog.html', context)
+
+
+def audio(request):
+    if request.GET:
+        step_code = request.GET.get('step_code')
+        bookcd_code = request.GET.get('bookcd_code')
+        track_idx = request.GET.get('track_idx')
+        track_list = Dialog.objects.filter(name=step_code, book_cd=bookcd_code)
+        step_name = ''
+        book_cd = ''
+        for track in track_list:
+            step_name = track.name
+            book_cd = track.book_cd
+            track.mp3 = "http://fmn2.tongclass.com/reading_dialog/" + track.step + '_' + track.book_cd + '_' + str(track.track) + '.mp3'
+
+        book_cd = book_cd.replace('_', '권 CD-')
+        context = {
+            'track_idx': track_idx,
+            'step_name': step_name,
+            'book_cd': book_cd,
+            'track_list': track_list,
+        }
+        return render(request, 'dialog/audio.html', context)
+    return HttpResponse('잘못된 접근입니다')
