@@ -113,8 +113,8 @@ tr.colored:hover td{
                                         {% for track in track_list %}
                                         <tr>
                                             <td>트랙{{ forloop.counter }}</td>
-                                            <td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
-                                        <!--<td><a href="javascript:openPlayer({{ forloop.counter0 }})"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>-->
+                                        <!--    <td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>-->
+                                        <td><a href="javascript:openPlayer({{ forloop.counter0 }})"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -171,10 +171,6 @@ tr.colored:hover td{
     <!--Custom JavaScript -->
     <script src="{% static 'js/custom.js' %}"></script>
     <!--This page JavaScript -->
-    <!--chartis chart-->
-    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
-    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
-    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
     <script>
     this.audio = null;
     function playSound(snd)
