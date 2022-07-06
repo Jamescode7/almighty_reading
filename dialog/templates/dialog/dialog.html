@@ -113,8 +113,11 @@ tr.colored:hover td{
                                         {% for track in track_list %}
                                         <tr>
                                             <td>트랙{{ forloop.counter }}</td>
-                                        <!--    <td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>-->
-                                        <td><a href="javascript:openPlayer({{ forloop.counter0 }})"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
+                                            {% if dialog_audio_play_popup == '0' %}
+                                                <td><a href="javascript:playSound('{{ track.mp3 }}')"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
+                                            {% else %}
+                                                <td><a href="javascript:openPlayer({{ forloop.counter0 }})"><button type="button" class="btn btn-outline-primary" >재생</button></a></td>
+                                            {% endif %}
                                         </tr>
                                         {% endfor %}
                                     </tbody>

@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 
+from common_value.models import EtcValue
 from dialog.models import Dialog
 
 
@@ -36,7 +37,14 @@ def main(request):
             for track in track_list:
                 track.mp3 = track.step + '_' + track.book_cd + '_' + str(track.track) + '.mp3'
 
+    dialog_audio_play_popup = 0
+    etc_value_list = EtcValue.objects.all()
+    for etc_value in etc_value_list:
+        if etc_value.etc_name == 'DIALOG_AUDIO_PLAY_POPUP':
+            dialog_audio_play_popup = etc_value.etc_value
+
     context = {
+        'dialog_audio_play_popup': dialog_audio_play_popup,
         'sound_path': 'http://fmn2.tongclass.com/reading_dialog/',
         'step_list': step_list,
         'step_code': step_code,
