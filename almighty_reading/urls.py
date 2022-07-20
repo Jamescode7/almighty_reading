@@ -26,15 +26,21 @@ from manage import main
 from study_info.views import bin_response
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FLUTTER_WEB_APP = os.path.join(BASE_DIR, 'step_reading')
+STEP_READING = os.path.join(BASE_DIR, 'step_reading')
+STEP_READING2 = os.path.join(BASE_DIR, 'step_reading2')
 
-def flutter_redirect(request, resource):
-    return serve(request, resource, FLUTTER_WEB_APP)
+def step_reading(request, resource):
+    return serve(request, resource, STEP_READING)
+def step_reading2(request, resource):
+    return serve(request, resource, STEP_READING2)
 
 urlpatterns = [
     path('', lambda request: redirect('step_reading/', permanent=False)),
-    path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
-    path('step_reading/<path:resource>', flutter_redirect),
+    path('step_reading/', lambda r: step_reading(r, 'index.html')),
+    path('step_reading/<path:resource>', step_reading),
+
+    path('step_reading2/', lambda r: step_reading2(r, 'index.html')),
+    path('step_reading2/<path:resource>', step_reading2),
 ]
 '''
 urlpatterns = [
