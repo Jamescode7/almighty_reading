@@ -18,10 +18,25 @@ from django.http import HttpResponseRedirect
 from django.urls import path, include
 from django.shortcuts import redirect
 
+from django.views.static import serve
+import os
+
 from common_value.models import AppVersion
 from manage import main
 from study_info.views import bin_response
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FLUTTER_WEB_APP = os.path.join(BASE_DIR, 'step_reading')
+
+def flutter_redirect(request, resource):
+    return serve(request, resource, FLUTTER_WEB_APP)
+
+urlpatterns = [
+    path('', lambda request: redirect('step_reading/', permanent=False)),
+    path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
+    path('step_reading/<path:resource>', flutter_redirect),
+]
+'''
 urlpatterns = [
     path('', lambda request: redirect('manager/info/', permanent=False)),
     path('ad/adm/admin/', admin.site.urls),
@@ -32,4 +47,8 @@ urlpatterns = [
     path('api/', include('appapi.urls')),
     path('manager/', include('manager.urls')),
     path('dialog/', include('dialog.urls')),
+
+    path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
+    path('step_reading/<path:resource>', flutter_redirect),
 ]
+'''
