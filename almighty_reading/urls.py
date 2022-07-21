@@ -28,11 +28,17 @@ from study_info.views import bin_response
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STEP_READING = os.path.join(BASE_DIR, 'step_reading')
 STEP_READING2 = os.path.join(BASE_DIR, 'step_reading2')
+STEP_READING3 = os.path.join(BASE_DIR, 'step_reading3')
+STEP_READING4 = os.path.join(BASE_DIR, 'step_reading4')
 
 def step_reading(request, resource):
     return serve(request, resource, STEP_READING)
 def step_reading2(request, resource):
     return serve(request, resource, STEP_READING2)
+def step_reading3(request, resource):
+    return serve(request, resource, STEP_READING3)
+def step_reading4(request, resource):
+    return serve(request, resource, STEP_READING4)
 
 urlpatterns = [
     path('', lambda request: redirect('step_reading/', permanent=False)),
@@ -41,6 +47,12 @@ urlpatterns = [
 
     path('step_reading2/', lambda r: step_reading2(r, 'index.html')),
     path('step_reading2/<path:resource>', step_reading2),
+
+    path('step_reading3/', lambda r: step_reading3(r, 'index.html')),
+    path('step_reading3/<path:resource>', step_reading3),
+
+    path('step_reading4/', lambda r: step_reading4(r, 'index.html')),
+    path('step_reading4/<path:resource>', step_reading4),
 ]
 '''
 urlpatterns = [
