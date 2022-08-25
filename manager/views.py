@@ -580,13 +580,13 @@ def btns(request, code=''):
         m = int(mm)
         if m > 3:
             # print('m : ' + str(m))
-            m = m - 3
+            m = m - 2
             # print('m : ' + str(m))
             mm = str(m)
             if m < 10:
                 mm = '0' + mm
             # print('mm : ' + mm)
-            log_list = StepFinishLog.objects.filter(dt_year=yy, dt_month=mm)
+            log_list = StepFinishLog.objects.filter(dt_year__lte=yy, dt_month__lte=mm)
             list_len = len(log_list)
             # print('len : ' + str(list_len))
             if list_len > 0:
@@ -594,7 +594,7 @@ def btns(request, code=''):
                 result = 'work'
             else:
                 result = 'not work, is zero'
-            return HttpResponse(code + '/' + yy + '/' + mm + '/' + dd + '/' + result)
+            return HttpResponse(code + '/' + yy + '/' + mm + '/' + str(list_len) + '/' + result)
 
     code = 'code zero'
     return HttpResponse(code)
