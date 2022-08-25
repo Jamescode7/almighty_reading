@@ -563,6 +563,42 @@ def update_member_list(request, agency_id):
     # 세션 등록
     request.session['sync_member3'] = 'ok'
 
+def btns(request, code=''):
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    result = ''
+    # 만약에 아이디가 etong이 아니라면 접근 금지.
+    if aid != 'etong': return HttpResponse(
+        '<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    if code == 'za1880aab33231sdaeealekea23z':
+        start_dt = date.today()
+        day = start_dt - timedelta(0)
+        yy = day.strftime('%y')
+        mm = day.strftime('%m')
+        dd = day.strftime('%d')
+        m = int(mm)
+        if m > 3:
+            # print('m : ' + str(m))
+            m = m - 3
+            # print('m : ' + str(m))
+            mm = str(m)
+            if m < 10:
+                mm = '0' + mm
+            # print('mm : ' + mm)
+            log_list = StepFinishLog.objects.filter(dt_year=yy, dt_month=mm)
+            list_len = len(log_list)
+            # print('len : ' + str(list_len))
+            if list_len > 0:
+                log_list.delete()
+                result = 'work'
+            else:
+                result = 'not work, is zero'
+            return HttpResponse(code + '/' + yy + '/' + mm + '/' + dd + '/' + result)
+
+    code = 'code zero'
+    return HttpResponse(code)
+
 
 def info(request, user_id=''):
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)

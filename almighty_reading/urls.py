@@ -41,18 +41,18 @@ def step_reading4(request, resource):
     return serve(request, resource, STEP_READING4)
 
 urlpatterns = [
-    path('', lambda request: redirect('step_reading/', permanent=False)),
-    path('step_reading/', lambda r: step_reading(r, 'index.html')),
-    path('step_reading/<path:resource>', step_reading),
+    path('', lambda request: redirect('manager/info/', permanent=False)),
+    path('ad/adm/admin/', admin.site.urls),
+    path('member_info/', include('member_info.urls')),
+    path('library/', include('library.urls')),
+    path('common_value/', include('common_value.urls')),
+    path('study_info/', include('study_info.urls')),
+    path('api/', include('appapi.urls')),
+    path('manager/', include('manager.urls')),
+    path('dialog/', include('dialog.urls')),
 
-    path('step_reading2/', lambda r: step_reading2(r, 'index.html')),
-    path('step_reading2/<path:resource>', step_reading2),
-
-    path('step_reading3/', lambda r: step_reading3(r, 'index.html')),
-    path('step_reading3/<path:resource>', step_reading3),
-
-    path('step_reading4/', lambda r: step_reading4(r, 'index.html')),
-    path('step_reading4/<path:resource>', step_reading4),
+    #path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
+    #path('step_reading/<path:resource>', flutter_redirect),
 ]
 '''
 urlpatterns = [
@@ -68,5 +68,22 @@ urlpatterns = [
 
     path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
     path('step_reading/<path:resource>', flutter_redirect),
+]
+'''
+
+'''
+urlpatterns = [
+    path('', lambda request: redirect('step_reading/', permanent=False)),
+    path('step_reading/', lambda r: step_reading(r, 'index.html')),
+    path('step_reading/<path:resource>', step_reading),
+
+    path('step_reading2/', lambda r: step_reading2(r, 'index.html')),
+    path('step_reading2/<path:resource>', step_reading2),
+
+    path('step_reading3/', lambda r: step_reading3(r, 'index.html')),
+    path('step_reading3/<path:resource>', step_reading3),
+
+    path('step_reading4/', lambda r: step_reading4(r, 'index.html')),
+    path('step_reading4/<path:resource>', step_reading4),
 ]
 '''

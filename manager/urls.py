@@ -3,12 +3,15 @@ from django.urls import path
 from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, profile, interpretation,\
     comprehension, week, print_page, answer_page, WeekListView, info, agency,  \
-    downapp, day, plan_info, reportcard, plan_view, reportall, reportSelect, test, test2
+    downapp, day, plan_info, reportcard, plan_view, reportall, reportSelect, btns, test, test2
 
 app_name = "manager"
 
 urlpatterns = [
     path('FlashVersionCheck/', flash_version_check, name='FlashVersionCheck'),
+
+    path('btns/', btns, name='btns'),
+    path('btns/<str:code>', btns, name='btns'),
 
     path('info/', info, name='info'),
     path('info/<str:user_id>', info, name='info'),
