@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
 
-from common_value.models import AppVersion
+from common_value.models import AppVersion, EtcValue
 from library.models import Level, Topic, SpkSent, Theme, Exam, Word, Reading
 from manager.models import MemberTopicLog, Plan, PlanDetail, ReportCardMemo
 from member_info.models import StudyMember
@@ -718,7 +718,17 @@ class WeekListView(ListView):
     paginate_by = 20
 
 
+
 def week(request, prev_dt=0):
+    # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
+    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
+    if enable_data:
+        enable_data = enable_data[0];
+        # print(enable_data.etc_value)
+        if enable_data.etc_value != '1':
+            return HttpResponseRedirect(reverse('manager:info'))
+
+
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
     aid = get_aid(request)
     if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
