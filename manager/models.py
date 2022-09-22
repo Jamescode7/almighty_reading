@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from common_value.models import Step
+from common_value.models import Step, StepMobile
 from library.models import Level, Topic
 
 
@@ -19,7 +19,7 @@ class PlanDetail(models.Model):
     seq = models.IntegerField(null=True, blank=True)
     stage = models.IntegerField(null=True, blank=True)
     step = models.ForeignKey(Step, on_delete=models.SET_NULL, null=True, blank=True)
-    step_mobile = models.CharField(max_length=25, null=True, blank=True)
+    step_mobile = models.ForeignKey(StepMobile, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 

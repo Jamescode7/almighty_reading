@@ -18,9 +18,9 @@ class PlanAdmin(ImportExportMixin, admin.ModelAdmin):
 
 @admin.register(PlanDetail)
 class PlanAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'plan_code', 'seq', 'stage', 'step']
+    list_display = ['id', 'plan_code', 'seq', 'stage', 'step', 'step_mobile']
     list_display_links = ['id']
-    list_editable = ['plan_code', 'seq', 'stage', 'step']
+    list_editable = ['plan_code', 'seq', 'stage', 'step', 'step_mobile']
 
 
 class MemberTopicLogResource(resources.ModelResource):

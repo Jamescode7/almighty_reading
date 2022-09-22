@@ -35,6 +35,15 @@ class Step(models.Model):
         return '(' + str(self.app_idx) + ') ' + self.step_name
 
 
+class StepMobile(models.Model):
+    step_code = models.IntegerField(default=0)
+    app_idx = models.IntegerField(default=0)
+    step_name = models.CharField(max_length=20, null=True, blank=True)
+
+    def __str__(self):
+        return '(' + str(self.app_idx) + ') ' + self.step_name
+
+
 class EtcValue(models.Model):
     etc_name = models.CharField(max_length=50, null=True, blank=True)
     etc_value = models.CharField(max_length=50, null=True, blank=True)
