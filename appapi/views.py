@@ -106,6 +106,8 @@ def common_test(request):
     study_code = 0
     step_code = 0
     step_code_name = ''
+    step_code_mobile = -1
+    step_code_name_mobile = 'none'
     clear_list = []
     plan_name = ''
 
@@ -138,6 +140,14 @@ def common_test(request):
             if plan_detail:
                 step_code = plan_detail.step.step_code
                 step_code_name = plan_detail.step.step_name
+                if plan_detail.step_mobile is not None:
+                    # print('ok')
+                    step_code_mobile = plan_detail.step_mobile.step_code
+                    step_code_name_mobile = plan_detail.step_mobile.step_name
+
+                #if plan_detail.step_mobile.step_code:
+                    # step_code_mobile = plan_detail.step_mobile.step_code
+                    # step_code_name_mobile = plan_detail.step_mobile.step_name
 
     if plan_type == "2":
         stage = 1
@@ -165,6 +175,8 @@ def common_test(request):
         "Step": step,
         "StepCode": step_code,
         "StepCodeName": step_code_name,
+        "StepCode_mobile": step_code_mobile,
+        "StepCodeName_mobile": step_code_name_mobile,
         "StudyCode": study_code,
         "ClearList": clear_list,
         "TopicNav": topic_nav
