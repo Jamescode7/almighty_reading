@@ -19,6 +19,8 @@ class PlanDetail(models.Model):
     seq = models.IntegerField(null=True, blank=True)
     stage = models.IntegerField(null=True, blank=True)
     step = models.ForeignKey(Step, on_delete=models.SET_NULL, null=True, blank=True)
+    step_mobile = models.CharField(max_length=25, null=True, blank=True)
+
 
 
 class MemberTopicLog(models.Model):
