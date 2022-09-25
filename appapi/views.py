@@ -470,6 +470,8 @@ def get_next_step(get_plan, get_stage, get_step):
     return_plan_step = 0
     return_app_step = 0
     return_app_step_name = ''
+    return_app_step_mobile = 0
+    return_app_step_name_mobile = ''
     return_q_num = 0
     for row in plan_detail:
         # print('-----------------')
