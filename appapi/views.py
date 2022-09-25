@@ -484,6 +484,8 @@ def get_next_step(get_plan, get_stage, get_step):
             return_plan_step = str(row.seq)
             return_app_step = str(row.step.step_code)
             return_app_step_name = str(row.step.step_name)
+            return_app_step_mobile = str(row.step_mobile.step_code)
+            return_app_step_name_mobile = str(row.step_mobile.step_name)
             if return_app_step == "6":
                 return_q_num = 1
             break
@@ -493,6 +495,8 @@ def get_next_step(get_plan, get_stage, get_step):
         "return_plan_step": return_plan_step,
         "return_app_step": return_app_step,
         "return_app_step_name": return_app_step_name,
+        "return_app_step_mobile": return_app_step_mobile,
+        "return_app_step_name_mobile": return_app_step_name_mobile,
         "return_q_num": return_q_num,
     }
     return data
@@ -529,6 +533,7 @@ def step_finish_save(request):
     get_ans = request.GET.get('Ans')
     # studyTime = request.GET.get('StudyTime')
     get_study_code = request.GET.get('StudyCode')
+    # is_mobile = request.GET.get('isMobile')
 
     # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     # print('### get data')
@@ -610,6 +615,8 @@ def step_finish_save(request):
         "Step": return_data['return_plan_step'],
         "StepCode": return_data['return_app_step'],
         "StepCodeName": return_data['return_app_step_name'],
+        "StepCodeMobile": return_data['return_app_step_mobile'],
+        "StepCodeNameMobile": return_data['return_app_step_name_mobile'],
         "FinishToday": is_finish_today,
         "FinishTopic": is_finish_topic,
         "Q_Num": return_data['return_q_num'],
