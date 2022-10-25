@@ -109,9 +109,9 @@ P{
             {% for sentence in sentence_list %}
             <tr>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd" >{% if reading_type == 'kor' %} &nbsp; {% else %} {{ sentence.eng|linebreaks }} {% endif %}</td>
+                <td class="tbd" >{% if reading_type == 'kor' %} &nbsp; {% else %} <br/>{{ sentence.eng|linebreaks }}<br/> {% endif %}</td>
                 <td class="" width="4%" >{{ forloop.counter }}</td>
-                <td class="tbd">{% if reading_type == 'eng' %} &nbsp; {% else %} {{ sentence.kor|linebreaks }} {% endif %}</td>
+                <td class="tbd">{% if reading_type == 'eng' %} &nbsp; {% else %} <br/>{{ sentence.kor|linebreaks }}<br/> {% endif %}</td>
             </tr>
             {% endfor %}
         </table>
