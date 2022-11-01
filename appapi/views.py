@@ -153,7 +153,10 @@ def common_test(request):
         stage = 1
         step = 1  # 플랜 타입이 자유학습이라면 무조건 스텝과 스테이지는 1로..
 
+
     topic_nav = ''
+    # 기존에는 아래(01)와 같이 구분하였지만 (02)둘 다 무조건 표시해주는 걸로. 22.11.1
+    '''01
     if level_code == "0" and topic_code == "0":
         # print('라이브러리를 골라야 합니다.')
         history = MemberTopicLog.objects.filter(username=mcode).order_by('-topic_code')
@@ -162,7 +165,17 @@ def common_test(request):
             clear_list.append(row.topic_code.topic_code)
     else:
         topic_nav = level_name + '>' + theme_name + '>' + topic_name
-
+    '''
+    # 02 start
+    history = MemberTopicLog.objects.filter(username=mcode).order_by('-topic_code')
+    for row in history:
+        # print(str(row))
+        clear_list.append(row.topic_code.topic_code)
+    if level_code == "0" and topic_code == "0":
+        print('라이브러리를 골라야 합니다.')
+    else:
+        topic_nav = level_name + '>' + theme_name + '>' + topic_name
+    # 02 fin
 
     data = {
         "Lcode": level_code,
