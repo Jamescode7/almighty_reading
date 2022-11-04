@@ -96,7 +96,13 @@ def common_test(request):
     theme_name = ''
     topic_code = "0"
     topic_name = ''
+    manager = 0
 
+    # 11.03 이 아이디가 매니저인지 아닌지 체크
+    member_manager_list = StudyMember.objects.filter(acode=mcode)
+    if member_manager_list:
+        manager = 1
+    # 11.03 end
 
     mem_level = "0"
     mem_level_name = ""
@@ -178,6 +184,7 @@ def common_test(request):
     # 02 fin
 
     data = {
+        "Manager": manager,
         "Lcode": level_code,
         "Pcode": topic_code,
         "PlanType": plan_type,
