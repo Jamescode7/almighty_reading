@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
+from django.urls import reverse
+
 from common_value.models import AppVersion
 from datetime import date, timedelta, datetime
 
@@ -117,8 +119,24 @@ def common_test(request):
     clear_list = []
     plan_name = ''
 
+
+
     user = StudyMember.objects.filter(mcode=mcode)
     if user:
+        print('get next process')
+        # Logic A-->
+    else:
+        #print('유저없음?')
+        if manager == 1:
+            #print('그런데 매니저?')
+            study_member = StudyMember(mcode=mcode, mname=mcode, acode=mcode,
+                                       plan_code=Plan.objects.get(plan_code=2))
+            study_member.save()
+
+
+    user = StudyMember.objects.filter(mcode=mcode)
+    if user:
+        # Logic A
         user = user[0]
         if user.level_code:
             mem_level = str(user.level_code.level_code)
@@ -154,6 +172,8 @@ def common_test(request):
                 #if plan_detail.step_mobile.step_code:
                     # step_code_mobile = plan_detail.step_mobile.step_code
                     # step_code_name_mobile = plan_detail.step_mobile.step_name
+    else:
+        print('뭐가 없음? ')
 
     if plan_type == "2":
         stage = 1
