@@ -297,10 +297,15 @@ def topic_to_dicionary(topic, idx):
 def theme_topic_load(request):
     # https://cem.mrzero.kr/rodata/ca/ThemeTopicLoad?Time=1716041&Mcode=26533&Tcode=110&Keyword=
     theme_code = request.GET.get('Tcode')
-    topic = Topic.objects.filter(theme_code=theme_code)
+    if theme_code == '930':
+        topic = Topic.objects.filter(theme_code=theme_code)
+    else:
+        topic = Topic.objects.filter(theme_code=theme_code).order_by('topic_name')
+
     tempDic = []
     for n in range(len(topic)):
         tempDic.append(topic_to_dicionary(topic[n], n))
+
     topic = tempDic
     data = {
         "TopicGroup": topic,
