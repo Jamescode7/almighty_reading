@@ -29,6 +29,7 @@ class TopicAdmin(ImportExportMixin, admin.ModelAdmin):
 
 @admin.register(Word)
 class WordAdmin(ImportExportMixin, admin.ModelAdmin):
+    search_fields = ['eng']
     list_display = ['id', 'word_code', 'topic_code', 'page_num', 'num', 'eng', 'kor', 'dic_eng', 'dic_kor', 'sound',
                     'use_yn']
     list_display_links = ['id']
