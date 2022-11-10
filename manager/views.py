@@ -477,10 +477,14 @@ def reportall(request):
         report_list.append(report)
         # print(str(len(report_list)))
 
+    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
+
+
     # print('make_cnt : ' + str(make_cnt))
     # print('continue_cnt : ' + str(continue_cnt))
     # print(check_mem_list)
     context = {
+        'memo_list': memo_list,
         'month_list': month_list,
         'day_list': day_list,
         'sm': sm,
