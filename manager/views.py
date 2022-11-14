@@ -941,7 +941,7 @@ def week_up(request, prev_dt=0):
         member.days = []
         loop = 6
 
-        for dt in range(7):
+        for dt in range(2):
             seek = loop = dt
             day = start_dt - timedelta(seek + prev_dt)
             day_str = day.strftime('%m.%d') + get_day(day.weekday())
