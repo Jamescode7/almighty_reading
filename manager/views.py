@@ -65,7 +65,7 @@ def comprehension(request, topic_code=''):
                 answer.answer = 'O'
             if answer.answer == 'F':
                 answer.answer = 'X'
-            #if cnt < 6:
+            # if cnt < 6:
             answer_list.append(answer.answer)
             # print('answer : ' + str(answer.answer))
             # print('==============' + str(cnt))
@@ -99,7 +99,7 @@ def comprehension(request, topic_code=''):
         cnt += 1
 
     context = {
-        'para_len':len(para_list),
+        'para_len': len(para_list),
         'is_member': is_member,
         'id': id,
         'mcode': mcode,
@@ -195,7 +195,6 @@ def interpretation(request, topic_code=''):
         row.kor = row.kor.replace(']', '')
         row.kor = row.kor.replace('^', '\n')
 
-
     context = {
         'level_info': level_info,
         'theme_info': theme_info,
@@ -215,11 +214,11 @@ def reportcard(request, mcode=''):
 
     month_list = []
     day_list = []
-    sm = '' # start month
-    sd = '0' # start day
+    sm = ''  # start month
+    sd = '0'  # start day
     sd_list = []
-    em = '0' # end month
-    ed = '0' # end day
+    em = '0'  # end month
+    ed = '0'  # end day
     ed_list = []
     now = datetime.now()
 
@@ -253,7 +252,6 @@ def reportcard(request, mcode=''):
     if request.GET.get('ed'):
         ed = request.GET.get('ed')
 
-
     user_name = ''
     study_start_day = ''
     study_end_day = ''
@@ -269,13 +267,16 @@ def reportcard(request, mcode=''):
 
         start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
         end_date = datetime(year, int(em), int(ed), 23, 59, 59)
-        #print('ed : ' + str(end_date.timetuple()))
-        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id')
+        # print('ed : ' + str(end_date.timetuple()))
+        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                   end_dt__lt=end_date).order_by('-id')
         # print(topic_list.query)
-        first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('id').first()
+        first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                    end_dt__lt=end_date).order_by('id').first()
         if first_topic:
             study_start_day = first_topic.start_dt
-        last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date, end_dt__lt=end_date).order_by('-id').first()
+        last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                   end_dt__lt=end_date).order_by('-id').first()
         if last_topic:
             study_end_day = last_topic.end_dt
     else:
@@ -427,7 +428,7 @@ def reportall(request):
     make_cnt = 0
     continue_cnt = 0
     for member in member_list:
-    # for check_mem in check_mem_list:
+        # for check_mem in check_mem_list:
         report = {}
         # print('loop! ')
         make_cnt += 1
@@ -452,7 +453,7 @@ def reportall(request):
             end_date = datetime(year, int(em), int(ed), 23, 59, 59)
             # print('ed : ' + str(end_date.timetuple()))
             report['topic_list'] = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                       end_dt__lt=end_date).order_by('-id')
+                                                                 end_dt__lt=end_date).order_by('-id')
             # print(topic_list.query)
             first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
                                                         end_dt__lt=end_date).order_by('id').first()
@@ -478,7 +479,6 @@ def reportall(request):
         # print(str(len(report_list)))
 
     memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
-
 
     # print('make_cnt : ' + str(make_cnt))
     # print('continue_cnt : ' + str(continue_cnt))
@@ -566,6 +566,7 @@ def update_member_list(request, agency_id):
 
     # 세션 등록
     request.session['sync_member3'] = 'ok'
+
 
 def btns(request, code=''):
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
@@ -666,7 +667,7 @@ def info(request, user_id=''):
                     month = today.strftime('%m')
                     day = today.strftime('%d')
 
-                    user = StudyMember.objects.filter(mcode=user_id) # 종료일 경우 현재 학습을 0, 리셋을 경우 상황에 따라 0
+                    user = StudyMember.objects.filter(mcode=user_id)  # 종료일 경우 현재 학습을 0, 리셋을 경우 상황에 따라 0
                     user = user[0]
                     if process == 'closed':
                         log.end_dt = datetime.now()
@@ -722,7 +723,6 @@ class WeekListView(ListView):
     paginate_by = 20
 
 
-
 def week(request, prev_dt=0):
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
@@ -731,7 +731,6 @@ def week(request, prev_dt=0):
         # print(enable_data.etc_value)
         if enable_data.etc_value != '1':
             return HttpResponseRedirect(reverse('manager:info'))
-
 
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
     aid = get_aid(request)
@@ -789,7 +788,7 @@ def week(request, prev_dt=0):
 
             # 03 날짜당 학생의 데이터를 추출해본다.
 
-            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by('-id')
+            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd)
             if log_list:
                 log_data = {}
                 log_data['yy'] = yy
@@ -801,7 +800,7 @@ def week(request, prev_dt=0):
                 prev_log['stage'] = 0
                 prev_log['step'] = 0
                 for log in log_list:
-                    #print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+                    # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
                     log_data = {}
                     log_data['yy'] = yy
                     log_data['mm'] = mm
@@ -844,14 +843,6 @@ def week(request, prev_dt=0):
 
                     prev_log['stage'] = log_data['stage']
 
-            else:
-                log_data = {}
-                log_data['yy'] = yy
-                log_data['mm'] = mm
-                log_data['dd'] = dd
-                log_data['color'] = ''
-                log_data['text'] = '.'
-                append_data_list.append(log_data)
 
 
             # member마다 7일간 데이터 저장.
@@ -924,9 +915,17 @@ def week_up(request, prev_dt=0):
     # 01 모든 학생을 가져온다.
     for member in member_list:
         member.days = []
-        loop = 6
+        seek = 6
+        day = start_dt - timedelta(seek + prev_dt)
+        yy = day.strftime('%y')
+        mm = day.strftime('%m')
+        sd = day.strftime('%d')
+
+        log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by(
+            '-id')
 
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
+        loop = 6
         for dt in range(7):
             seek = loop - dt
             day = start_dt - timedelta(seek + prev_dt)
@@ -936,96 +935,79 @@ def week_up(request, prev_dt=0):
             dd = day.strftime('%d')
             append_data_list = []
 
-    # 여기까지 하고 다시 조회
-    for member in member_list:
-        member.days = []
-        loop = 6
-
-        seek = loop = dt
-        day = start_dt - timedelta(seek + prev_dt)
-        day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        yy = day.strftime('%y')
-        mm = day.strftime('%m')
-        dd = day.strftime('%d')
-        append_data_list = []
+            # 03 날짜당 학생의 데이터를 추출해본다.
 
 
-        # 03 날짜당 학생의 데이터를 추출해본다.dddd
-        log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=22, dt_month=11,
-                                                dt_day__range=[7, 14]).order_by('-id')
-        if log_list:
-            log_data = {}
-            log_data['yy'] = yy
-            log_data['mm'] = mm
-            log_data['dd'] = dd
-            prev_log = {}
-            prev_log['text'] = 'st'
-            prev_log['color'] = 'black'
-            prev_log['stage'] = 0
-            prev_log['step'] = 0
-            for log in log_list:
-                # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+            if log_list:
                 log_data = {}
                 log_data['yy'] = yy
                 log_data['mm'] = mm
                 log_data['dd'] = dd
-                log_data['stage'] = log.stage
-                log_data['step'] = log.step
-                log_data['text'] = 'st' + str(log.stage)
-                log_data['color'] = 'colorGray'
-                if log.plan_type == 2:
-                    # ////////// 자 유 학 습 /////////////////////////////////////////////
-                    if log.step == 7 or log.step_num != '0':
-                        # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
-                        log_data['text'] = 'Q'
-                        log_data['color'] = 'colorForestGreen'
-                        if prev_log['text'] != 'Q':
+                prev_log = {}
+                prev_log['text'] = 'st'
+                prev_log['color'] = 'black'
+                prev_log['stage'] = 0
+                prev_log['step'] = 0
+                for log in log_list:
+                    # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+                    log_data = {}
+                    log_data['yy'] = yy
+                    log_data['mm'] = mm
+                    log_data['dd'] = dd
+                    log_data['stage'] = log.stage
+                    log_data['step'] = log.step
+                    log_data['text'] = 'st' + str(log.stage)
+                    log_data['color'] = 'colorGray'
+                    if log.plan_type == 2:
+                        # ////////// 자 유 학 습 /////////////////////////////////////////////
+                        if log.step == 7 or log.step_num != '0':
+                            # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
+                            log_data['text'] = 'Q'
+                            log_data['color'] = 'colorForestGreen'
+                            if prev_log['text'] != 'Q':
+                                append_data_list.insert(0, log_data)
+                                prev_log['text'] = 'Q'
+                        else:
+                            # 그 외 스텝일 때
+                            log_data['text'] = str(log.step)
+                            log_data['color'] = 'colorGreen'
                             append_data_list.insert(0, log_data)
-                            prev_log['text'] = 'Q'
+                    elif log.topic_code == 'C':
+                        # //////////  종 료 /////////////////////////////////////////////
+                        log_data['text'] = 'C'
+                        log_data['color'] = 'colorIndigo'
+                        append_data_list.insert(0, log_data)
+                    elif log.topic_code == 'R':
+                        # ////////// 리 셋 /////////////////////////////////////////////
+                        log_data['text'] = 'R'
+                        log_data['color'] = 'colorRed'
+                        append_data_list.insert(0, log_data)
                     else:
-                        # 그 외 스텝일 때
-                        log_data['text'] = str(log.step)
-                        log_data['color'] = 'colorGreen'
-                        append_data_list.insert(0, log_data)
-                elif log.topic_code == 'C':
-                    # //////////  종 료 /////////////////////////////////////////////
-                    log_data['text'] = 'C'
-                    log_data['color'] = 'colorIndigo'
-                    append_data_list.insert(0, log_data)
-                elif log.topic_code == 'R':
-                    # ////////// 리 셋 /////////////////////////////////////////////
-                    log_data['text'] = 'R'
-                    log_data['color'] = 'colorRed'
-                    append_data_list.insert(0, log_data)
-                else:
-                    # ////////// 완 전 학 습 ////////////////////////////////////////////
-                    if log.finish_today:
-                        log_data['color'] = 'colorBlue'
+                        # ////////// 완 전 학 습 ////////////////////////////////////////////
+                        if log.finish_today:
+                            log_data['color'] = 'colorBlue'
 
-                    if prev_log['stage'] != log_data['stage']:
-                        append_data_list.insert(0, log_data)
+                        if prev_log['stage'] != log_data['stage']:
+                            append_data_list.insert(0, log_data)
 
-                prev_log['stage'] = log_data['stage']
+                    prev_log['stage'] = log_data['stage']
 
-        else:
-            log_data = {}
-            log_data['yy'] = yy
-            log_data['mm'] = mm
-            log_data['dd'] = dd
-            log_data['color'] = ''
-            log_data['text'] = '.'
-            append_data_list.append(log_data)
+            else:
+                log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
+                log_data['color'] = ''
+                log_data['text'] = '.'
+                append_data_list.append(log_data)
 
-        # member마다 7일간 데이터 저장.
-        member.days.append(append_data_list)
-
-
+            # member마다 7일간 데이터 저장.
+            member.days.append(append_data_list)
 
     prev_week = prev_dt + 7
     next_week = prev_dt - 7
     if next_week < 0:
         next_week = 0
-
     context = {
         'switch_desc': switch_desc,
         'prev_week': prev_week,
