@@ -961,48 +961,56 @@ def week_up(request, prev_dt=0):
                 prev_log['step'] = 0
                 for log in log_list:
                     # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
-                    log_data = {}
-                    log_data['yy'] = yy
-                    log_data['mm'] = mm
-                    log_data['dd'] = dd
-                    log_data['stage'] = log.stage
-                    log_data['step'] = log.step
-                    log_data['text'] = 'st' + str(log.stage)
-                    log_data['color'] = 'colorGray'
-                    if log.plan_type == 2:
-                        # ////////// 자 유 학 습 /////////////////////////////////////////////
-                        if log.step == 7 or log.step_num != '0':
-                            # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
-                            log_data['text'] = 'Q'
-                            log_data['color'] = 'colorForestGreen'
-                            if prev_log['text'] != 'Q':
+                    if log.username == member.mcode and log.dt_year == yy and log.dt_month == mm and log.dt_day == dd:
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['stage'] = log.stage
+                        log_data['step'] = log.step
+                        log_data['text'] = 'st' + str(log.stage)
+                        log_data['color'] = 'colorGray'
+                        if log.plan_type == 2:
+                            # ////////// 자 유 학 습 /////////////////////////////////////////////
+                            if log.step == 7 or log.step_num != '0':
+                                # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
+                                log_data['text'] = 'Q'
+                                log_data['color'] = 'colorForestGreen'
+                                if prev_log['text'] != 'Q':
+                                    append_data_list.insert(0, log_data)
+                                    prev_log['text'] = 'Q'
+                            else:
+                                # 그 외 스텝일 때
+                                log_data['text'] = str(log.step)
+                                log_data['color'] = 'colorGreen'
                                 append_data_list.insert(0, log_data)
-                                prev_log['text'] = 'Q'
+                        elif log.topic_code == 'C':
+                            # //////////  종 료 /////////////////////////////////////////////
+                            log_data['text'] = 'C'
+                            log_data['color'] = 'colorIndigo'
+                            append_data_list.insert(0, log_data)
+                        elif log.topic_code == 'R':
+                            # ////////// 리 셋 /////////////////////////////////////////////
+                            log_data['text'] = 'R'
+                            log_data['color'] = 'colorRed'
+                            append_data_list.insert(0, log_data)
                         else:
-                            # 그 외 스텝일 때
-                            log_data['text'] = str(log.step)
-                            log_data['color'] = 'colorGreen'
-                            append_data_list.insert(0, log_data)
-                    elif log.topic_code == 'C':
-                        # //////////  종 료 /////////////////////////////////////////////
-                        log_data['text'] = 'C'
-                        log_data['color'] = 'colorIndigo'
-                        append_data_list.insert(0, log_data)
-                    elif log.topic_code == 'R':
-                        # ////////// 리 셋 /////////////////////////////////////////////
-                        log_data['text'] = 'R'
-                        log_data['color'] = 'colorRed'
-                        append_data_list.insert(0, log_data)
+                            # ////////// 완 전 학 습 ////////////////////////////////////////////
+                            if log.finish_today:
+                                log_data['color'] = 'colorBlue'
+
+                            if prev_log['stage'] != log_data['stage']:
+                                append_data_list.insert(0, log_data)
+
+                        prev_log['stage'] = log_data['stage']
                     else:
-                        # ////////// 완 전 학 습 ////////////////////////////////////////////
-                        if log.finish_today:
-                            log_data['color'] = 'colorBlue'
-
-                        if prev_log['stage'] != log_data['stage']:
-                            append_data_list.insert(0, log_data)
-
-                    prev_log['stage'] = log_data['stage']
-
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['color'] = ''
+                        log_data['text'] = '.'
+                        append_data_list.append(log_data)
             else:
                 log_data = {}
                 log_data['yy'] = yy
