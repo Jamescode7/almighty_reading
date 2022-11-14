@@ -788,6 +788,7 @@ def week(request, prev_dt=0):
             append_data_list = []
 
             # 03 날짜당 학생의 데이터를 추출해본다.
+
             log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by('-id')
             if log_list:
                 log_data = {}
@@ -860,6 +861,77 @@ def week(request, prev_dt=0):
     next_week = prev_dt - 7
     if next_week < 0:
         next_week = 0
+    context = {
+        'switch_desc': switch_desc,
+        'prev_week': prev_week,
+        'next_week': next_week,
+        'arg': prev_dt,
+        'start_dt': start_dt,
+        'days': days,
+        'member_list': member_list,
+    }
+    return render(request, 'manager/week.html', context)
+
+
+def week_up(request, prev_dt=0):
+    # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
+    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
+    if enable_data:
+        enable_data = enable_data[0];
+        # print(enable_data.etc_value)
+        if enable_data.etc_value != '1':
+            return HttpResponseRedirect(reverse('manager:info'))
+
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    # 웹전산에서 회원 리스트를 갱신한다.
+    # update_member_list(request, aid)
+    call(request)
+
+    start_dt = date.today()
+
+    # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
+    days = []
+    loop = 6
+    for n in range(7):
+        seek = loop - n
+        day = start_dt - timedelta(seek + prev_dt)
+        day_str = day.strftime('%m.%d') + get_day(day.weekday())
+        # print(day_str.strip()[-1])
+        days.append(day_str)
+
+    desc = ''
+    order = 'mname'
+
+    switch_desc = '1'
+    query_desc = ''
+
+    order_by = 'mname'
+    if request.GET.get('desc'):
+        desc = request.GET.get('desc')
+        if desc == '1':
+            switch_desc = '0'
+            query_desc = '-'
+        else:
+            desc = '0'
+            switch_desc = '1'
+            query_desc = ''
+
+        # 모든 학생에 대해 7일간 학습 데이터 가져오기
+        member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
+        # 01 모든 학생을 가져온다.
+        for member in member_list:
+            member.days = []
+            loop = 6
+
+
+    prev_week = prev_dt + 7
+    next_week = prev_dt - 7
+    if next_week < 0:
+        next_week = 0
+    member_list = []
     context = {
         'switch_desc': switch_desc,
         'prev_week': prev_week,
