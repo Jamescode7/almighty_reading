@@ -788,7 +788,8 @@ def week(request, prev_dt=0):
 
             # 03 날짜당 학생의 데이터를 추출해본다.
 
-            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd)
+            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by(
+                '-id')
             if log_list:
                 log_data = {}
                 log_data['yy'] = yy
@@ -843,7 +844,14 @@ def week(request, prev_dt=0):
 
                     prev_log['stage'] = log_data['stage']
 
-
+            else:
+                log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
+                log_data['color'] = ''
+                log_data['text'] = '.'
+                append_data_list.append(log_data)
 
             # member마다 7일간 데이터 저장.
             member.days.append(append_data_list)
@@ -920,8 +928,11 @@ def week_up(request, prev_dt=0):
         yy = day.strftime('%y')
         mm = day.strftime('%m')
         sd = day.strftime('%d')
+        eday = start_dt - timedelta(prev_dt)
+        ed = eday.strftime('%d')
 
-        log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd).order_by(
+
+        log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day__range=[sd,ed]).order_by(
             '-id')
 
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
