@@ -919,12 +919,24 @@ def week_up(request, prev_dt=0):
             switch_desc = '1'
             query_desc = ''
 
-        # 모든 학생에 대해 7일간 학습 데이터 가져오기
-        member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
-        # 01 모든 학생을 가져온다.
-        for member in member_list:
-            member.days = []
-            loop = 6
+    # 모든 학생에 대해 7일간 학습 데이터 가져오기
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
+    # 01 모든 학생을 가져온다.
+    for member in member_list:
+        member.days = []
+        loop = 6
+
+        # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
+        for dt in range(7):
+            seek = loop - dt
+            day = start_dt - timedelta(seek + prev_dt)
+            day_str = day.strftime('%m.%d') + get_day(day.weekday())
+            yy = day.strftime('%y')
+            mm = day.strftime('%m')
+            dd = day.strftime('%d')
+            append_data_list = []
+
+
 
 
     prev_week = prev_dt + 7
