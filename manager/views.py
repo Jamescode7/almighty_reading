@@ -949,13 +949,10 @@ def week_up(request, prev_dt=0):
         dd = day.strftime('%d')
         append_data_list = []
 
-        print(yy)
-        print(mm)
-        print(dd)
 
         # 03 날짜당 학생의 데이터를 추출해본다.
         log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=22, dt_month=11,
-                                                dt_day=11).order_by('-id')
+                                                dt_day__range=[7, 14]).order_by('-id')
         if log_list:
             log_data = {}
             log_data['yy'] = yy
