@@ -39,9 +39,10 @@ class WordAdmin(ImportExportMixin, admin.ModelAdmin):
 
 @admin.register(WrtMoon)
 class WrtMoonAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['id', 'reading_code', 'topic_code', 'page_num', 'para_num', 'eng','kor']
+    search_fields = ['eng', 'kor', 'topic_code']
+    list_display = ['id', 'reading_code', 'topic_code', 'page_num', 'para_num', 'eng', 'kor']
     list_display_links = ['id']
-    list_editable = ['reading_code', 'topic_code', 'page_num', 'para_num', 'eng','kor']
+    list_editable = ['reading_code', 'topic_code', 'page_num', 'para_num', 'eng', 'kor']
 
 
 @admin.register(WrtWord)
