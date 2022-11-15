@@ -723,7 +723,8 @@ class WeekListView(ListView):
     paginate_by = 20
 
 
-def week(request, prev_dt=0):
+def week_up(request, prev_dt=0):
+    ## week 와 week_up 체인지.
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
     if enable_data:
@@ -872,7 +873,7 @@ def week(request, prev_dt=0):
     return render(request, 'manager/week.html', context)
 
 
-def week_up(request, prev_dt=0):
+def week(request, prev_dt=0):
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
     if enable_data:
