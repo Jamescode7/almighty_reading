@@ -1010,7 +1010,7 @@ def week_up(request, prev_dt=0):
                         log_data['dd'] = dd
                         log_data['color'] = ''
                         log_data['text'] = '.'
-                        append_data_list.append(log_data)
+                        # append_data_list.append(log_data)
             else:
                 log_data = {}
                 log_data['yy'] = yy
