@@ -545,12 +545,14 @@ def generate_date_lists():
 
 
 def get_date_filters(request):
-    sy = request.GET.get('sy', str(datetime.now().year))  # 연도 선택 추가
+    sy = request.GET.get('sy', str(datetime.now().year))  # 시작 연도
+    ey = request.GET.get('ey', str(datetime.now().year))  # 종료 연도
     sm = request.GET.get('sm', '')
     sd = request.GET.get('sd', '0')
     em = request.GET.get('em', '0')
     ed = request.GET.get('ed', '0')
-    return sy, sm, sd, em, ed
+    return sy, ey, sm, sd, em, ed
+
 
 
 def create_report_list(aid, sy, sm, sd, em, ed):
