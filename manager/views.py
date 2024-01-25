@@ -507,10 +507,10 @@ def reportall_test(request):
     year_list, month_list, day_list = generate_date_lists()
 
     # 날짜 필터 설정
-    sy, sm, sd, em, ed = get_date_filters(request)
+    sy, ey, sm, sd, em, ed = get_date_filters(request)  # 'ey' 추가
 
     # 보고서 리스트 생성
-    report_list = create_report_list(aid, sy, sm, sd, em, ed)
+    report_list = create_report_list(aid, sy, sm, sd, ey, em, ed)  # 매개변수 순서 및 'ey' 추가
 
     # 메모 리스트
     memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
@@ -520,7 +520,8 @@ def reportall_test(request):
         'year_list': year_list,  # 연도 리스트 추가
         'month_list': month_list,
         'day_list': day_list,
-        'sy': sy,  # 연도 추가
+        'sy': sy,  # 시작 연도
+        'ey': ey,  # 종료 연도 추가
         'sm': sm,
         'sd': sd,
         'em': em,
@@ -528,6 +529,7 @@ def reportall_test(request):
         'report_list': report_list,
     }
     return render(request, 'manager/reportcardall_test.html', context)
+
 
 
 def handle_check_list(request, aid):
@@ -555,13 +557,14 @@ def get_date_filters(request):
 
 
 
-def create_report_list(aid, sy, ey, sm, sd, em, ed):
+def create_report_list(aid, sy, sm, sd, ey, em, ed):
     report_list = []
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
     for member in member_list:
-        report = create_report(member, sy, ey, sm, sd, em, ed)
+        report = create_report(member, sy, sm, sd, ey, em, ed)
         report_list.append(report)
     return report_list
+
 
 
 def create_report(member, sy, sm, sd, ey, em, ed):
@@ -575,6 +578,7 @@ def create_report(member, sy, sm, sd, ey, em, ed):
 
     set_study_period(report)
     return report
+
 
 
 
