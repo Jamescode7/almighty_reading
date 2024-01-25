@@ -555,25 +555,27 @@ def get_date_filters(request):
 
 
 
-def create_report_list(aid, sy, sm, sd, em, ed):
+def create_report_list(aid, sy, ey, sm, sd, em, ed):
     report_list = []
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
     for member in member_list:
-        report = create_report(member, sy, sm, sd, em, ed)
+        report = create_report(member, sy, ey, sm, sd, em, ed)
         report_list.append(report)
     return report_list
 
-def create_report(member, sy, sm, sd, em, ed):
+
+def create_report(member, sy, sm, sd, ey, em, ed):
     report = {'user_name': member.mname, 'level_name': member.level_code}
     if sm and em and sd != '0' and ed != '0':
         start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
-        end_date = datetime(int(sy), int(em), int(ed), 23, 59, 59)
+        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
         report['topic_list'] = get_topics(member.mcode, start_date, end_date)
     else:
         report['topic_list'] = MemberTopicLog.objects.filter(username=member.mcode).order_by('-id')
 
     set_study_period(report)
     return report
+
 
 
 def get_topics(mcode, start_date, end_date):
