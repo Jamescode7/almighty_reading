@@ -95,7 +95,14 @@ tr.colored:hover td{
                             <button type="button" class="btn btn-primary roundbtn" onclick="allCheck(true)">전체선택</button></a>
                             <button type="button" class="btn btn-facebook roundbtn" onclick="allCheck(false)">전체해제</button></a>
                             <span style="padding-left: 20px;">&nbsp;</span>#총 <span id="textCnt" style="font-weight: bold; color:#ff0084;">0</span>명이 선택되었습니다.
-                            <button type="submit" class="btn btn-success roundbtn" >레포트카드 출력</button></a>
+                            <!--<button type="submit" class="btn btn-success roundbtn" >레포트카드 출력</button></a>-->
+                            <!-- 기존 레포트카드 출력 버튼 -->
+                            <button type="button" class="btn btn-success roundbtn" onclick="submitForm('reportall')">레포트카드 출력</button>
+
+                            <!-- 테스트 버튼 추가 -->
+                            <button type="button" class="btn btn-info roundbtn" onclick="submitForm('reportall_test')">테스트 레포트카드 출력</button>
+
+
                             <!--<button type="submit" class="btn btn-success roundbtn" onclick="window.open('{% url 'manager:reportall' %}', 'reportcard', 'width=900px, height=1000px' );">레포트카드 출력</button></a>-->
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
@@ -245,12 +252,30 @@ tr.colored:hover td{
 
         $(document).ready(function() {
         $('#memberForm').submit(function() {
+            /* submitForm을 만들었으므로 아래 4줄은 주석처리 24.01.25
             window.open('', 'reportall', 'width=900px,height=1000px');
             this.action = '{% url 'manager:reportall' %}'
             this.method = 'GET';
             this.target = 'reportall';
+            */
         });
     });
+
+
+        // form 테스트를 겸하는 submit 소스 추가.
+        function submitForm(action) {
+            var form = document.getElementById('memberForm');
+            if(action === 'reportall') {
+                form.action = '{% url 'manager:reportall' %}';
+            } else if(action === 'reportall_test') {
+                form.action = '{% url 'manager:reportall_test' %}';
+            }
+            window.open('', 'reportWindow', 'width=900px,height=1000px');
+            form.method = 'GET';
+            form.target = 'reportWindow';
+            form.submit();
+        }
+
     </script>
 
 </body>

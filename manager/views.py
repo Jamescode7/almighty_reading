@@ -497,6 +497,94 @@ def reportall(request):
     return render(request, 'manager/reportcardall.html', context)
 
 
+def reportall_test(request):
+    aid = get_aid(request)
+
+    # 체크 리스트 처리
+    handle_check_list(request, aid)
+
+    # 날짜 리스트 생성
+    year_list, month_list, day_list = generate_date_lists()
+
+    # 날짜 필터 설정
+    sy, sm, sd, em, ed = get_date_filters(request)
+
+    # 보고서 리스트 생성
+    report_list = create_report_list(aid, sy, sm, sd, em, ed)
+
+    # 메모 리스트
+    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
+
+    context = {
+        'memo_list': memo_list,
+        'year_list': year_list,  # 연도 리스트 추가
+        'month_list': month_list,
+        'day_list': day_list,
+        'sy': sy,  # 연도 추가
+        'sm': sm,
+        'sd': sd,
+        'em': em,
+        'ed': ed,
+        'report_list': report_list,
+    }
+    return render(request, 'manager/reportcardall_test.html', context)
+
+
+def handle_check_list(request, aid):
+    if request.GET.getlist('check_list'):
+        StudyMember.objects.filter(acode=aid).update(is_check=0)
+        check_mem_list = request.GET.getlist('check_list')
+        StudyMember.objects.filter(acode=aid, mcode__in=check_mem_list).update(is_check=1)
+
+def generate_date_lists():
+    current_year = datetime.now().year
+    year_list = [str(year) for year in range(current_year - 5, current_year + 1)]  # 예: 현재 연도에서 5년 전부터 현재 연도까지
+    month_list = [str(x) for x in range(1, 13)]
+    day_list = [str(x) for x in range(1, 32)]
+    return year_list, month_list, day_list
+
+
+def get_date_filters(request):
+    sy = request.GET.get('sy', str(datetime.now().year))  # 연도 선택 추가
+    sm = request.GET.get('sm', '')
+    sd = request.GET.get('sd', '0')
+    em = request.GET.get('em', '0')
+    ed = request.GET.get('ed', '0')
+    return sy, sm, sd, em, ed
+
+
+def create_report_list(aid, sy, sm, sd, em, ed):
+    report_list = []
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
+    for member in member_list:
+        report = create_report(member, sy, sm, sd, em, ed)
+        report_list.append(report)
+    return report_list
+
+def create_report(member, sy, sm, sd, em, ed):
+    report = {'user_name': member.mname, 'level_name': member.level_code}
+    if sm and em and sd != '0' and ed != '0':
+        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
+        end_date = datetime(int(sy), int(em), int(ed), 23, 59, 59)
+        report['topic_list'] = get_topics(member.mcode, start_date, end_date)
+    else:
+        report['topic_list'] = MemberTopicLog.objects.filter(username=member.mcode).order_by('-id')
+
+    set_study_period(report)
+    return report
+
+
+def get_topics(mcode, start_date, end_date):
+    return MemberTopicLog.objects.filter(
+        username=mcode, start_dt__gte=start_date, end_dt__lt=end_date
+    ).order_by('-id')
+
+def set_study_period(report):
+    if report['topic_list']:
+        report['study_start_day'] = report['topic_list'].first().start_dt
+        report['study_end_day'] = report['topic_list'].last().end_dt
+
+
 def get_aid(request):
     if 'agency' in request.session:
         aid = request.session['agency']

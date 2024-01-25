@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+
+<style>
+
+.subtitle{
+    margin-top:40px;
+}
+
+.tb{
+    border-collapse: collapse;
+    border: 1px solid #adadad;
+
+    text-align:center;
+    font-size:0.85rem;
+}
+
+.ttitle{
+    padding:0.4rem;
+}
+
+.tbd{
+    padding:0.4rem;
+    text-align:left;
+
+}
+
+
+
+
+
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html, body {
+    width: 210mm;
+    height: 297mm;
+  }
+   .noprint{
+       display:none;
+   }
+}
+
+.container{
+    width: 210mm;
+    height: 297mm;
+    page-break-before: always;
+}
+
+
+textarea.autosize {
+    min-height: 80px;
+    width: 100%;
+}
+
+
+</style>
+<script>
+    function printPage(){
+        window.print();
+    }
+</script>
+<body>
+    <!-- 컨트롤 박스 -->
+    <div id="ctrlArea" class="noprint">
+
+            <button onclick="printPage()">Print this page</button>
+            <span style="padding-left: 10px;">학습기간</span>
+            <span style="border: 1px solid #000000; padding: 5px 10px; border-radius: 10px; background-color: #efefef">
+                <select id="sy" name="sy" class="shadow-none p-0 border-0 ">
+                    {% for year in year_list %}
+                        <option {% if year == sy %}selected{% endif %} value="{{ year }}">
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+                년
+                <select id="sm" name="sm" class="shadow-none p-0 border-0 ">
+                    {% for month in month_list %}
+                        <option {% if month == sm %}selected{% endif %} value="{{ month }}">
+                            {{ month }}
+                        </option>
+                    {% endfor %}
+                </select>
+                월
+                <select id="sd" name="sd" class="shadow-none p-0 border-0 ">
+                    {% for day in day_list %}
+                        <option {% if day == sd %}selected{% endif %} value="{{ day }}">
+                            {{ day }}
+                        </option>
+                    {% endfor %}
+                </select>
+                일 ~
+                <select id="em" name="em" class="shadow-none p-0 border-0 ">
+                    {% for month in month_list %}
+                        <option {% if month == em %}selected{% endif %} value="{{ month }}">
+                            {{ month }}
+                        </option>
+                    {% endfor %}
+                </select>
+                월
+                <select id="ed" name="ed" class="shadow-none p-0 border-0 ">
+                    {% for day in day_list %}
+                        <option {% if day == ed %}selected{% endif %} value="{{ day }}">
+                            {{ day }}
+                        </option>
+                    {% endfor %}
+                </select>
+                일
+            <button style="padding: 0px 15px; margin:0px 10px; background-color: #06357a; color: #FFFFFF" class="btn btn-facebook" onclick="checkMonthAndDay()">검색</button>
+            </span>
+        </div>
+    <!-- Loop start -->
+        {% for report in report_list %}
+    <table class="container" width="90%" style="margin-left:auto; margin-right:auto; width: 90%" >
+
+            <tr><td>
+            <!-- 로고 -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <div style="">
+                                <img width="350px" src="{% static 'plugins/images/logo_reportcard.png' %}" style="padding-top: 30px; padding-left: 0px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 학생정보 -->
+            <p>1. 학생정보</p>
+            <table class="tb" border="1" width="100%" align="center"  >
+                <tr>
+                    <td class="tbd" width="10%" >Name</td>
+                    <td class="tbd" colspan="3" >{{ report.user_name }}</td>
+                </tr>
+                <tr>
+                    <td class="tbd" width="10%" >학습기간</td>
+                    <td class="tbd" width="40%" >{{ report.study_start_day|date:"m.d" }}~{{ report.study_end_day|date:"m.d" }}</td>
+                    <td class="tbd" width="10%" >Level</td>
+                    <td class="tbd" width="40%" >{{ report.level_name }}</td>
+                </tr>
+            </table>
+            <!-- 학습정보 -->
+            <p class="subtitle">2. 학습정보</p>
+            <table class="tb" border="1" width="100%" align="center"  >
+                <tr>
+                    <td class="ttitle" width="50%" >토픽명</td>
+                    <td class="ttitle" width="25%" >시작일</td>
+                    <td class="ttitle" width="25%" >종료일</td>
+                </tr>
+                {% for topic in report.topic_list %}
+                <tr>
+                    <td class="" height="30px" >{{ topic.topic_code }}</td>
+                    <td class="">{{ topic.start_dt|date:"m/d" }}</td>
+                    <td class="">{{ topic.end_dt|date:"m/d" }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p class="subtitle">메모</p>
+            <textarea id="memo{{ forloop.counter0 }}" class="autosize" onkeydown="resize(this)" onkeyup="resize(this)" placeholder=""></textarea>
+            <p class="subtitle" style="float: right;">
+                <span>원장 :</span>
+                <span style="padding-left: 130px">(확인)</span>
+            </p>
+
+            <select name="mem_level" onchange="setMemo(this, {{ forloop.counter0 }})" class="noprint shadow-none p-0 border-0 form-control-line">
+                <option value="">메모 선택</option>
+            {% for memo in memo_list %}
+                <option value="{{ memo.memo }}">
+                    {{ memo.title }}
+                </option>
+            {% endfor %}
+                <option value="">직접 입력</option>
+            </select>
+            </td></tr>
+            <tr>
+    </table>
+    {% endfor %}
+    <!-- Loop end -->
+</body>
+<script>
+function resize(obj) {
+  obj.style.height = "1px";
+  obj.style.height = (12+obj.scrollHeight)+"px";
+}
+
+
+
+function checkMonthAndDay(){
+    const select_value_sm = document.getElementById("sm");
+    var sm = select_value_sm.options[select_value_sm.selectedIndex].value;
+
+    const select_value_sd = document.getElementById("sd");
+    var sd = select_value_sd.options[select_value_sd.selectedIndex].value;
+
+    const select_value_em = document.getElementById("em");
+    var em = select_value_em.options[select_value_em.selectedIndex].value;
+
+    const select_value_ed = document.getElementById("ed");
+    var ed = select_value_ed.options[select_value_ed.selectedIndex].value;
+
+    sm = parseInt(sm);
+    sd = parseInt(sd);
+    em = parseInt(em);
+    ed = parseInt(ed);
+
+    if( sm >= em ){
+        if( sm > em ) {
+            alert('종료일보다 시작일이 더 이전이어야 합니다.')
+            return false;
+        }
+        if( sd > ed ){
+            alert('종료일보다 시작일이 더 이전이어야 합니다. ')
+            return false;
+        }
+    }
+    location.href='?sm=' + sm + '&sd=' + sd + '&em=' + em + '&ed=' + ed + '';
+}
+
+function setMemo(self, idx)
+{
+    //alert(self.value);
+    setText = self.value;
+    var textArea = document.getElementById('memo' + idx);
+    textArea.value = setText;
+}
+
+</script>
+</html>
