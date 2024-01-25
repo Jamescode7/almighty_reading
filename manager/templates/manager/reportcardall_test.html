@@ -94,6 +94,15 @@ textarea.autosize {
                     {% endfor %}
                 </select>
                 일 ~
+                <!-- 종료 연도 선택 -->
+                <select id="ey" name="ey" class="shadow-none p-0 border-0">
+                    {% for year in year_list %}
+                        <option {% if year == ey %}selected{% endif %} value="{{ year }}">
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+                년
                 <select id="em" name="em" class="shadow-none p-0 border-0 ">
                     {% for month in month_list %}
                         <option {% if month == em %}selected{% endif %} value="{{ month }}">
