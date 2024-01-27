@@ -310,6 +310,74 @@ def reportcard(request, mcode=''):
     return render(request, 'manager/reportcard.html', context)
 
 
+def reportcard_test(request, mcode=''):
+    if mcode == '':
+        return HttpResponse('잘못된 접근입니다 (topic code)')
+
+    # 날짜 리스트 생성
+    year_list, month_list, day_list = generate_date_lists()
+
+    # 날짜 필터 설정
+    sy, ey, sm, sd, em, ed = get_date_filters(request)  # 'sy'와 'ey' 추가
+
+    user_name = ''
+    study_start_day = ''
+    study_end_day = ''
+    level_name = ''
+    member = StudyMember.objects.filter(mcode=mcode)
+    if member:
+        member = member[0]
+        user_name = member.mname
+        level_name = member.level_code
+
+    if sm and em and sd != '0' and ed != '0':
+        print('ok, get data!')
+
+        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)  # 'sy' 추가
+        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)  # 'ey' 추가
+        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                   end_dt__lt=end_date).order_by('-id')
+        first_topic = topic_list.order_by('id').first()
+        last_topic = topic_list.order_by('-id').first()
+        if first_topic:
+            study_start_day = first_topic.start_dt
+        if last_topic:
+            study_end_day = last_topic.end_dt
+    else:
+        topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
+        first_topic = topic_list.order_by('id').first()
+        last_topic = topic_list.order_by('-id').first()
+        if first_topic:
+            study_start_day = first_topic.start_dt
+        if last_topic:
+            study_end_day = last_topic.end_dt
+
+    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
+    for memo in memo_list:
+        memo.memo = memo.memo.replace('ㅇㅇ', user_name)
+
+    context = {
+        'memo_list': memo_list,
+        'year_list': year_list,  # 연도 리스트 추가
+        'month_list': month_list,
+        'day_list': day_list,
+        'sy': sy,  # 시작 연도
+        'ey': ey,  # 종료 연도 추가
+        'sm': sm,
+        'sd': sd,
+        'em': em,
+        'ed': ed,
+
+        'user_name': user_name,
+        'level_name': level_name,
+        'topic_list': topic_list,
+        'study_start_day': study_start_day,
+        'study_end_day': study_end_day,
+    }
+    return render(request, 'manager/reportcard_test.html', context)
+
+
+
 def reportSelect(request):
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
     aid = get_aid(request)
