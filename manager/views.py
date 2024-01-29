@@ -338,7 +338,7 @@ def reportcard_test(request, mcode=''):
         topic_list = MemberTopicLog.objects.filter(
             username=mcode,
             start_dt__lte=start_date,
-            end_dt__gte=end_date
+            # end_dt 조건 삭제
         ).order_by('-id')
 
         first_topic = topic_list.order_by('id').first()
