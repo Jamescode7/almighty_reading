@@ -1318,9 +1318,54 @@ def week_up_test(request, prev_dt=0):
     context = week_common(request, prev_dt, next_week_limit=False)
     return render(request, 'manager/week.html', context)
 
-def process_log(log):
-    # Placeholder for your log processing logic
-    return log
+def process_log(logs):
+    processed_logs = []
+    prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}
+
+    for log in logs:
+        log_data = {
+            'yy': log.dt_year,
+            'mm': log.dt_month,
+            'dd': log.dt_day,
+            'stage': log.stage,
+            'step': log.step,
+            'text': 'st' + str(log.stage),
+            'color': 'colorGray',  # Default color
+        }
+
+        if log.plan_type == 2:
+            # Free study logic
+            if log.step == 7 or log.step_num != '0':
+                log_data['text'] = 'Q'
+                log_data['color'] = 'colorForestGreen'
+                if prev_log['text'] != 'Q':
+                    processed_logs.insert(0, log_data)
+                    prev_log['text'] = 'Q'
+            else:
+                log_data['text'] = str(log.step)
+                log_data['color'] = 'colorGreen'
+                processed_logs.insert(0, log_data)
+        elif log.topic_code == 'C':
+            # Closed logic
+            log_data['text'] = 'C'
+            log_data['color'] = 'colorIndigo'
+            processed_logs.insert(0, log_data)
+        elif log.topic_code == 'R':
+            # Reset logic
+            log_data['text'] = 'R'
+            log_data['color'] = 'colorRed'
+            processed_logs.insert(0, log_data)
+        else:
+            # Completed study logic
+            if log.finish_today:
+                log_data['color'] = 'colorBlue'
+
+            if prev_log['stage'] != log_data['stage']:
+                processed_logs.insert(0, log_data)
+
+        prev_log['stage'] = log_data['stage']
+
+    return processed_logs
 
 def day(request):
     mname = request.GET.get('mname')
