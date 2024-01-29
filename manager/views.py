@@ -1228,22 +1228,21 @@ def week(request, prev_dt=0):
     }
     #return render(request, 'manager/week.html', context)
     # member_list를 JSON 형식으로 직렬화
-    member_list_json = serialize('json', member_list)
+    member_list_serialized = serialize('json', member_list)
+    member_list_json = json.loads(member_list_serialized)
 
-    # context를 JSON으로 직렬화 가능한 형태로 만들기
+    # 각 member에 대한 .days 속성 추가
+    for member, member_data in zip(member_list, member_list_json):
+        member_data['fields']['days'] = member.days  # .days 속성 추가
+
     context = {
-        'switch_desc': switch_desc,
-        'prev_week': prev_week,
-        'next_week': next_week,
-        'arg': prev_dt,
-        'start_dt': str(start_dt),  # start_dt를 문자열로 변환
-        'days': days,
-        'member_list_json': member_list_json,  # 직렬화된 member_list_json 사용
+        # ... (이전 코드와 동일)
+        'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
     }
 
-    # JsonResponse를 사용하여 context를 JSON 형식으로 반환
     return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
+from django.core.serializers.json import DjangoJSONEncoder
 
 def week_test(request, prev_dt=0):
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
@@ -1326,20 +1325,18 @@ def week_test(request, prev_dt=0):
     }
     #return render(request, 'manager/week.html', context)
     # member_list를 JSON 형식으로 직렬화
-    member_list_json = serialize('json', member_list)
+    member_list_serialized = serialize('json', member_list)
+    member_list_json = json.loads(member_list_serialized)
 
-    # context를 JSON으로 직렬화 가능한 형태로 만들기
+    # 각 member에 대한 .days 속성 추가
+    for member, member_data in zip(member_list, member_list_json):
+        member_data['fields']['days'] = member.days  # .days 속성 추가
+
     context = {
-        'switch_desc': switch_desc,
-        'prev_week': prev_week,
-        'next_week': next_week,
-        'arg': prev_dt,
-        'start_dt': str(start_dt),  # start_dt를 문자열로 변환
-        'days': days,
-        'member_list_json': member_list_json,  # 직렬화된 member_list_json 사용
+        # ... (이전 코드와 동일)
+        'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
     }
 
-    # JsonResponse를 사용하여 context를 JSON 형식으로 반환
     return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
 def process_logs_for_day(logs, day):
