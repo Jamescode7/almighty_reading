@@ -1,5 +1,7 @@
 import random
 import urllib
+import json
+from django.core.serializers import serialize
 from itertools import groupby
 import json
 import calendar
@@ -1226,13 +1228,21 @@ def week(request, prev_dt=0):
     }
     #return render(request, 'manager/week.html', context)
     # member_list를 JSON 형식으로 직렬화
-    member_list_json = serializers.serialize('json', member_list)
+    member_list_json = serialize('json', member_list)
 
-    # context에 member_list_json 추가
-    context['member_list_json'] = member_list_json
+    # context를 JSON으로 직렬화 가능한 형태로 만들기
+    context = {
+        'switch_desc': switch_desc,
+        'prev_week': prev_week,
+        'next_week': next_week,
+        'arg': prev_dt,
+        'start_dt': str(start_dt),  # start_dt를 문자열로 변환
+        'days': days,
+        'member_list_json': member_list_json,  # 직렬화된 member_list_json 사용
+    }
 
     # JsonResponse를 사용하여 context를 JSON 형식으로 반환
-    return JsonResponse(context, json_dumps_params={'indent': 4})
+    return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
 
 def week_test(request, prev_dt=0):
@@ -1316,13 +1326,21 @@ def week_test(request, prev_dt=0):
     }
     #return render(request, 'manager/week.html', context)
     # member_list를 JSON 형식으로 직렬화
-    member_list_json = serializers.serialize('json', member_list)
+    member_list_json = serialize('json', member_list)
 
-    # context에 member_list_json 추가
-    context['member_list_json'] = member_list_json
+    # context를 JSON으로 직렬화 가능한 형태로 만들기
+    context = {
+        'switch_desc': switch_desc,
+        'prev_week': prev_week,
+        'next_week': next_week,
+        'arg': prev_dt,
+        'start_dt': str(start_dt),  # start_dt를 문자열로 변환
+        'days': days,
+        'member_list_json': member_list_json,  # 직렬화된 member_list_json 사용
+    }
 
     # JsonResponse를 사용하여 context를 JSON 형식으로 반환
-    return JsonResponse(context, json_dumps_params={'indent': 4})
+    return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
 def process_logs_for_day(logs, day):
     append_data_list = []
