@@ -11,7 +11,7 @@ services:
     ports:
       - 80:80
   django_container_gunicorn:
-    image: django_ar_image:153
+    image: django_ar_image:154
     networks:
       - network
     volumes:
