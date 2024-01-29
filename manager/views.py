@@ -1224,72 +1224,98 @@ def week(request, prev_dt=0):
     }
     return render(request, 'manager/week.html', context)
 
-def week_test(request, prev_dt=0):
-    # Check if the WEEK_MENU_ENABLE is set to '1'
+
+def get_week_dates(start_dt):
+    return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
+            in range(6, -1, -1)]
+
+
+def get_week_logs(member_list, start_dt, end_dt):
+    week_logs = StepFinishLog.objects.filter(
+        username__in=member_list.values_list('mcode', flat=True),
+        dt_year=start_dt.strftime('%y'),
+        dt_month=start_dt.strftime('%m'),
+        dt_day__range=[start_dt.strftime('%d'), end_dt.strftime('%d')]
+    ).order_by('-id')
+    return week_logs
+
+
+def organize_logs_by_member_date(week_logs):
+    logs_by_member_date = {
+        (log.username, log.dt_year, log.dt_month, log.dt_day): log for log in week_logs
+    }
+    return logs_by_member_date
+
+
+def week_common(request, prev_dt=0, next_week_limit=True):
+    # Check if the WEEK_MENU_ENABLE feature is active
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
     if enable_data:
         enable_data = enable_data[0]
         if enable_data.etc_value != '1':
             return HttpResponseRedirect(reverse('manager:info'))
 
-    # Check session
+    # Check session and handle unauthorized access
     aid = get_aid(request)
     if aid == 'bad_way':
         return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
+    # Update member list from web accounting
+    # update_member_list(request, aid)
     call(request)
 
-    start_dt = date.today()
+    # Calculate start and end dates for the week
+    start_dt = date.today() - timedelta(days=prev_dt)
+    end_dt = start_dt + timedelta(days=6)
 
-    # Calculate the dates for the table header
-    days = []
-    for n in range(7):
-        day = start_dt - timedelta(n + prev_dt)
-        day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        days.append(day_str)
-    days = days[::-1]  # Reverse the list to get the correct order
+    # Get the week days labels
+    week_days = get_week_dates(start_dt)
 
-    # Fetch the member list
-    order = 'mname' if not request.GET.get('desc', '') == '1' else '-mname'
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(order)
+    # Get the member list from the database
+    switch_desc = '1'  # This would typically come from the request, set default for now
+    order_by = 'mname'  # Default ordering
+    query_desc = '-' if request.GET.get('desc') == '1' else ''  # Adjust based on 'desc' param
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order_by)
 
-    # Prepare the date range for the log entries
-    start_date = start_dt - timedelta(6 + prev_dt)
-    end_date = start_dt - timedelta(prev_dt)
+    # Fetch logs for all members for the week
+    week_logs = get_week_logs(member_list, start_dt, end_dt)
 
-    # Fetch all logs for the members in the date range
-    logs = StepFinishLog.objects.filter(
-        username__in=member_list.values_list('mcode', flat=True),
-        dt_date__range=[start_date, end_date]
-    ).order_by('username', '-dt_date', '-id')  # Ensure logs are grouped by member and sorted by date
+    # Organize logs by member and date for easy access
+    logs_by_member_date = organize_logs_by_member_date(week_logs)
 
-    # Group logs by member using a dictionary
-    logs_by_member = {mcode: list(logs) for mcode, logs in groupby(logs, key=lambda log: log.username)}
-
-    # Iterate over the members and process their logs
+    # Process logs for each member and each day
     for member in member_list:
-        member_logs = logs_by_member.get(member.mcode, [])
-        member.days = [[] for _ in range(7)]  # Prepare a list for each of the 7 days
+        member.days = []
+        for date_str in [start_dt + timedelta(days=i) for i in range(7)]:
+            yy, mm, dd = date_str.strftime('%y'), date_str.strftime('%m'), date_str.strftime('%d')
+            day_logs = logs_by_member_date.get((member.mcode, yy, mm, dd), [])
+            day_data_list = process_log(day_logs)  # Assuming this function processes individual logs
+            member.days.append(day_data_list)
 
-        for log in member_logs:
-            log_day_index = (log.dt_date - start_date).days  # Calculate the index of the day for the log
-            if 0 <= log_day_index < 7:
-                # Process the log here (as per your current logic) and add it to the correct day
-                member.days[log_day_index].append(process_log(log))  # Replace 'process_log' with your actual processing
-
-    # Prepare the context and render the response
+    # Calculate navigation for previous and next week
     prev_week = prev_dt + 7
-    next_week = max(prev_dt - 7, 0)  # Ensure we don't go into negative weeks
+    next_week = max(prev_dt - 7, 0) if next_week_limit else prev_dt - 7
 
+    # Prepare context for rendering
     context = {
-        'switch_desc': '0' if order == 'mname' else '1',
+        'switch_desc': switch_desc,
         'prev_week': prev_week,
         'next_week': next_week,
         'arg': prev_dt,
-        'start_dt': start_dt,
-        'days': days,
+        'start_dt': start_dt.strftime('%Y-%m-%d'),
+        'days': week_days,
         'member_list': member_list,
     }
+    return context
+
+
+def week(request, prev_dt=0):
+    context = week_common(request, prev_dt)
+    return render(request, 'manager/week.html', context)
+
+
+def week_up(request, prev_dt=0):
+    context = week_common(request, prev_dt, next_week_limit=False)
     return render(request, 'manager/week.html', context)
 
 def process_log(log):

@@ -28,6 +28,10 @@ urlpatterns = [
 
     #Week Test
     path('week_test/', week_test, name='week_test'),
+    path('week_test/<int:prev_dt>', week_test, name='week_test'),
+
+    path('week_up_test/', week_up_test, name='week_up_test'),
+    path('week_up_test/<int:prev_dt>', week_up, name='week_up_test'),
 
     path('day/', day, name='day'),
 
