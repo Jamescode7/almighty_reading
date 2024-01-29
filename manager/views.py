@@ -1294,36 +1294,63 @@ def week_test(request, prev_dt=0):
                 log_date = date(int('20' + log.dt_year), int(log.dt_month), int(log.dt_day))
                 if start_date <= log_date <= end_date:
                     # 로그의 날짜가 start_date와 end_date 사이인 경우에만 데이터 처리
-                    log_data = {}
-                    log_data['yy'] = yy
-                    log_data['mm'] = mm
-                    log_data['dd'] = dd
-                    log_data['stage'] = log.stage
-                    log_data['step'] = log.step
-                    log_data['text'] = 'st' + str(log.stage)
-                    log_data['color'] = 'colorGray'
-                    # ... (나머지 로그 처리 로직)
-                    # 이 부분은 이전에 제공된 코드와 동일하므로 생략하고, 필요한 로직을 여기에 추가하세요.
-
-                    append_data_list.append(log_data)
+                    if log.dt_day == dd:
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['stage'] = log.stage
+                        log_data['step'] = log.step
+                        log_data['text'] = 'st' + str(log.stage)
+                        log_data['color'] = 'colorGray'
+                        if log.plan_type == 2:
+                            # 자유 학습
+                            if log.step == 7 or log.step_num != '0':
+                                log_data['text'] = 'Q'
+                                log_data['color'] = 'colorForestGreen'
+                            else:
+                                log_data['text'] = str(log.step)
+                                log_data['color'] = 'colorGreen'
+                        elif log.topic_code == 'C':
+                            # 종료
+                            log_data['text'] = 'C'
+                            log_data['color'] = 'colorIndigo'
+                        elif log.topic_code == 'R':
+                            # 리셋
+                            log_data['text'] = 'R'
+                            log_data['color'] = 'colorRed'
+                        else:
+                            # 완전 학습
+                            if log.finish_today:
+                                log_data['color'] = 'colorBlue'
+                        append_data_list.append(log_data)
+                    else:
+                        # 해당 날짜에 대한 로그가 없는 경우
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['color'] = ''
+                        log_data['text'] = '.'
+                        append_data_list.append(log_data)
 
             # member마다 7일간 데이터 저장
             member.days.append(append_data_list)
 
-    prev_week = prev_dt + 7
-    next_week = prev_dt - 7
-    if next_week < 0:
-        next_week = 0
-    context = {
-        'switch_desc': switch_desc,
-        'prev_week': prev_week,
-        'next_week': next_week,
-        'arg': prev_dt,
-        'start_dt': start_dt,
-        'days': days,
-        'member_list': member_list,
-    }
-    return render(request, 'manager/week.html', context)
+        prev_week = prev_dt + 7
+        next_week = prev_dt - 7
+        if next_week < 0:
+            next_week = 0
+        context = {
+            'switch_desc': switch_desc,
+            'prev_week': prev_week,
+            'next_week': next_week,
+            'arg': prev_dt,
+            'start_dt': start_dt,
+            'days': days,
+            'member_list': member_list,
+        }
+        return render(request, 'manager/week.html', context)
 
 
 def get_week_dates(start_dt):
