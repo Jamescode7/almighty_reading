@@ -646,8 +646,8 @@ def create_report(member, sy, sm, sd, ey, em, ed):
         end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
         report['topic_list'] = MemberTopicLog.objects.filter(
             username=member.mcode,
-            start_dt__gte=start_date,  # 시작 날짜가 주어진 범위의 시작 날짜 이후 (변경된 부분)
-            end_dt__lte=end_date       # 종료 날짜가 주어진 범위의 끝 날짜 이전 (변경된 부분)
+            start_dt__gte=start_date,  # 시작 날짜가 주어진 범위의 시작 날짜 이후
+            # end_dt__lte=end_date       # 이 조건을 제거하여 종료일은 검사하지 않도록 함
         ).order_by('-id')
         first_topic = report['topic_list'].order_by('id').first()
         last_topic = report['topic_list'].order_by('-id').first()
@@ -665,7 +665,6 @@ def create_report(member, sy, sm, sd, ey, em, ed):
             report['study_end_day'] = last_topic.end_dt
 
     return report
-
 
 
 
