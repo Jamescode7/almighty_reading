@@ -3,6 +3,8 @@ import urllib
 from itertools import groupby
 import json
 import calendar
+from django.core import serializers
+from django.http import JsonResponse
 
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
@@ -1223,9 +1225,14 @@ def week(request, prev_dt=0):
         'member_list': member_list,
     }
     #return render(request, 'manager/week.html', context)
-    # render 함수 대신 HttpResponse를 사용하여 context를 JSON 형식으로 반환
-    json_data = json.dumps(context, indent=4, default=str)  # default=str를 사용하여 datetime 객체를 문자열로 변환
-    return HttpResponse(json_data, content_type='application/json')
+    # member_list를 JSON 형식으로 직렬화
+    member_list_json = serializers.serialize('json', member_list)
+
+    # context에 member_list_json 추가
+    context['member_list_json'] = member_list_json
+
+    # JsonResponse를 사용하여 context를 JSON 형식으로 반환
+    return JsonResponse(context, json_dumps_params={'indent': 4})
 
 
 def week_test(request, prev_dt=0):
@@ -1308,9 +1315,14 @@ def week_test(request, prev_dt=0):
         'member_list': member_list,
     }
     #return render(request, 'manager/week.html', context)
-    # render 함수 대신 HttpResponse를 사용하여 context를 JSON 형식으로 반환
-    json_data = json.dumps(context, indent=4, default=str)  # default=str를 사용하여 datetime 객체를 문자열로 변환
-    return HttpResponse(json_data, content_type='application/json')
+    # member_list를 JSON 형식으로 직렬화
+    member_list_json = serializers.serialize('json', member_list)
+
+    # context에 member_list_json 추가
+    context['member_list_json'] = member_list_json
+
+    # JsonResponse를 사용하여 context를 JSON 형식으로 반환
+    return JsonResponse(context, json_dumps_params={'indent': 4})
 
 def process_logs_for_day(logs, day):
     append_data_list = []
