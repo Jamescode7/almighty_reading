@@ -1226,21 +1226,19 @@ def week(request, prev_dt=0):
         'days': days,
         'member_list': member_list,
     }
-    #return render(request, 'manager/week.html', context)
-    # member_list를 JSON 형식으로 직렬화
-    member_list_serialized = serialize('json', member_list)
-    member_list_json = json.loads(member_list_serialized)
+    return render(request, 'manager/week.html', context)
+    # 아래 테스트 코드 보존
+    #member_list_serialized = serialize('json', member_list)
+    #member_list_json = json.loads(member_list_serialized)
+    #for member, member_data in zip(member_list, member_list_json):
+        #member_data['fields']['days'] = member.days  # .days 속성 추가
 
-    # 각 member에 대한 .days 속성 추가
-    for member, member_data in zip(member_list, member_list_json):
-        member_data['fields']['days'] = member.days  # .days 속성 추가
-
-    context = {
+    #context = {
         # ... (이전 코드와 동일)
-        'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
-    }
+     #   'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
+    #}
 
-    return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
+    #return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
 from django.core.serializers.json import DjangoJSONEncoder
 
