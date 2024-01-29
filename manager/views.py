@@ -1222,7 +1222,10 @@ def week(request, prev_dt=0):
         'days': days,
         'member_list': member_list,
     }
-    return render(request, 'manager/week.html', context)
+    #return render(request, 'manager/week.html', context)
+    # render 함수 대신 HttpResponse를 사용하여 context를 JSON 형식으로 반환
+    json_data = json.dumps(context, indent=4, default=str)  # default=str를 사용하여 datetime 객체를 문자열로 변환
+    return HttpResponse(json_data, content_type='application/json')
 
 
 def week_test(request, prev_dt=0):
@@ -1304,7 +1307,10 @@ def week_test(request, prev_dt=0):
         'days': days,
         'member_list': member_list,
     }
-    return render(request, 'manager/week.html', context)
+    #return render(request, 'manager/week.html', context)
+    # render 함수 대신 HttpResponse를 사용하여 context를 JSON 형식으로 반환
+    json_data = json.dumps(context, indent=4, default=str)  # default=str를 사용하여 datetime 객체를 문자열로 변환
+    return HttpResponse(json_data, content_type='application/json')
 
 def process_logs_for_day(logs, day):
     append_data_list = []
