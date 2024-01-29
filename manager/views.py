@@ -337,9 +337,8 @@ def reportcard_test(request, mcode=''):
         end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
         topic_list = MemberTopicLog.objects.filter(
             username=mcode,
-            # 조건: 학습 시작일이 end_date 이전이고, 학습 종료일이 start_date 이후인 학습 기록을 모두 포함
-            start_dt__lte=end_date,
-            end_dt__gte=start_date
+            start_dt__lte=start_date,
+            end_dt__gte=end_date
         ).order_by('-id')
 
         first_topic = topic_list.order_by('id').first()
@@ -647,8 +646,8 @@ def create_report(member, sy, sm, sd, ey, em, ed):
         end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
         report['topic_list'] = MemberTopicLog.objects.filter(
             username=member.mcode,
-            start_dt__lte=end_date,  # 시작 날짜가 주어진 범위의 끝 날짜 이전
-            end_dt__gte=start_date   # 종료 날짜가 주어진 범위의 시작 날짜 이후
+            start_dt__gte=start_date,  # 시작 날짜가 주어진 범위의 시작 날짜 이후 (변경된 부분)
+            end_dt__lte=end_date       # 종료 날짜가 주어진 범위의 끝 날짜 이전 (변경된 부분)
         ).order_by('-id')
         first_topic = report['topic_list'].order_by('id').first()
         last_topic = report['topic_list'].order_by('-id').first()
@@ -666,6 +665,7 @@ def create_report(member, sy, sm, sd, ey, em, ed):
             report['study_end_day'] = last_topic.end_dt
 
     return report
+
 
 
 
