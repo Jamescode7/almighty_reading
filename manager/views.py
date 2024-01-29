@@ -1242,7 +1242,7 @@ def week_test(request, prev_dt=0):
     end_dt = start_dt - timedelta(6 + prev_dt)
 
     days = []
-    for n in range(7):
+    for n in range(6, -1, -1):
         day = start_dt - timedelta(n + prev_dt)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
         days.append(day_str)
@@ -1307,10 +1307,8 @@ def week_test(request, prev_dt=0):
     return render(request, 'manager/week.html', context)
 
 def process_logs_for_day(logs, day):
-    # Initialize an empty list to hold the processed data for the day.
     append_data_list = []
 
-    # Extract necessary information from each log and process it.
     prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}
     for log in logs:
         log_data = {
@@ -1357,8 +1355,20 @@ def process_logs_for_day(logs, day):
 
         prev_log['stage'] = log_data['stage']
 
-    # If no logs were found for the day, add a placeholder.
-    if not append_data_list:
+    # 로그 데이터가 있는 경우에만 처리
+    if logs:
+        # 처리된 로그 데이터가 없는 경우 '.'을 표시
+        if not append_data_list:
+            log_data = {
+                'yy': day.strftime('%y'),
+                'mm': day.strftime('%m'),
+                'dd': day.strftime('%d'),
+                'color': '',
+                'text': '.'
+            }
+            append_data_list.append(log_data)
+    else:
+        # 로그 데이터 자체가 없는 경우 '.'을 표시
         log_data = {
             'yy': day.strftime('%y'),
             'mm': day.strftime('%m'),
