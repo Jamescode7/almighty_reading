@@ -1309,12 +1309,12 @@ def week_common(request, prev_dt=0, next_week_limit=True):
     return context
 
 
-def week(request, prev_dt=0):
+def week_test(request, prev_dt=0):
     context = week_common(request, prev_dt)
     return render(request, 'manager/week.html', context)
 
 
-def week_up(request, prev_dt=0):
+def week_up_test(request, prev_dt=0):
     context = week_common(request, prev_dt, next_week_limit=False)
     return render(request, 'manager/week.html', context)
 
