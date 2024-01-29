@@ -333,10 +333,15 @@ def reportcard_test(request, mcode=''):
     if sm and em and sd != '0' and ed != '0':
         print('ok, get data!')
 
-        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)  # 'sy' 추가
-        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)  # 'ey' 추가
-        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                   end_dt__lt=end_date).order_by('-id')
+        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
+        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
+        topic_list = MemberTopicLog.objects.filter(
+            username=mcode,
+            # 조건: 학습 시작일이 end_date 이전이고, 학습 종료일이 start_date 이후인 학습 기록을 모두 포함
+            start_dt__lte=end_date,
+            end_dt__gte=start_date
+        ).order_by('-id')
+
         first_topic = topic_list.order_by('id').first()
         last_topic = topic_list.order_by('-id').first()
         if first_topic:
@@ -640,12 +645,28 @@ def create_report(member, sy, sm, sd, ey, em, ed):
     if sm and em and sd != '0' and ed != '0':
         start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
         end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
-        report['topic_list'] = get_topics(member.mcode, start_date, end_date)
+        report['topic_list'] = MemberTopicLog.objects.filter(
+            username=member.mcode,
+            start_dt__lte=end_date,  # 시작 날짜가 주어진 범위의 끝 날짜 이전
+            end_dt__gte=start_date   # 종료 날짜가 주어진 범위의 시작 날짜 이후
+        ).order_by('-id')
+        first_topic = report['topic_list'].order_by('id').first()
+        last_topic = report['topic_list'].order_by('-id').first()
+        if first_topic:
+            report['study_start_day'] = first_topic.start_dt
+        if last_topic:
+            report['study_end_day'] = last_topic.end_dt
     else:
         report['topic_list'] = MemberTopicLog.objects.filter(username=member.mcode).order_by('-id')
+        first_topic = report['topic_list'].order_by('id').first()
+        last_topic = report['topic_list'].order_by('-id').first()
+        if first_topic:
+            report['study_start_day'] = first_topic.start_dt
+        if last_topic:
+            report['study_end_day'] = last_topic.end_dt
 
-    set_study_period(report)
     return report
+
 
 
 
