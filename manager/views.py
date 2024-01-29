@@ -1224,7 +1224,6 @@ def week(request, prev_dt=0):
     }
     return render(request, 'manager/week.html', context)
 
-
 def week_test(request, prev_dt=0):
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
@@ -1290,12 +1289,12 @@ def week_test(request, prev_dt=0):
                 dt_month=mm,
             ).order_by('-id')
 
-            found_logs_for_day = False
+            found_logs_for_day = False  # Initialize the flag for each day
             for log in log_list:
                 log_date = date(int('20' + log.dt_year), int(log.dt_month), int(log.dt_day))
                 if start_date <= log_date <= end_date:
                     # 로그의 날짜가 start_date와 end_date 사이인 경우에만 데이터 처리
-                    if log.dt_day == dd:
+                    if str(log.dt_day).zfill(2) == dd:  # 날짜 비교 방식 개선
                         found_logs_for_day = True
                         log_data = {}
                         log_data['yy'] = yy
