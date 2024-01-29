@@ -1224,41 +1224,33 @@ def week(request, prev_dt=0):
     }
     return render(request, 'manager/week.html', context)
 
+
 def week_test(request, prev_dt=0):
-    # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
     if enable_data:
         enable_data = enable_data[0]
         if enable_data.etc_value != '1':
             return HttpResponseRedirect(reverse('manager:info'))
 
-    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
     aid = get_aid(request)
     if aid == 'bad_way':
         return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
 
-    # 웹전산에서 회원 리스트를 갱신한다.
     call(request)
 
     start_dt = date.today()
+    end_dt = start_dt - timedelta(6 + prev_dt)
 
-    # 시작일과 종료일 계산
-    start_date = start_dt - timedelta(6 + prev_dt)  # 주의 시작 날짜
-    end_date = start_dt - timedelta(prev_dt)  # 주의 종료 날짜
-
-    # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
     days = []
     for n in range(7):
-        day = start_dt - timedelta(6 - n + prev_dt)
+        day = start_dt - timedelta(n + prev_dt)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
         days.append(day_str)
 
     desc = ''
     order = 'mname'
-
     switch_desc = '1'
     query_desc = ''
-
     order_by = 'mname'
     if request.GET.get('desc'):
         desc = request.GET.get('desc')
@@ -1270,60 +1262,39 @@ def week_test(request, prev_dt=0):
             switch_desc = '1'
             query_desc = ''
 
-    # 모든 학생에 대해 7일간 학습 데이터 가져오기
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
+
+    log_list = StepFinishLog.objects.filter(
+        username__in=member_list.values_list('mcode', flat=True),
+        dt_year__gte=end_dt.year,
+        dt_month__gte=end_dt.month,
+        dt_day__gte=end_dt.day,
+        dt_year__lte=start_dt.year,
+        dt_month__lte=start_dt.month,
+        dt_day__lte=start_dt.day
+    ).order_by('-id')
+
+    logs_by_member_and_date = {}
+    for log in log_list:
+        member_date_key = (log.username, log.dt_year, log.dt_month, log.dt_day)
+        if member_date_key not in logs_by_member_and_date:
+            logs_by_member_and_date[member_date_key] = []
+        logs_by_member_and_date[member_date_key].append(log)
+
     for member in member_list:
         member.days = []
-        for dt in range(7):
-            # 날짜 범위 계산
-            day = start_dt - timedelta(6 - dt + prev_dt)
-            yy = day.strftime('%y')
-            mm = day.strftime('%m')
-            dd = day.strftime('%d')
-            append_data_list = []
-
-            # 날짜별 로그 필터링
-            log_list = StepFinishLog.objects.filter(
-                username=member.mcode,
-                dt_year=yy,
-                dt_month=mm,
-            ).order_by('-id')
-
-            found_logs_for_day = False  # Initialize the flag for each day
-            for log in log_list:
-                log_date = date(int('20' + log.dt_year), int(log.dt_month), int(log.dt_day))
-                if start_date <= log_date <= end_date:
-                    # 로그의 날짜가 start_date와 end_date 사이인 경우에만 데이터 처리
-                    if str(log.dt_day).zfill(2) == dd:  # 날짜 비교 방식 개선
-                        found_logs_for_day = True
-                        log_data = {}
-                        log_data['yy'] = yy
-                        log_data['mm'] = mm
-                        log_data['dd'] = dd
-                        log_data['stage'] = log.stage
-                        log_data['step'] = log.step
-                        log_data['text'] = 'st' + str(log.stage)
-                        log_data['color'] = 'colorGray'
-                        # ... (나머지 로그 처리 로직, 동일하게 유지)
-                        append_data_list.append(log_data)
-
-            if not found_logs_for_day:
-                # 해당 날짜에 대한 로그가 없는 경우
-                log_data = {}
-                log_data['yy'] = yy
-                log_data['mm'] = mm
-                log_data['dd'] = dd
-                log_data['color'] = ''
-                log_data['text'] = '.'
-                append_data_list.append(log_data)
-
-            # member마다 7일간 데이터 저장
-            member.days.append(append_data_list)
+        for n in range(7):
+            day = start_dt - timedelta(n + prev_dt)
+            log_key = (member.mcode, day.year, day.month, day.day)
+            logs_for_day = logs_by_member_and_date.get(log_key, [])
+            # Process the logs for the day for this member
+            member.days.append(process_logs_for_day(logs_for_day, day))
 
     prev_week = prev_dt + 7
     next_week = prev_dt - 7
     if next_week < 0:
         next_week = 0
+
     context = {
         'switch_desc': switch_desc,
         'prev_week': prev_week,
@@ -1335,6 +1306,69 @@ def week_test(request, prev_dt=0):
     }
     return render(request, 'manager/week.html', context)
 
+def process_logs_for_day(logs, day):
+    # Initialize an empty list to hold the processed data for the day.
+    append_data_list = []
+
+    # Extract necessary information from each log and process it.
+    prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}
+    for log in logs:
+        log_data = {
+            'yy': day.strftime('%y'),
+            'mm': day.strftime('%m'),
+            'dd': day.strftime('%d'),
+            'stage': log.stage,
+            'step': log.step,
+            'text': 'st' + str(log.stage),
+            'color': 'colorGray'
+        }
+
+        if log.plan_type == 2:
+            # 자유 학습
+            if log.step == 7 or log.step_num != '0':
+                # 문제 풀이
+                log_data['text'] = 'Q'
+                log_data['color'] = 'colorForestGreen'
+                if prev_log['text'] != 'Q':
+                    append_data_list.insert(0, log_data)
+                    prev_log['text'] = 'Q'
+            else:
+                # 그 외 스텝일 때
+                log_data['text'] = str(log.step)
+                log_data['color'] = 'colorGreen'
+                append_data_list.insert(0, log_data)
+        elif log.topic_code == 'C':
+            # 종료
+            log_data['text'] = 'C'
+            log_data['color'] = 'colorIndigo'
+            append_data_list.insert(0, log_data)
+        elif log.topic_code == 'R':
+            # 리셋
+            log_data['text'] = 'R'
+            log_data['color'] = 'colorRed'
+            append_data_list.insert(0, log_data)
+        else:
+            # 완전 학습
+            if log.finish_today:
+                log_data['color'] = 'colorBlue'
+
+            if prev_log['stage'] != log_data['stage']:
+                append_data_list.insert(0, log_data)
+
+        prev_log['stage'] = log_data['stage']
+
+    # If no logs were found for the day, add a placeholder.
+    if not append_data_list:
+        log_data = {
+            'yy': day.strftime('%y'),
+            'mm': day.strftime('%m'),
+            'dd': day.strftime('%d'),
+            'color': '',
+            'text': '.'
+        }
+        append_data_list.append(log_data)
+
+    return append_data_list
 
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
