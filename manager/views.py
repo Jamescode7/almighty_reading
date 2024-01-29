@@ -1277,19 +1277,19 @@ def week_common(request, prev_dt=0, next_week_limit=True):
     query_desc = '-' if request.GET.get('desc') == '1' else ''  # Adjust based on 'desc' param
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order_by)
 
-    # Fetch logs for all members for the week
-    week_logs = get_week_logs(member_list, start_dt, end_dt)
-
-    # Organize logs by member and date for easy access
-    logs_by_member_date = organize_logs_by_member_date(week_logs)
-
     # Process logs for each member and each day
     for member in member_list:
         member.days = []
-        for date_str in [start_dt + timedelta(days=i) for i in range(7)]:
-            yy, mm, dd = date_str.strftime('%y'), date_str.strftime('%m'), date_str.strftime('%d')
-            day_logs = logs_by_member_date.get((member.mcode, yy, mm, dd), [])
-            day_data_list = process_log(day_logs)  # Assuming this function processes individual logs
+        for dt in range(7):
+            seek = 6 - dt
+            day = start_dt - timedelta(seek + prev_dt)
+            yy, mm, dd = day.strftime('%y'), day.strftime('%m'), day.strftime('%d')
+            log_list = StepFinishLog.objects.filter(
+                username=member.mcode, dt_year=yy, dt_month=mm, dt_day=dd
+            ).order_by('-id')
+
+            # Process logs for this specific day
+            day_data_list = process_log(log_list)
             member.days.append(day_data_list)
 
     # Calculate navigation for previous and next week
@@ -1333,8 +1333,9 @@ def process_log(logs):
             'color': 'colorGray',  # Default color
         }
 
+        # Replicate the logic from the week function here
+        # Free study logic
         if log.plan_type == 2:
-            # Free study logic
             if log.step == 7 or log.step_num != '0':
                 log_data['text'] = 'Q'
                 log_data['color'] = 'colorForestGreen'
@@ -1345,13 +1346,13 @@ def process_log(logs):
                 log_data['text'] = str(log.step)
                 log_data['color'] = 'colorGreen'
                 processed_logs.insert(0, log_data)
+        # Closed logic
         elif log.topic_code == 'C':
-            # Closed logic
             log_data['text'] = 'C'
             log_data['color'] = 'colorIndigo'
             processed_logs.insert(0, log_data)
+        # Reset logic
         elif log.topic_code == 'R':
-            # Reset logic
             log_data['text'] = 'R'
             log_data['color'] = 'colorRed'
             processed_logs.insert(0, log_data)
