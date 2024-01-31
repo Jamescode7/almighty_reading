@@ -1112,7 +1112,7 @@ def week(request, prev_dt=0):
         new_prev_dt = prev_dt - count_days
 
         # 리다이렉트
-        return redirect('manager:week_test', prev_dt=new_prev_dt)
+        return redirect('manager:week', prev_dt=new_prev_dt)
 
     desc = ''
     order = 'mname'
