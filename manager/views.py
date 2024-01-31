@@ -1414,7 +1414,7 @@ def week_test(request, prev_dt=0):
         'days': days,
         'member_list': member_list,
     }
-    return render(request, 'manager/week.html', context)
+    return render(request, 'manager/week_test.html', context)
 
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
