@@ -1091,6 +1091,9 @@ def week(request, prev_dt=0):
         # print(day_str.strip()[-1])
         days.append(day_str)
 
+    # Log for debugging
+    print(f"prev_dt: {prev_dt}, start_dt: {start_dt}, days: {days}")
+
     desc = ''
     order = 'mname'
 
@@ -1135,6 +1138,15 @@ def week(request, prev_dt=0):
             mm = day.strftime('%m')
             dd = day.strftime('%d')
             append_data_list = []
+
+            # Log for debugging
+            print(f"Querying for member: {member.mcode}, Date: {yy}-{mm}-{dd}")
+
+            log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm,
+                                                    dt_day__range=[dd, dd]).order_by('-id')
+
+            # Log for debugging
+            print(f"log_list count for {yy}-{mm}-{dd}: {log_list.count()}")
 
             # 03 날짜당 학생의 데이터를 추출해본다.
 
@@ -1227,18 +1239,6 @@ def week(request, prev_dt=0):
         'member_list': member_list,
     }
     return render(request, 'manager/week.html', context)
-    # 아래 테스트 코드 보존
-    #member_list_serialized = serialize('json', member_list)
-    #member_list_json = json.loads(member_list_serialized)
-    #for member, member_data in zip(member_list, member_list_json):
-        #member_data['fields']['days'] = member.days  # .days 속성 추가
-
-    #context = {
-        # ... (이전 코드와 동일)
-     #   'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
-    #}
-
-    #return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
 
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -1331,7 +1331,6 @@ def week_test(request, prev_dt=0):
         member_data['fields']['days'] = member.days  # .days 속성 추가
 
     context = {
-        # ... (이전 코드와 동일)
         'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
     }
 
