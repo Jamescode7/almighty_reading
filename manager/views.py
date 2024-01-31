@@ -1255,10 +1255,7 @@ def week_test(request, prev_dt=0):
         seek = loop - n
         day = start_dt - timedelta(seek + prev_dt)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        # 월 또는 년이 바뀌었는지 확인
-        if n > 0 and (day.month != days[-1].month or day.year != days[-1].year):
-            redirect_needed = True
-            break
+
         days.append(day_str)
 
     # 월 또는 년이 바뀌었다면 리다이렉트
