@@ -10,7 +10,7 @@ from django.http import JsonResponse
 
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from datetime import date, timedelta, datetime
 
 # Create your views here.
@@ -1250,12 +1250,22 @@ def week_test(request, prev_dt=0):
     # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
     days = []
     loop = 6
+    redirect_needed = False
     for n in range(7):
         seek = loop - n
         day = start_dt - timedelta(seek + prev_dt)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        # print(day_str.strip()[-1])
+        # 월 또는 년이 바뀌었는지 확인
+        if n > 0 and (day.month != days[-1].month or day.year != days[-1].year):
+            redirect_needed = True
+            break
         days.append(day_str)
+
+    # 월 또는 년이 바뀌었다면 리다이렉트
+    if redirect_needed:
+        new_start_date = days[0]  # 새로운 주의 첫 번째 날짜
+        new_prev_dt = (start_dt - new_start_date).days  # 새로운 prev_dt 계산
+        return redirect('manager:week', prev_dt=new_prev_dt)
 
     desc = ''
     order = 'mname'
