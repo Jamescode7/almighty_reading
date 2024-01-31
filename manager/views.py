@@ -1249,14 +1249,20 @@ def week_test(request, prev_dt=0):
 
     # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
     days = []
+    dates = []
     loop = 6
     redirect_needed = False
     for n in range(7):
         seek = loop - n
         day = start_dt - timedelta(seek + prev_dt)
+        dates.append(day)
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
-
         days.append(day_str)
+
+        # 월 또는 년이 바뀌었는지 확인
+        if n > 0 and (dates[n].month != dates[n - 1].month or dates[n].year != dates[n - 1].year):
+            redirect_needed = True
+            break
 
     # 월 또는 년이 바뀌었다면 리다이렉트
     if redirect_needed:
