@@ -2,8 +2,6 @@ import random
 import urllib
 import json
 from django.core.serializers import serialize
-import logging
-logger = logging.getLogger(__name__)
 from itertools import groupby
 import json
 import calendar
@@ -1261,7 +1259,7 @@ def week_test(request, prev_dt=0):
         days.append(day_str)
 
     # Log for debugging
-    logger.debug(f"prev_dt: {prev_dt}, start_dt: {start_dt}, days: {days}")
+    print(f"prev_dt: {prev_dt}, start_dt: {start_dt}, days: {days}")
 
     desc = ''
     order = 'mname'
@@ -1309,9 +1307,9 @@ def week_test(request, prev_dt=0):
             append_data_list = []
 
             # Log for debugging
-            logger.debug(f"Querying for member: {member.mcode}, Date: {yy}-{mm}-{dd}")
+            print(f"Querying for member: {member.mcode}, Date: {yy}-{mm}-{dd}")
 
-            
+
 
             # 03 날짜당 학생의 데이터를 추출해본다.
 
