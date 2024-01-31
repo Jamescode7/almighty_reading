@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ko">
+{% load static %}
+{% include 'head_manager.html' %}
+<style>
+
+
+tr.colored:nth-child(even){
+
+}
+
+tr.colored:nth-child(odd){
+}
+
+tr.colored:hover td{
+
+  background-color:#cdcdcd !important;
+
+  color:#303f39 !important;
+}
+
+th{
+    text-align:center;
+}
+td{
+    text-align: center;
+}
+
+.fontred{
+    color: #ff0000 !important;
+}
+
+.stageClear{
+    background:blue;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorGreen{
+    background:green;
+    border-radius:50%;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorForestGreen{
+    background:darkslategray;
+    border-radius:50%;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorBlue{
+    background:blue;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorGray{
+    background:gray;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorRed{
+    background:red;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorIndigo{
+    background:indigo;
+    border-radius:50%;
+    height: 23px;
+    width: 23px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+.colorNone{
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    color: #000000;
+    font-size: 0.8rem;
+}
+
+</style>
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        {% include 'topbar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        {% include 'left-sidebar_manager.html' %}
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12" >
+                        <h4 class="page-title" style="float:left; padding-right: 40px;">일일학습현황 </h4>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGray">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 학습중&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorBlue">st</span> <span style="line-height: 17px; vertical-align: center;">스테이지 완료&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorGreen">0</span> <span style="line-height: 17px; vertical-align: center;">자유학습 스텝&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorForestGreen">Q</span> <span style="line-height: 17px; vertical-align: center;">자유학습 문제풀이&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorRed">R</span> <span style="line-height: 17px; vertical-align: center;">리셋&nbsp;&nbsp;&nbsp; </span>
+                        <span style="line-height: 20px; width:22px; height: 22px; vertical-align: bottom" class="colorIndigo">C</span> <span style="line-height: 17px; vertical-align: center;">종료&nbsp;&nbsp;&nbsp; </span>
+                    </div>
+                    <div class="col-lg-3 col-sm-4 col-md-4 col-xs-12">
+                        <div class="d-md-flex">
+                            <ol class="breadcrumb ms-auto">
+                                <li><a href="#" class="fw-normal">Dashboard</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-sm-12" >
+                        <a href="{% url 'manager:week_test' prev_dt=prev_week %}"> <button type="button" class="btn btn-primary" > 이전 7일</button></a>
+                        <a href="{% url 'manager:week_test' prev_dt=next_week %}"> <button type="button" class="btn btn-primary" > 다음 7일</button></a>
+                        <a href="{% url 'manager:week_test' prev_dt=0 %}"> <button type="button" class="btn btn-dark" > 오늘</button></a>
+                        <br><br>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12" >
+                        <div class="white-box">
+                            <div class="table-responsive" style="height:700px; overflow: auto;">
+                                <table class="table text-nowrap" style="">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">#</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0"><a href="?desc={{switch_desc}}">이름</a></th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">아이디</th>
+                                            <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0">&nbsp;&nbsp;&nbsp;</th>
+                                            {% for day in days %}
+                                                <th style="background-color: white; position:sticky; top: 0px;" class="border-top-0 {% if day|last == '토' or day|last == '일' %} fontred {% endif %}">
+                                                    {{day}}
+                                                </th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for member in member_list %}
+                                        <tr class="colored" >
+                                            <td style="color:#aaaaaa;">{{ forloop.counter }}</td>
+                                            <td>{{ member.mname }}</td>
+                                            <td style="color:#aaaaaa">{{ member.mcode }}</td>
+                                            <td style="{%if member.level_code == NONE %} color:#cdcdcd {% else %} color:#000000 {% endif %}"></td>
+                                            {% for day in member.days %}
+
+                                                <td style="">
+                                                    {% for row in day %}
+
+                                                    {% if day|length >= 1 and forloop.first%}
+                                                    <a href="javascript:window.open('../day?mname={{ member.mname }}&mcode={{ member.mcode }}&yy={{ row.yy }}&mm={{ row.mm }}&dd={{ row.dd }}', 'detail', 'width=500px, height=600px' );">
+                                                    {% endif %}
+                                                        {% if forloop.counter <= 6 %}
+                                                            {% if forloop.counter == 6 %}
+                                                                …<span class="{{ row.color }}">∞</span>
+                                                            {% else %}
+                                                                <span class="{{ row.color }}">{{ row.text }}</span>
+                                                            {% endif %}
+                                                            {% if forloop.counter|divisibleby:3 %}
+                                                                <br>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% if day|length > 1 and forloop.last %}
+                                                    </a>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </td>
+
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'footer_manager.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app-style-switcher.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'js/custom.js' %}"></script>
+    <!--This page JavaScript -->
+    <!--chartis chart-->
+    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
+    <script>
+
+        function validateForm()
+        {
+            var mem_level = document.forms["memForm"]["mem_level"].value;
+            if( mem_level == '선택없음' )
+            {
+                alert( '레벨을 선택해주세요' );
+                return false;
+            }
+            return true;
+        }
+
+        function getDay(dayCode){
+            day = "";
+            switch(dayCode){
+                case 0: day = "월";
+                case 1: day = "화";
+                case 2: day = "수";
+                case 3: day = "목";
+                case 4: day = "금";
+                case 5: day = "토";
+                case 6: day = "일";
+            }
+            return day;
+        }
+    </script>
+</body>
+
+</html>
