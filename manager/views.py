@@ -1228,54 +1228,6 @@ def week(request, prev_dt=0):
     }
     return render(request, 'manager/week.html', context)
 
-
-def week_test(request, prev_dt=0):
-    # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
-    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE').first()
-    if enable_data and enable_data.etc_value != '1':
-        return HttpResponseRedirect(reverse('manager:info'))
-
-    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리
-    aid = get_aid(request)
-    if aid == 'bad_way':
-        return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
-
-    # 웹전산에서 회원 리스트를 갱신한다.
-    call(request)
-
-    # 날짜 범위 계산
-    start_dt = date.today()
-    start_date = start_dt - timedelta(6 + prev_dt)
-    end_date = start_dt - timedelta(prev_dt)
-
-    # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
-    days = [
-        (start_dt - timedelta(n + prev_dt)).strftime('%m.%d') + get_day((start_dt - timedelta(n + prev_dt)).weekday())
-        for n in range(7)]
-
-    # 정렬 관련 로직
-    desc = request.GET.get('desc', '0')
-    switch_desc = '0' if desc == '1' else '1'
-    query_desc = '-' if desc == '1' else ''
-
-    # 회원 목록 가져오기
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + 'mname')
-
-
-    prev_week = prev_dt + 7
-    next_week = max(prev_dt - 7, 0)
-    context = {
-        'switch_desc': switch_desc,
-        'prev_week': prev_week,
-        'next_week': next_week,
-        'arg': prev_dt,
-        'start_dt': start_dt,
-        'days': days,
-        'member_list': member_list,
-    }
-    return render(request, 'manager/week.html', context)
-
-
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
             in range(6, -1, -1)]
