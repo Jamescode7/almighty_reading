@@ -1265,16 +1265,17 @@ def week_test(request, prev_dt=0):
             break
 
     if redirect_needed:
-        # 'mm.dd' 형식의 문자열을 datetime.date 객체로 변환
-        new_start_date_str = days[0].split('.')[0] + '.' + days[0].split('.')[1]  # 'mm.dd' 형식
-        new_start_date = datetime.strptime(f'{start_dt.year}.{new_start_date_str}', '%Y.%m.%d').date()  # 연도 추가
+        # 연도가 바뀌는 순간부터 연도가 바뀌기 직전까지의 일수를 계산
+        count_days = 0
+        current_month = dates[-1].month  # 마지막 날짜의 월
+        for date in reversed(dates):
+            if date.month == current_month:
+                count_days += 1
+            else:
+                break
 
-        # 만약 새로운 시작 날짜가 현재 날짜보다 미래인 경우(예: 12월에서 1월로 넘어감), 연도를 1 감소시킵니다.
-        if new_start_date > start_dt:
-            new_start_date = datetime.strptime(f'{start_dt.year - 1}.{new_start_date_str}', '%Y.%m.%d').date()
-
-        # 새로운 prev_dt 계산
-        new_prev_dt = (start_dt - new_start_date).days
+        # 카운트한 일수만큼 prev_dt에서 빼서 new_prev_dt 계산
+        new_prev_dt = prev_dt - count_days
 
         # 리다이렉트
         return redirect('manager:week_test', prev_dt=new_prev_dt)
