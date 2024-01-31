@@ -1063,9 +1063,6 @@ def week_up(request, prev_dt=0):
 
 
 def week(request, prev_dt=0):
-    # 해당 기능 잠금. 성능개선 협의 완료 시 해제.
-    return redirect('manager:week_test', prev_dt=0)
-
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
     if enable_data:
