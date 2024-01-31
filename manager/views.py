@@ -1229,13 +1229,19 @@ def week(request, prev_dt=0):
     return render(request, 'manager/week.html', context)
 
 
+from datetime import date, timedelta
+from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import reverse
+from django.shortcuts import render
+
+
+# ... 다른 필요한 import ...
+
 def week_test(request, prev_dt=0):
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
-    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
-    if enable_data:
-        enable_data = enable_data[0]
-        if enable_data.etc_value != '1':
-            return HttpResponseRedirect(reverse('manager:info'))
+    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE').first()
+    if enable_data and enable_data.etc_value != '1':
+        return HttpResponseRedirect(reverse('manager:info'))
 
     # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리
     aid = get_aid(request)
@@ -1245,35 +1251,35 @@ def week_test(request, prev_dt=0):
     # 웹전산에서 회원 리스트를 갱신한다.
     call(request)
 
+    # 날짜 범위 계산
     start_dt = date.today()
+    start_date = start_dt - timedelta(6 + prev_dt)
+    end_date = start_dt - timedelta(prev_dt)
 
     # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
-    days = []
-    for n in range(7):
-        seek = 6 - n
-        day = start_dt - timedelta(seek + prev_dt)
-        day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        days.append(day_str)
+    days = [
+        (start_dt - timedelta(n + prev_dt)).strftime('%m.%d') + get_day((start_dt - timedelta(n + prev_dt)).weekday())
+        for n in range(7)]
 
-    # 기존의 order 변수와 관련된 로직은 유지
-    desc = ''
-    order = 'mname'
+    # 정렬 관련 로직
+    desc = request.GET.get('desc', '0')
+    switch_desc = '0' if desc == '1' else '1'
+    query_desc = '-' if desc == '1' else ''
 
-    switch_desc = '1'
-    query_desc = ''
+    # 회원 목록 가져오기
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + 'mname')
 
-    order_by = 'mname'
-    if request.GET.get('desc'):
-        desc = request.GET.get('desc')
-        if desc == '1':
-            switch_desc = '0'
-            query_desc = '-'
-        else:
-            desc = '0'
-            switch_desc = '1'
-            query_desc = ''
+    # 로그 데이터를 한 번에 가져옵니다.
+    logs = StepFinishLog.objects.filter(
+        username__in=member_list.values_list('mcode', flat=True),
+        dt_date__range=[start_date, end_date]
+    ).order_by('-dt_date', '-id')
 
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
+    # 회원별 로그 데이터를 사전에 저장합니다.
+    logs_by_member = {mcode: [] for mcode in member_list.values_list('mcode', flat=True)}
+    for log in logs:
+        logs_by_member[log.username].append(log)
+
     for member in member_list:
         member.days = []
         for n in range(7):
@@ -1282,14 +1288,10 @@ def week_test(request, prev_dt=0):
             mm = current_day.strftime('%m')
             dd = current_day.strftime('%d')
 
-            log_list = StepFinishLog.objects.filter(
-                username=member.mcode,
-                dt_year=yy,
-                dt_month=mm,
-                dt_day=dd
-            ).order_by('-id')
+            # 해당 회원의 로그 리스트 가져오기
+            log_list = logs_by_member.get(member.mcode, [])
 
-            # 여기부터 log_list를 처리하는 로직
+            # log_list 처리 로직
             append_data_list = []
             prev_log = {'stage': 0, 'step': 0, 'text': 'st', 'color': 'black'}
             for log in log_list:
@@ -1345,9 +1347,7 @@ def week_test(request, prev_dt=0):
             member.days.append(append_data_list)
 
     prev_week = prev_dt + 7
-    next_week = prev_dt - 7
-    if next_week < 0:
-        next_week = 0
+    next_week = max(prev_dt - 7, 0)
     context = {
         'switch_desc': switch_desc,
         'prev_week': prev_week,
@@ -1358,6 +1358,7 @@ def week_test(request, prev_dt=0):
         'member_list': member_list,
     }
     return render(request, 'manager/week.html', context)
+
 
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
