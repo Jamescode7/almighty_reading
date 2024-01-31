@@ -1311,11 +1311,7 @@ def week_test(request, prev_dt=0):
             # Log for debugging
             logger.debug(f"Querying for member: {member.mcode}, Date: {yy}-{mm}-{dd}")
 
-            log_list2 = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm,
-                                                    dt_day__range=[dd, dd]).order_by('-id')
-
-            # Log for debugging
-            logger.debug(f"log_list count for {yy}-{mm}-{dd}: {log_list2.count()}")
+            
 
             # 03 날짜당 학생의 데이터를 추출해본다.
 
