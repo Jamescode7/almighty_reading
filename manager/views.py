@@ -1268,8 +1268,8 @@ def week_test(request, prev_dt=0):
         # 연도가 바뀌는 순간부터 연도가 바뀌기 직전까지의 일수를 계산
         count_days = 0
         current_month = dates[-1].month  # 마지막 날짜의 월
-        for date in reversed(dates):
-            if date.month == current_month:
+        for dateChecker in reversed(dates):
+            if dateChecker.month == current_month:
                 count_days += 1
             else:
                 break
