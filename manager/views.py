@@ -1229,14 +1229,6 @@ def week(request, prev_dt=0):
     return render(request, 'manager/week.html', context)
 
 
-from datetime import date, timedelta
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
-from django.shortcuts import render
-
-
-# ... 다른 필요한 import ...
-
 def week_test(request, prev_dt=0):
     # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
     enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE').first()
@@ -1269,82 +1261,6 @@ def week_test(request, prev_dt=0):
     # 회원 목록 가져오기
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + 'mname')
 
-    # 로그 데이터를 한 번에 가져옵니다.
-    logs = StepFinishLog.objects.filter(
-        username__in=member_list.values_list('mcode', flat=True),
-        dt_date__range=[start_date, end_date]
-    ).order_by('-dt_date', '-id')
-
-    # 회원별 로그 데이터를 사전에 저장합니다.
-    logs_by_member = {mcode: [] for mcode in member_list.values_list('mcode', flat=True)}
-    for log in logs:
-        logs_by_member[log.username].append(log)
-
-    for member in member_list:
-        member.days = []
-        for n in range(7):
-            current_day = start_dt - timedelta(6 - n + prev_dt)
-            yy = current_day.strftime('%y')
-            mm = current_day.strftime('%m')
-            dd = current_day.strftime('%d')
-
-            # 해당 회원의 로그 리스트 가져오기
-            log_list = logs_by_member.get(member.mcode, [])
-
-            # log_list 처리 로직
-            append_data_list = []
-            prev_log = {'stage': 0, 'step': 0, 'text': 'st', 'color': 'black'}
-            for log in log_list:
-                log_data = {
-                    'yy': yy,
-                    'mm': mm,
-                    'dd': dd,
-                    'stage': log.stage,
-                    'step': log.step,
-                    'text': 'st' + str(log.stage),
-                    'color': 'colorGray'
-                }
-
-                if log.plan_type == 2:
-                    # 자유 학습
-                    if log.step == 7 or log.step_num != '0':
-                        log_data['text'] = 'Q'
-                        log_data['color'] = 'colorForestGreen'
-                    else:
-                        log_data['text'] = str(log.step)
-                        log_data['color'] = 'colorGreen'
-                elif log.topic_code == 'C':
-                    # 종료
-                    log_data['text'] = 'C'
-                    log_data['color'] = 'colorIndigo'
-                elif log.topic_code == 'R':
-                    # 리셋
-                    log_data['text'] = 'R'
-                    log_data['color'] = 'colorRed'
-                else:
-                    # 완전 학습
-                    if log.finish_today:
-                        log_data['color'] = 'colorBlue'
-
-                if prev_log['stage'] != log_data['stage'] or prev_log['step'] != log_data['step']:
-                    append_data_list.insert(0, log_data)
-                    prev_log = log_data
-                else:
-                    if log_data['text'] not in ['.', 'C', 'R'] and log_data['text'] == prev_log['text']:
-                        # 같은 단계의 반복이면 마지막 로그만 유지
-                        append_data_list[0] = log_data
-
-            if not append_data_list:
-                # 로그 데이터가 없으면 기본 데이터 추가
-                append_data_list.append({
-                    'yy': yy,
-                    'mm': mm,
-                    'dd': dd,
-                    'color': '',
-                    'text': '.'
-                })
-
-            member.days.append(append_data_list)
 
     prev_week = prev_dt + 7
     next_week = max(prev_dt - 7, 0)
