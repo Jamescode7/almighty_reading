@@ -1091,6 +1091,173 @@ def week(request, prev_dt=0):
         # print(day_str.strip()[-1])
         days.append(day_str)
 
+    desc = ''
+    order = 'mname'
+
+    switch_desc = '1'
+    query_desc = ''
+
+    order_by = 'mname'
+    if request.GET.get('desc'):
+        desc = request.GET.get('desc')
+        if desc == '1':
+            switch_desc = '0'
+            query_desc = '-'
+        else:
+            desc = '0'
+            switch_desc = '1'
+            query_desc = ''
+
+    # 모든 학생에 대해 7일간 학습 데이터 가져오기
+    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
+    # 01 모든 학생을 가져온다.
+    for member in member_list:
+        member.days = []
+        seek = 6
+        day = start_dt - timedelta(seek + prev_dt)
+        yy = day.strftime('%y')
+        mm = day.strftime('%m')
+        sd = day.strftime('%d')
+        eday = start_dt - timedelta(prev_dt)
+        ed = eday.strftime('%d')
+
+
+        log_list = StepFinishLog.objects.filter(username=member.mcode, dt_year=yy, dt_month=mm, dt_day__range=[sd,ed]).order_by(
+            '-id')
+
+        # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
+        loop = 6
+        for dt in range(7):
+            seek = loop - dt
+            day = start_dt - timedelta(seek + prev_dt)
+            day_str = day.strftime('%m.%d') + get_day(day.weekday())
+            yy = day.strftime('%y')
+            mm = day.strftime('%m')
+            dd = day.strftime('%d')
+            append_data_list = []
+
+            # 03 날짜당 학생의 데이터를 추출해본다.
+
+
+            if log_list:
+                log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
+                prev_log = {}
+                prev_log['text'] = 'st'
+                prev_log['color'] = 'black'
+                prev_log['stage'] = 0
+                prev_log['step'] = 0
+                for log in log_list:
+                    # print(' --' + member.mcode + '/' + str(log.stage) + '/' + str(log.step))
+                    if log.username == member.mcode and log.dt_year == yy and log.dt_month == mm and log.dt_day == dd:
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['stage'] = log.stage
+                        log_data['step'] = log.step
+                        log_data['text'] = 'st' + str(log.stage)
+                        log_data['color'] = 'colorGray'
+                        if log.plan_type == 2:
+                            # ////////// 자 유 학 습 /////////////////////////////////////////////
+                            if log.step == 7 or log.step_num != '0':
+                                # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
+                                log_data['text'] = 'Q'
+                                log_data['color'] = 'colorForestGreen'
+                                if prev_log['text'] != 'Q':
+                                    append_data_list.insert(0, log_data)
+                                    prev_log['text'] = 'Q'
+                            else:
+                                # 그 외 스텝일 때
+                                log_data['text'] = str(log.step)
+                                log_data['color'] = 'colorGreen'
+                                append_data_list.insert(0, log_data)
+                        elif log.topic_code == 'C':
+                            # //////////  종 료 /////////////////////////////////////////////
+                            log_data['text'] = 'C'
+                            log_data['color'] = 'colorIndigo'
+                            append_data_list.insert(0, log_data)
+                        elif log.topic_code == 'R':
+                            # ////////// 리 셋 /////////////////////////////////////////////
+                            log_data['text'] = 'R'
+                            log_data['color'] = 'colorRed'
+                            append_data_list.insert(0, log_data)
+                        else:
+                            # ////////// 완 전 학 습 ////////////////////////////////////////////
+                            if log.finish_today:
+                                log_data['color'] = 'colorBlue'
+
+                            if prev_log['stage'] != log_data['stage']:
+                                append_data_list.insert(0, log_data)
+
+                        prev_log['stage'] = log_data['stage']
+                    else:
+                        log_data = {}
+                        log_data['yy'] = yy
+                        log_data['mm'] = mm
+                        log_data['dd'] = dd
+                        log_data['color'] = ''
+                        log_data['text'] = '.'
+                        # append_data_list.append(log_data)
+            else:
+                log_data = {}
+                log_data['yy'] = yy
+                log_data['mm'] = mm
+                log_data['dd'] = dd
+                log_data['color'] = ''
+                log_data['text'] = '.'
+                append_data_list.append(log_data)
+
+            # member마다 7일간 데이터 저장.
+            member.days.append(append_data_list)
+
+    prev_week = prev_dt + 7
+    next_week = prev_dt - 7
+    if next_week < 0:
+        next_week = 0
+    context = {
+        'switch_desc': switch_desc,
+        'prev_week': prev_week,
+        'next_week': next_week,
+        'arg': prev_dt,
+        'start_dt': start_dt,
+        'days': days,
+        'member_list': member_list,
+    }
+    return render(request, 'manager/week.html', context)
+
+
+def week_test(request, prev_dt=0):
+    # DB에서 이 메뉴를 사용할 것인지 체크를 해본다.
+    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
+    if enable_data:
+        enable_data = enable_data[0];
+        # print(enable_data.etc_value)
+        if enable_data.etc_value != '1':
+            return HttpResponseRedirect(reverse('manager:info'))
+
+    # 세션을 확인하여 포겟미낫을 통해 등록된 세션이 없다면 넘어가지 못하게 처리 (agency 함수 참고)
+    aid = get_aid(request)
+    if aid == 'bad_way': return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
+
+    # 웹전산에서 회원 리스트를 갱신한다.
+    # update_member_list(request, aid)
+    call(request)
+
+    start_dt = date.today()
+
+    # 시작일 기준 전날 6일 날짜 가져오기 - 테이블 상단용
+    days = []
+    loop = 6
+    for n in range(7):
+        seek = loop - n
+        day = start_dt - timedelta(seek + prev_dt)
+        day_str = day.strftime('%m.%d') + get_day(day.weekday())
+        # print(day_str.strip()[-1])
+        days.append(day_str)
+
     # Log for debugging
     print(f"prev_dt: {prev_dt}, start_dt: {start_dt}, days: {days}")
 
@@ -1239,176 +1406,6 @@ def week(request, prev_dt=0):
         'member_list': member_list,
     }
     return render(request, 'manager/week.html', context)
-
-from django.core.serializers.json import DjangoJSONEncoder
-
-def week_test(request, prev_dt=0):
-    enable_data = EtcValue.objects.filter(etc_name='WEEK_MENU_ENABLE')
-    if enable_data:
-        enable_data = enable_data[0]
-        if enable_data.etc_value != '1':
-            return HttpResponseRedirect(reverse('manager:info'))
-
-    aid = get_aid(request)
-    if aid == 'bad_way':
-        return HttpResponse('<br><br><center>잘못된 접근입니다 <br><b><u>포겟미낫 관리자</u></b>를 통해 접속해주세요<center>')
-
-    call(request)
-
-    start_dt = date.today()
-    end_dt = start_dt - timedelta(6 + prev_dt)
-
-    days = []
-    for n in range(6, -1, -1):
-        day = start_dt - timedelta(n + prev_dt)
-        day_str = day.strftime('%m.%d') + get_day(day.weekday())
-        days.append(day_str)
-
-    desc = ''
-    order = 'mname'
-    switch_desc = '1'
-    query_desc = ''
-    order_by = 'mname'
-    if request.GET.get('desc'):
-        desc = request.GET.get('desc')
-        if desc == '1':
-            switch_desc = '0'
-            query_desc = '-'
-        else:
-            desc = '0'
-            switch_desc = '1'
-            query_desc = ''
-
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1).order_by(query_desc + order)
-
-    log_list = StepFinishLog.objects.filter(
-        username__in=member_list.values_list('mcode', flat=True),
-        dt_year__gte=end_dt.year,
-        dt_month__gte=end_dt.month,
-        dt_day__gte=end_dt.day,
-        dt_year__lte=start_dt.year,
-        dt_month__lte=start_dt.month,
-        dt_day__lte=start_dt.day
-    ).order_by('-id')
-
-    logs_by_member_and_date = {}
-    for log in log_list:
-        member_date_key = (log.username, log.dt_year, log.dt_month, log.dt_day)
-        if member_date_key not in logs_by_member_and_date:
-            logs_by_member_and_date[member_date_key] = []
-        logs_by_member_and_date[member_date_key].append(log)
-
-    for member in member_list:
-        member.days = []
-        for n in range(7):
-            day = start_dt - timedelta(n + prev_dt)
-            log_key = (member.mcode, day.year, day.month, day.day)
-            logs_for_day = logs_by_member_and_date.get(log_key, [])
-            # Process the logs for the day for this member
-            member.days.append(process_logs_for_day(logs_for_day, day))
-
-    prev_week = prev_dt + 7
-    next_week = prev_dt - 7
-    if next_week < 0:
-        next_week = 0
-
-    context = {
-        'switch_desc': switch_desc,
-        'prev_week': prev_week,
-        'next_week': next_week,
-        'arg': prev_dt,
-        'start_dt': start_dt,
-        'days': days,
-        'member_list': member_list,
-    }
-    #return render(request, 'manager/week.html', context)
-    # member_list를 JSON 형식으로 직렬화
-    member_list_serialized = serialize('json', member_list)
-    member_list_json = json.loads(member_list_serialized)
-
-    # 각 member에 대한 .days 속성 추가
-    for member, member_data in zip(member_list, member_list_json):
-        member_data['fields']['days'] = member.days  # .days 속성 추가
-
-    context = {
-        'member_list_json': json.dumps(member_list_json, cls=DjangoJSONEncoder, indent=4)  # JSON 형식으로 다시 변환
-    }
-
-    return JsonResponse(context, safe=False, json_dumps_params={'indent': 4})
-
-def process_logs_for_day(logs, day):
-    append_data_list = []
-
-    prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}
-    for log in logs:
-        log_data = {
-            'yy': day.strftime('%y'),
-            'mm': day.strftime('%m'),
-            'dd': day.strftime('%d'),
-            'stage': log.stage,
-            'step': log.step,
-            'text': 'st' + str(log.stage),
-            'color': 'colorGray'
-        }
-
-        if log.plan_type == 2:
-            # 자유 학습
-            if log.step == 7 or log.step_num != '0':
-                # 문제 풀이
-                log_data['text'] = 'Q'
-                log_data['color'] = 'colorForestGreen'
-                if prev_log['text'] != 'Q':
-                    append_data_list.insert(0, log_data)
-                    prev_log['text'] = 'Q'
-            else:
-                # 그 외 스텝일 때
-                log_data['text'] = str(log.step)
-                log_data['color'] = 'colorGreen'
-                append_data_list.insert(0, log_data)
-        elif log.topic_code == 'C':
-            # 종료
-            log_data['text'] = 'C'
-            log_data['color'] = 'colorIndigo'
-            append_data_list.insert(0, log_data)
-        elif log.topic_code == 'R':
-            # 리셋
-            log_data['text'] = 'R'
-            log_data['color'] = 'colorRed'
-            append_data_list.insert(0, log_data)
-        else:
-            # 완전 학습
-            if log.finish_today:
-                log_data['color'] = 'colorBlue'
-
-            if prev_log['stage'] != log_data['stage']:
-                append_data_list.insert(0, log_data)
-
-        prev_log['stage'] = log_data['stage']
-
-    # 로그 데이터가 있는 경우에만 처리
-    if logs:
-        # 처리된 로그 데이터가 없는 경우 '.'을 표시
-        if not append_data_list:
-            log_data = {
-                'yy': day.strftime('%y'),
-                'mm': day.strftime('%m'),
-                'dd': day.strftime('%d'),
-                'color': '',
-                'text': '.'
-            }
-            append_data_list.append(log_data)
-    else:
-        # 로그 데이터 자체가 없는 경우 '.'을 표시
-        log_data = {
-            'yy': day.strftime('%y'),
-            'mm': day.strftime('%m'),
-            'dd': day.strftime('%d'),
-            'color': '',
-            'text': '.'
-        }
-        append_data_list.append(log_data)
-
-    return append_data_list
 
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
