@@ -1328,12 +1328,16 @@ def week_test(request, prev_dt=0):
     # 모든 학생의 mcode를 리스트로 추출
     mcode_list = member_list.values_list('mcode', flat=True)
 
+    # Generate a list of date tuples (year, month, day) for the date range
+    date_tuples = [(d.strftime('%y'), d.strftime('%m'), d.strftime('%d')) for d in
+                   [start_dt - timedelta(days=x) for x in range(prev_dt, prev_dt + 7)]]
+
     # 해당 기간 동안의 모든 학습 로그 한 번에 가져오기
     logs = StepFinishLog.objects.filter(
         username__in=mcode_list,
-        dt_year__range=[end_dt.strftime('%y'), start_dt.strftime('%y')],
-        dt_month__range=[end_dt.strftime('%m'), start_dt.strftime('%m')],
-        dt_day__range=[end_dt.strftime('%d'), start_dt.strftime('%d')]
+        dt_year__in=[dt[0] for dt in date_tuples],
+        dt_month__in=[dt[1] for dt in date_tuples],
+        dt_day__in=[dt[2] for dt in date_tuples]
     ).order_by('-id')
 
     # 로그를 사용자와 날짜별로 정리
