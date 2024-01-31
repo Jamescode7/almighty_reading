@@ -1347,6 +1347,7 @@ def week_test(request, prev_dt=0):
     # 01 모든 학생을 가져온다.
     for member in member_list:
         member.days = []
+        prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}  # Initialize prev_log outside the loop
 
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
         for dt in range(7):
@@ -1363,22 +1364,37 @@ def week_test(request, prev_dt=0):
             if key in logs_by_user_and_date:
                 for log in logs_by_user_and_date[key]:
                     # log 데이터를 처리하는 로직
-                    log_data = {}
-                    log_data['yy'] = yy
-                    log_data['mm'] = mm
-                    log_data['dd'] = dd
-                    log_data['text'] = 'Log data processing...'  # 실제 로그 데이터에 맞게 조정 필요
-                    log_data['color'] = 'Log color processing...'  # 실제 로그 데이터에 맞게 조정 필요
-                    # 이부분에 로그 데이터에 따른 추가 처리 로직 삽입
-                    append_data_list.append(log_data)
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd}
+
+                    if log.plan_type == 2:
+                        if log.step == 7 or log.step_num != '0':
+                            log_data['text'] = 'Q'
+                            log_data['color'] = 'colorForestGreen'
+                            if prev_log['text'] != 'Q':
+                                append_data_list.insert(0, log_data)
+                                prev_log['text'] = 'Q'
+                        else:
+                            log_data['text'] = str(log.step)
+                            log_data['color'] = 'colorGreen'
+                            append_data_list.insert(0, log_data)
+                    elif log.topic_code == 'C':
+                        log_data['text'] = 'C'
+                        log_data['color'] = 'colorIndigo'
+                        append_data_list.insert(0, log_data)
+                    elif log.topic_code == 'R':
+                        log_data['text'] = 'R'
+                        log_data['color'] = 'colorRed'
+                        append_data_list.insert(0, log_data)
+                    else:
+                        log_data['text'] = 'st' + str(log.stage)
+                        log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
+                        if prev_log['stage'] != log.stage:
+                            append_data_list.insert(0, log_data)
+
+                    prev_log['stage'] = log.stage  # Update prev_log after processing
             else:
                 # 로그 데이터가 없는 경우
-                log_data = {}
-                log_data['yy'] = yy
-                log_data['mm'] = mm
-                log_data['dd'] = dd
-                log_data['color'] = ''
-                log_data['text'] = '.'
+                log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
                 append_data_list.append(log_data)
 
             # member마다 7일간 데이터 저장.
