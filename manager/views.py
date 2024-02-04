@@ -1329,6 +1329,11 @@ def week_test(request, prev_dt=0):
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
                         if prev_log['stage'] != log.stage:
                             append_data_list.insert(0, log_data)
+                        else:
+                            # 로그 데이터가 없는 경우
+                            log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
+                            append_data_list.append(log_data)
+
 
                     prev_log['stage'] = log.stage  # Update prev_log after processing
             else:
