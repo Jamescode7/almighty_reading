@@ -1264,27 +1264,6 @@ def week_test(request, prev_dt=0):
         day_str = day.strftime('%m.%d') + get_day(day.weekday())
         days.append(day_str)
 
-        # 월 또는 년이 바뀌었는지 확인
-        if n > 0 and (dates[n].month != dates[n - 1].month or dates[n].year != dates[n - 1].year):
-            redirect_needed = True
-            break
-
-    if redirect_needed:
-        # 연도가 바뀌는 순간부터 연도가 바뀌기 직전까지의 일수를 계산
-        count_days = 0
-        current_month = dates[-1].month  # 마지막 날짜의 월
-        for dateChecker in reversed(dates):
-            if dateChecker.month == current_month:
-                count_days += 1
-            else:
-                break
-
-        # 카운트한 일수만큼 prev_dt에서 빼서 new_prev_dt 계산
-        new_prev_dt = prev_dt - count_days
-
-        # 리다이렉트
-        return redirect('manager:week_test', prev_dt=new_prev_dt)
-
     desc = ''
     order = 'mname'
 
