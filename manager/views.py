@@ -1336,11 +1336,11 @@ def week_test(request, prev_dt=0):
                         log_data['text'] = 'st' + str(log.stage)
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
 
-                    # 데이터를 추가하기 전에 조건들을 체크
-                    if ((prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']) and
-                            log_data['stage'] not in seen_stages):
-                        append_data_list.insert(0, log_data)
-                        seen_stages.add(log_data['stage'])
+                        # 데이터를 추가하기 전에 조건들을 체크
+                        if ((prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']) and
+                                log_data['stage'] not in seen_stages):
+                            append_data_list.insert(0, log_data)
+                            seen_stages.add(log_data['stage'])
 
                     prev_log['stage'] = log.stage
                     prev_log['color'] = log_data['color']
