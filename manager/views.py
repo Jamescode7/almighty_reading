@@ -1341,8 +1341,14 @@ def week_test(request, prev_dt=0):
                     prev_log['stage'] = log.stage
                     prev_log['color'] = log_data['color']
             else:
-                # /// 로그 데이터가 없는 경우 002
-                log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
+                # 로그 데이터가 없고, 이전 로그의 색상이 'colorBlue'인 경우 (이전 날에 학습이 완료된 경우)
+                if prev_log['color'] == 'colorBlue':
+                    # 같은 stage의 'colorBlue' 데이터를 기본 데이터로 설정
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': 'colorBlue',
+                                'text': 'st' + str(prev_log['stage'])}
+                else:
+                    # 그렇지 않으면, '.' 데이터 설정
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
                 append_data_list.append(log_data)
 
             # member마다 7일간 데이터 저장.
