@@ -1287,6 +1287,7 @@ def week_test(request, prev_dt=0):
     for member in member_list:
         member.days = []
         prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}  # Initialize prev_log outside the loop
+        seen_stages = set()  # Initialize seen stages
 
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
         for dt in range(7):
@@ -1297,6 +1298,7 @@ def week_test(request, prev_dt=0):
             mm = day.strftime('%m')
             dd = day.strftime('%d')
             append_data_list = []
+            seen_stages.clear()  # Reset seen stages for the new day
 
             # 로그를 사용자와 날짜별로 정리된 데이터에서 현재 날짜의 로그를 가져옴
             key = (member.mcode, yy, mm, dd)
@@ -1334,9 +1336,11 @@ def week_test(request, prev_dt=0):
                         log_data['text'] = 'st' + str(log.stage)
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
 
-                        # 비교 로직 개선: stage 뿐만 아니라 color도 비교
-                        if prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']:
-                            append_data_list.insert(0, log_data)
+                    # 데이터를 추가하기 전에 조건들을 체크
+                    if ((prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']) and
+                            log_data['stage'] not in seen_stages):
+                        append_data_list.insert(0, log_data)
+                        seen_stages.add(log_data['stage'])
 
                     prev_log['stage'] = log.stage
                     prev_log['color'] = log_data['color']
