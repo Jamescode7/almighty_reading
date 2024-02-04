@@ -1306,38 +1306,43 @@ def week_test(request, prev_dt=0):
                     log_data = {'yy': yy, 'mm': mm, 'dd': dd}
 
                     if log.plan_type == 2:
+                        # ////////// 자 유 학 습 /////////////////////////////////////////////
                         if log.step == 7 or log.step_num != '0':
+                            # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
                             log_data['text'] = 'Q'
                             log_data['color'] = 'colorForestGreen'
                             if prev_log['text'] != 'Q':
                                 append_data_list.insert(0, log_data)
                                 prev_log['text'] = 'Q'
                         else:
+                            # ////// 그 외 스텝일 때
                             log_data['text'] = str(log.step)
                             log_data['color'] = 'colorGreen'
                             append_data_list.insert(0, log_data)
                     elif log.topic_code == 'C':
+                        # //////////  종 료 /////////////////////////////////////////////
                         log_data['text'] = 'C'
                         log_data['color'] = 'colorIndigo'
                         append_data_list.insert(0, log_data)
                     elif log.topic_code == 'R':
+                        # ////////// 리 셋 /////////////////////////////////////////////
                         log_data['text'] = 'R'
                         log_data['color'] = 'colorRed'
                         append_data_list.insert(0, log_data)
                     else:
+                        # ////////// 완 전 학 습 ////////////////////////////////////////////
                         log_data['text'] = 'st' + str(log.stage)
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
                         if prev_log['stage'] != log.stage:
                             append_data_list.insert(0, log_data)
-                        else:
-                            # 로그 데이터가 없는 경우
-                            log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
-                            append_data_list.append(log_data)
 
-
-                    prev_log['stage'] = log.stage  # Update prev_log after processing
+                    prev_log['stage'] = log.stage
+                else:
+                    # /// 로그 데이터가 없는 경우
+                    log_data = {}
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
             else:
-                # 로그 데이터가 없는 경우
+                # /// 로그 데이터가 없는 경우
                 log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
                 append_data_list.append(log_data)
 
