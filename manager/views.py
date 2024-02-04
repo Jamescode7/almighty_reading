@@ -1333,16 +1333,15 @@ def week_test(request, prev_dt=0):
                         # ////////// 완 전 학 습 ////////////////////////////////////////////
                         log_data['text'] = 'st' + str(log.stage)
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
-                        if prev_log['stage'] != log.stage:
+
+                        # 비교 로직 개선: stage 뿐만 아니라 color도 비교
+                        if prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']:
                             append_data_list.insert(0, log_data)
 
                     prev_log['stage'] = log.stage
-                else:
-                    # /// 로그 데이터가 없는 경우
-                    log_data = {}
-                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
+                    prev_log['color'] = log_data['color']
             else:
-                # /// 로그 데이터가 없는 경우
+                # /// 로그 데이터가 없는 경우 002
                 log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
                 append_data_list.append(log_data)
 
