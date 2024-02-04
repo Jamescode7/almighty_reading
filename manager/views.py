@@ -338,14 +338,10 @@ def reportcard_test(request, mcode=''):
     if sm and em and sd != '0' and ed != '0':
         print('ok, get data!')
 
-        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
-        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
-        topic_list = MemberTopicLog.objects.filter(
-            username=mcode,
-            start_dt__lte=start_date,
-            # end_dt 조건 삭제
-        ).order_by('-id')
-
+        start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)  # 'sy' 추가
+        end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)  # 'ey' 추가
+        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
+                                                   end_dt__lt=end_date).order_by('-id')
         first_topic = topic_list.order_by('id').first()
         last_topic = topic_list.order_by('-id').first()
         if first_topic:
@@ -608,7 +604,6 @@ def reportall_test(request):
     return render(request, 'manager/reportcardall_test.html', context)
 
 
-
 def handle_check_list(request, aid):
     if request.GET.getlist('check_list'):
         StudyMember.objects.filter(acode=aid).update(is_check=0)
@@ -633,7 +628,6 @@ def get_date_filters(request):
     return sy, ey, sm, sd, em, ed
 
 
-
 def create_report_list(aid, sy, sm, sd, ey, em, ed):
     report_list = []
     member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
@@ -643,42 +637,24 @@ def create_report_list(aid, sy, sm, sd, ey, em, ed):
     return report_list
 
 
-
 def create_report(member, sy, sm, sd, ey, em, ed):
     report = {'user_name': member.mname, 'level_name': member.level_code}
     if sm and em and sd != '0' and ed != '0':
         start_date = datetime(int(sy), int(sm), int(sd), 0, 0, 0)
         end_date = datetime(int(ey), int(em), int(ed), 23, 59, 59)
-        report['topic_list'] = MemberTopicLog.objects.filter(
-            username=member.mcode,
-            start_dt__gte=start_date,  # 시작 날짜가 주어진 범위의 시작 날짜 이후
-            # end_dt__lte=end_date       # 이 조건을 제거하여 종료일은 검사하지 않도록 함
-        ).order_by('-id')
-        first_topic = report['topic_list'].order_by('id').first()
-        last_topic = report['topic_list'].order_by('-id').first()
-        if first_topic:
-            report['study_start_day'] = first_topic.start_dt
-        if last_topic:
-            report['study_end_day'] = last_topic.end_dt
+        report['topic_list'] = get_topics(member.mcode, start_date, end_date)
     else:
         report['topic_list'] = MemberTopicLog.objects.filter(username=member.mcode).order_by('-id')
-        first_topic = report['topic_list'].order_by('id').first()
-        last_topic = report['topic_list'].order_by('-id').first()
-        if first_topic:
-            report['study_start_day'] = first_topic.start_dt
-        if last_topic:
-            report['study_end_day'] = last_topic.end_dt
 
+    set_study_period(report)
     return report
-
-
-
 
 
 def get_topics(mcode, start_date, end_date):
     return MemberTopicLog.objects.filter(
         username=mcode, start_dt__gte=start_date, end_dt__lt=end_date
     ).order_by('-id')
+
 
 def set_study_period(report):
     if report['topic_list']:
