@@ -1315,8 +1315,10 @@ def week_test(request, prev_dt=0):
                             log_data['text'] = 'Q'
                             log_data['color'] = 'colorForestGreen'
                             if prev_log['text'] != 'Q':
-                                append_data_list.insert(0, log_data)
-                                prev_log['text'] = 'Q'
+                                if log_data['stage'] not in seen_stages:
+                                    append_data_list.insert(0, log_data)
+                                    prev_log['text'] = 'Q'
+                                    seen_stages.add(log_data['stage'])
                         else:
                             # ////// 그 외 스텝일 때
                             log_data['text'] = str(log.step)
@@ -1326,12 +1328,16 @@ def week_test(request, prev_dt=0):
                         # //////////  종 료 /////////////////////////////////////////////
                         log_data['text'] = 'C'
                         log_data['color'] = 'colorIndigo'
-                        append_data_list.insert(0, log_data)
+                        if log_data['stage'] not in seen_stages:
+                            append_data_list.insert(0, log_data)
+                            seen_stages.add(log_data['stage'])
                     elif log.topic_code == 'R':
                         # ////////// 리 셋 /////////////////////////////////////////////
                         log_data['text'] = 'R'
                         log_data['color'] = 'colorRed'
-                        append_data_list.insert(0, log_data)
+                        if log_data['stage'] not in seen_stages:
+                            append_data_list.insert(0, log_data)
+                            seen_stages.add(log_data['stage'])
                     else:
                         # ////////// 완 전 학 습 ////////////////////////////////////////////
                         log_data['text'] = 'st' + str(log.stage)
