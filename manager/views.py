@@ -1287,6 +1287,7 @@ def week_test(request, prev_dt=0):
     for member in member_list:
         member.days = []
         prev_log = {'text': 'st', 'color': 'black', 'stage': 0, 'step': 0}  # Initialize prev_log outside the loop
+        seen_stages = set()  # Initialize seen stages
 
         # 02 한 학생당 지정된(seek) 날짜로부터 지난 7일간의 날짜를 가져온다.
         for dt in range(7):
@@ -1297,6 +1298,7 @@ def week_test(request, prev_dt=0):
             mm = day.strftime('%m')
             dd = day.strftime('%d')
             append_data_list = []
+            seen_stages.clear()  # Reset seen stages for the new day
 
             # 로그를 사용자와 날짜별로 정리된 데이터에서 현재 날짜의 로그를 가져옴
             key = (member.mcode, yy, mm, dd)
@@ -1306,34 +1308,51 @@ def week_test(request, prev_dt=0):
                     log_data = {'yy': yy, 'mm': mm, 'dd': dd}
 
                     if log.plan_type == 2:
+                        # ////////// 자 유 학 습 /////////////////////////////////////////////
                         if log.step == 7 or log.step_num != '0':
+                            # log.step == 7 은 정오답 체크 / log.step_num != '0'은 문제 풀이(1~6)
                             log_data['text'] = 'Q'
                             log_data['color'] = 'colorForestGreen'
                             if prev_log['text'] != 'Q':
                                 append_data_list.insert(0, log_data)
                                 prev_log['text'] = 'Q'
                         else:
+                            # ////// 그 외 스텝일 때
                             log_data['text'] = str(log.step)
                             log_data['color'] = 'colorGreen'
                             append_data_list.insert(0, log_data)
                     elif log.topic_code == 'C':
+                        # //////////  종 료 /////////////////////////////////////////////
                         log_data['text'] = 'C'
                         log_data['color'] = 'colorIndigo'
                         append_data_list.insert(0, log_data)
                     elif log.topic_code == 'R':
+                        # ////////// 리 셋 /////////////////////////////////////////////
                         log_data['text'] = 'R'
                         log_data['color'] = 'colorRed'
                         append_data_list.insert(0, log_data)
                     else:
+                        # ////////// 완 전 학 습 ////////////////////////////////////////////
                         log_data['text'] = 'st' + str(log.stage)
                         log_data['color'] = 'colorGray' if not log.finish_today else 'colorBlue'
-                        if prev_log['stage'] != log.stage:
-                            append_data_list.insert(0, log_data)
 
-                    prev_log['stage'] = log.stage  # Update prev_log after processing
+                    # 데이터를 추가하기 전에 조건들을 체크
+                    if ((prev_log['stage'] != log.stage or prev_log['color'] != log_data['color']) and
+                            log_data['stage'] not in seen_stages):
+                        append_data_list.insert(0, log_data)
+                        seen_stages.add(log_data['stage'])
+
+                    prev_log['stage'] = log.stage
+                    prev_log['color'] = log_data['color']
             else:
-                # 로그 데이터가 없는 경우
-                log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
+                # 로그 데이터가 없고, 이전 로그의 색상이 'colorBlue'인 경우 (이전 날에 학습이 완료된 경우)
+                if prev_log['color'] == 'colorBlue':
+                    # 같은 stage의 'colorBlue' 데이터를 기본 데이터로 설정
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': 'colorBlue',
+                                'text': 'st' + str(prev_log['stage'])}
+                else:
+                    # 그렇지 않으면, '.' 데이터 설정
+                    log_data = {'yy': yy, 'mm': mm, 'dd': dd, 'color': '', 'text': '.'}
                 append_data_list.append(log_data)
 
             # member마다 7일간 데이터 저장.
@@ -1354,6 +1373,7 @@ def week_test(request, prev_dt=0):
         'member_list': member_list,
     }
     return render(request, 'manager/week_test.html', context)
+
 
 def get_week_dates(start_dt):
     return [(start_dt - timedelta(days=i)).strftime('%m.%d') + get_day((start_dt - timedelta(days=i)).weekday()) for i
