@@ -3,9 +3,17 @@ from django.shortcuts import render
 
 from common_value.models import EtcValue
 from dialog.models import Dialog
-
+from django.http import HttpResponse, HttpResponseRedirect
 
 def main(request):
+    # 현재 요청이 HTTPS를 통해 이루어졌는지 확인
+    if request.is_secure():
+        # HTTPS를 사용하는 경우, HTTP로 리다이렉트할 URL 생성
+        new_url = 'http://' + request.get_host() + request.get_full_path()
+        # HTTP URL로 리다이렉트
+        return HttpResponseRedirect(new_url)
+
+
     step_list = []
     step_code = ''
     bookcd_list = []
