@@ -30,6 +30,9 @@ ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = ['https://www.readoly.co.kr']
 
+# HTTPS 사용 시 Django가 'X-Forwarded-Proto' 헤더를 신뢰할 수 있도록 설정
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
