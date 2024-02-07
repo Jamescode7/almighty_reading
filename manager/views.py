@@ -217,108 +217,6 @@ def reportcard(request, mcode=''):
     if mcode == '':
         return HttpResponse('잘못된 접근입니다 (topic code)')
 
-    month_list = []
-    day_list = []
-    sm = ''  # start month
-    sd = '0'  # start day
-    sd_list = []
-    em = '0'  # end month
-    ed = '0'  # end day
-    ed_list = []
-    now = datetime.now()
-
-    ctrl_day = ''
-    for x in range(1, 13):
-        month_list.append(str(x))
-
-    for x in range(1, 32):
-        day_list.append(str(x))
-
-    if request.GET.get('sm'):
-        sm = request.GET.get('sm')
-        year = now.year
-        get_month = calendar.monthrange(year, int(sm))
-        end_day = get_month[1] + 1
-        for y in range(1, end_day):
-            sd_list.append(str(y))
-
-    if request.GET.get('sd'):
-        sd = request.GET.get('sd')
-
-    if request.GET.get('em'):
-        em = request.GET.get('em')
-        year = now.year
-        if em != '0':
-            get_month = calendar.monthrange(year, int(em))
-            end_day = get_month[1] + 1
-            for y in range(1, end_day):
-                ed_list.append(str(y))
-
-    if request.GET.get('ed'):
-        ed = request.GET.get('ed')
-
-    user_name = ''
-    study_start_day = ''
-    study_end_day = ''
-    level_name = ''
-    member = StudyMember.objects.filter(mcode=mcode)
-    if member:
-        member = member[0]
-        user_name = member.mname
-        level_name = member.level_code
-
-    if sd != '0' and em != '0' and ed != '0':
-        print('ok, get data!')
-
-        start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
-        end_date = datetime(year, int(em), int(ed), 23, 59, 59)
-        # print('ed : ' + str(end_date.timetuple()))
-        topic_list = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                   end_dt__lt=end_date).order_by('-id')
-        # print(topic_list.query)
-        first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                    end_dt__lt=end_date).order_by('id').first()
-        if first_topic:
-            study_start_day = first_topic.start_dt
-        last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                   end_dt__lt=end_date).order_by('-id').first()
-        if last_topic:
-            study_end_day = last_topic.end_dt
-    else:
-        topic_list = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
-        first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
-        study_start_day = first_topic.start_dt
-        last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
-        study_end_day = last_topic.end_dt
-
-    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
-    for memo in memo_list:
-        memo.memo = memo.memo.replace('ㅇㅇ', user_name)
-
-    context = {
-        'memo_list': memo_list,
-        'month_list': month_list,
-        'day_list': day_list,
-        'sm': sm,
-        'sd': sd,
-        'em': em,
-        'ed': ed,
-
-        'ctrl_day': ctrl_day,
-
-        'user_name': user_name,
-        'level_name': level_name,
-        'topic_list': topic_list,
-        'study_start_day': study_start_day,  # eng, kor, eng+kor
-        'study_end_day': study_end_day,
-    }
-    return render(request, 'manager/reportcard.html', context)
-
-
-def reportcard_test(request, mcode=''):
-    if mcode == '':
-        return HttpResponse('잘못된 접근입니다 (topic code)')
-
     # 날짜 리스트 생성
     year_list, month_list, day_list = generate_date_lists()
 
@@ -379,7 +277,7 @@ def reportcard_test(request, mcode=''):
         'study_start_day': study_start_day,
         'study_end_day': study_end_day,
     }
-    return render(request, 'manager/reportcard_test.html', context)
+    return render(request, 'manager/reportcard.html', context)
 
 
 
@@ -443,135 +341,6 @@ def reportSelect(request):
 
 def reportall(request):
     aid = get_aid(request)
-    if request.GET.getlist('check_list'):
-        # acode에 해당하는 모든 원생의 리스트를 비활성화
-        all_member = StudyMember.objects.filter(acode=aid)
-        for member in all_member:
-            member.is_check = 0
-            member.save()
-        # 이전에 체크박스를 체크한 리스트들의 list를 활성화
-        check_mem_list = request.GET.getlist('check_list')
-        for check_mem in check_mem_list:
-            member = StudyMember.objects.filter(mcode=check_mem)
-            member = member[0]
-            member.is_check = 1
-            member.save()
-
-    month_list = []
-    day_list = []
-    sm = ''  # start month
-    sd = '0'  # start day
-    sd_list = []
-    em = '0'  # end month
-    ed = '0'  # end day
-    ed_list = []
-    now = datetime.now()
-    ctrl_day = ''
-    for x in range(1, 13):
-        month_list.append(str(x))
-
-    for x in range(1, 32):
-        day_list.append(str(x))
-
-    if request.GET.get('sm'):
-        sm = request.GET.get('sm')
-        year = now.year
-        get_month = calendar.monthrange(year, int(sm))
-        end_day = get_month[1] + 1
-        for y in range(1, end_day):
-            sd_list.append(str(y))
-
-    if request.GET.get('sd'):
-        sd = request.GET.get('sd')
-
-    if request.GET.get('em'):
-        em = request.GET.get('em')
-        year = now.year
-        if em != '0':
-            get_month = calendar.monthrange(year, int(em))
-            end_day = get_month[1] + 1
-            for y in range(1, end_day):
-                ed_list.append(str(y))
-
-    if request.GET.get('ed'):
-        ed = request.GET.get('ed')
-
-    report_list = []
-    member_list = StudyMember.objects.filter(acode=aid, list_enable=1, is_check=1).order_by('mname')
-    make_cnt = 0
-    continue_cnt = 0
-    for member in member_list:
-        # for check_mem in check_mem_list:
-        report = {}
-        # print('loop! ')
-        make_cnt += 1
-        mcode = member.mcode
-
-        report['user_name'] = ''
-        report['study_start_day'] = ''
-        report['study_end_day'] = ''
-        report['level_name'] = ''
-
-        member = StudyMember.objects.filter(mcode=mcode)
-        if member:
-            member = member[0]
-            report['user_name'] = member.mname
-            report['level_name'] = member.level_code
-        # print('>>> here2')
-        if sd != '0' and em != '0' and ed != '0':
-            # print('>>> here3-1')
-            # print('ok, get data!')
-
-            start_date = datetime(year, int(sm), int(sd), 0, 0, 0)
-            end_date = datetime(year, int(em), int(ed), 23, 59, 59)
-            # print('ed : ' + str(end_date.timetuple()))
-            report['topic_list'] = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                                 end_dt__lt=end_date).order_by('-id')
-            # print(topic_list.query)
-            first_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                        end_dt__lt=end_date).order_by('id').first()
-            if first_topic:
-                report['study_start_day'] = first_topic.start_dt
-            last_topic = MemberTopicLog.objects.filter(username=mcode, start_dt__gte=start_date,
-                                                       end_dt__lt=end_date).order_by('-id').first()
-            if last_topic:
-                report['study_end_day'] = last_topic.end_dt
-        else:
-            # print('>>> here3-2')
-            report['topic_list'] = MemberTopicLog.objects.filter(username=mcode).order_by('-id')
-            first_topic = MemberTopicLog.objects.filter(username=mcode).order_by('id').first()
-            if first_topic is None:
-                continue_cnt += 1
-                continue
-            report['study_start_day'] = first_topic.start_dt
-            last_topic = MemberTopicLog.objects.filter(username=mcode).order_by('-id').first()
-            report['study_end_day'] = last_topic.end_dt
-
-        # print('apeend')
-        report_list.append(report)
-        # print(str(len(report_list)))
-
-    memo_list = ReportCardMemo.objects.filter(visible=1).order_by('seq')
-
-    # print('make_cnt : ' + str(make_cnt))
-    # print('continue_cnt : ' + str(continue_cnt))
-    # print(check_mem_list)
-    context = {
-        'memo_list': memo_list,
-        'month_list': month_list,
-        'day_list': day_list,
-        'sm': sm,
-        'sd': sd,
-        'em': em,
-        'ed': ed,
-        'ctrl_day': ctrl_day,
-        'report_list': report_list,
-    }
-    return render(request, 'manager/reportcardall.html', context)
-
-
-def reportall_test(request):
-    aid = get_aid(request)
 
     # 체크 리스트 처리
     handle_check_list(request, aid)
@@ -601,7 +370,7 @@ def reportall_test(request):
         'ed': ed,
         'report_list': report_list,
     }
-    return render(request, 'manager/reportcardall_test.html', context)
+    return render(request, 'manager/reportcardall.html', context)
 
 
 def handle_check_list(request, aid):

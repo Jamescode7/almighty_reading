@@ -70,6 +70,14 @@ textarea.autosize {
             <button onclick="printPage()">Print this page</button>
             <span style="padding-left: 10px;">학습기간</span>
             <span style="border: 1px solid #000000; padding: 5px 10px; border-radius: 10px; background-color: #efefef">
+                <select id="sy" name="sy" class="shadow-none p-0 border-0 ">
+                    {% for year in year_list %}
+                        <option {% if year == sy %}selected{% endif %} value="{{ year }}">
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+                년
                 <select id="sm" name="sm" class="shadow-none p-0 border-0 ">
                     {% for month in month_list %}
                         <option {% if month == sm %}selected{% endif %} value="{{ month }}">
@@ -86,6 +94,15 @@ textarea.autosize {
                     {% endfor %}
                 </select>
                 일 ~
+                <!-- 종료 연도 선택 -->
+                <select id="ey" name="ey" class="shadow-none p-0 border-0">
+                    {% for year in year_list %}
+                        <option {% if year == ey %}selected{% endif %} value="{{ year }}">
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+                년
                 <select id="em" name="em" class="shadow-none p-0 border-0 ">
                     {% for month in month_list %}
                         <option {% if month == em %}selected{% endif %} value="{{ month }}">
@@ -184,35 +201,32 @@ function resize(obj) {
 
 
 function checkMonthAndDay(){
+    const select_value_sy = document.getElementById("sy");
+    var sy = parseInt(select_value_sy.options[select_value_sy.selectedIndex].value);
+
     const select_value_sm = document.getElementById("sm");
-    var sm = select_value_sm.options[select_value_sm.selectedIndex].value;
+    var sm = parseInt(select_value_sm.options[select_value_sm.selectedIndex].value);
 
     const select_value_sd = document.getElementById("sd");
-    var sd = select_value_sd.options[select_value_sd.selectedIndex].value;
+    var sd = parseInt(select_value_sd.options[select_value_sd.selectedIndex].value);
+
+    const select_value_ey = document.getElementById("ey");
+    var ey = parseInt(select_value_ey.options[select_value_ey.selectedIndex].value);
 
     const select_value_em = document.getElementById("em");
-    var em = select_value_em.options[select_value_em.selectedIndex].value;
+    var em = parseInt(select_value_em.options[select_value_em.selectedIndex].value);
 
     const select_value_ed = document.getElementById("ed");
-    var ed = select_value_ed.options[select_value_ed.selectedIndex].value;
+    var ed = parseInt(select_value_ed.options[select_value_ed.selectedIndex].value);
 
-    sm = parseInt(sm);
-    sd = parseInt(sd);
-    em = parseInt(em);
-    ed = parseInt(ed);
-
-    if( sm >= em ){
-        if( sm > em ) {
-            alert('종료일보다 시작일이 더 이전이어야 합니다.')
-            return false;
-        }
-        if( sd > ed ){
-            alert('종료일보다 시작일이 더 이전이어야 합니다. ')
-            return false;
-        }
+    if (sy > ey || (sy === ey && sm > em) || (sy === ey && sm === em && sd > ed)) {
+        alert('종료일보다 시작일이 더 이전이어야 합니다.');
+        return false;
     }
-    location.href='?sm=' + sm + '&sd=' + sd + '&em=' + em + '&ed=' + ed + '';
+
+    location.href = '?sy=' + sy + '&sm=' + sm + '&sd=' + sd + '&ey=' + ey + '&em=' + em + '&ed=' + ed;
 }
+
 
 function setMemo(self, idx)
 {
