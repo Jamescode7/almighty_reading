@@ -263,9 +263,12 @@ tr.colored:hover td{
             var form = document.getElementById('memberForm');
             if(action === 'reportall') {
                 form.action = '{% url 'manager:reportall' %}';
-            } else if(action === 'reportall_test') {
-                form.action = '{% url 'manager:reportall_test' %}';
             }
+            /*
+            else if(action === 'reportall_test') {
+               테스트용.삭제.
+            }
+             */
             window.open('', 'reportWindow', 'width=900px,height=1000px');
             form.method = 'GET';
             form.target = 'reportWindow';
