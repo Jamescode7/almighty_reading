@@ -4,7 +4,7 @@ from appapi.views import flash_version_check
 from manager.views import dashboard, basic_table, profile, interpretation, \
     comprehension, week, week_up, print_page, answer_page, WeekListView, info, agency, \
     downapp, day, plan_info, reportcard, plan_view, reportall, reportSelect, btns, test, test2, reportall_test, \
-    reportcard_test, week_test
+    reportcard_test
 
 app_name = "manager"
 
@@ -25,9 +25,6 @@ urlpatterns = [
 
     path('week_up/', week_up, name='week_up'),
     path('week_up/<int:prev_dt>', week_up, name='week_up'),
-
-    path('week_test/', week_test, name='week_test'),
-    path('week_test/<int:prev_dt>', week_test, name='week_test'),
 
     path('day/', day, name='day'),
 
