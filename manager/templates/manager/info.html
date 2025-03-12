@@ -146,7 +146,7 @@ tr.colored:hover td{
                                                             </option>
                                                         {% endfor %}
                                                     </select>
-                                                    <button type="submit" class="btn btn-primary">변경</button>
+                                                    <button type="submit" name="btn_level" value="1" class="btn btn-primary">변경</button>
                                                 </div>
                                             </th>
                                             <th class="border-top-0">마이플랜</th>
@@ -159,7 +159,7 @@ tr.colored:hover td{
                                                             </option>
                                                         {% endfor %}
                                                     </select>
-                                                    <button type="submit" class="btn btn-primary">변경</button>
+                                                    <button type="submit" name="btn_plan" value="1" class="btn btn-primary">변경</button>
                                                     <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;" onclick="window.open('{% url 'manager:plan_view' %}', 'plan_view', 'width=720px, height=1000px' );">플랜보기</button>
                                                 </div>
                                             </th>
@@ -293,6 +293,33 @@ tr.colored:hover td{
             document.forms["topicForm"].submit();
         }
     </script>
+    <script>
+        {% if member_topic_log|length > 0 and member_topic_log.0.end_dt == None %}
+          var hasOngoingStudy = true;
+        {% else %}
+          var hasOngoingStudy = false;
+        {% endif %}
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.querySelector('form[name="memForm"]');
+            form.addEventListener('submit', function(event) {
+                if (event.submitter && event.submitter.name === 'btn_plan') {
+                    if (hasOngoingStudy) {
+                        var ok = confirm("플랜을 변경하실 경우 진행중이던 학습은 종료 처리 됩니다. 계속하시겠습니까?");
+                        if (!ok) {
+                            event.preventDefault();
+                        }
+                    }
+                }
+            });
+        });
+        </script>
+        
+        
+    
+    
+    
+    
 </body>
 
 </html>

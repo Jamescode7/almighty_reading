@@ -581,14 +581,51 @@ def info(request, user_id=''):
             user = user[0]
             is_select_level = True
 
-            # 플랜이나 레벨제한을 바꿨을때 실행.
-            if request.GET.get('mem_level'):
+            # 1. 레벨/플랜 변경 처리
+            # ----------------------
+            # - 레벨 변경 (btn_level)
+            # - 플랜 변경 (btn_plan)
+            if request.GET.get('mem_level') or request.GET.get('mem_plan'):
                 mem_level = request.GET.get('mem_level')
                 mem_plan = request.GET.get('mem_plan')
+
+                # 혹시 "플랜 변경" 버튼(btn_plan)을 눌렀다면 → 진행 중 학습 강제 종료 로직
+                if 'btn_plan' in request.GET:
+                    # 진행 중(end_dt == None)인 가장 최근 MemberTopicLog 찾기
+                    latest_log = MemberTopicLog.objects.filter(
+                        username=user_id,
+                        end_dt__isnull=True
+                    ).order_by('-id').first()
+
+                    if latest_log:
+                        # 종료 처리
+                        latest_log.end_dt = datetime.now()
+                        latest_log.save()
+
+                        # StepFinishLog 기록 (기존 로직 준용)
+                        today = date.today()
+                        year = today.strftime('%y')
+                        month = today.strftime('%m')
+                        day = today.strftime('%d')
+                        StepFinishLog.objects.create(
+                            username=user_id,
+                            dt_year=year,
+                            dt_month=month,
+                            dt_day=day,
+                            topic_code='C'
+                            # 나머지는 None
+                        )
+
+                        # user.current_study도 초기화
+                        user.current_study = 0
+                        user.save()
+
+                # 이제 레벨/플랜 실제 변경
                 user.level_code = Level.objects.get(level_code=mem_level)
                 user.plan_code = Plan.objects.get(plan_code=mem_plan)
                 user.save()
                 return HttpResponseRedirect(reverse('manager:info', args=(user_id,)))
+
 
             # 토픽 종료 또는 토픽 리셋 실행.
             if request.GET.get('process'):
