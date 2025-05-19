@@ -14,7 +14,7 @@ RUN pip install gunicorn
 
 RUN pip install mysqlclient
 
-RUN echo "REMEMBER 217"
+RUN echo "REMEMBER 218"
 
 EXPOSE 8000
 
