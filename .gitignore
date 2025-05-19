@@ -85,3 +85,9 @@ db.sqlite3
 .idea/
 
 media/
+
+#for create pdf file
+make-pdf.sh
+_minted/
+*.tex
+*.pdf

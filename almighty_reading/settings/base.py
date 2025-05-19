@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'appapi',
     'manager',
     'dialog',
+    'engedu_privacy_policy',
 ]
 
 MIDDLEWARE = [

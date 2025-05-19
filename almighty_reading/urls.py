@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/', include('appapi.urls')),
     path('manager/', include('manager.urls')),
     path('dialog/', include('dialog.urls')),
+    path('engedu_privacy_policy/', include('engedu_privacy_policy.urls')),
 
     #path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
     #path('step_reading/<path:resource>', flutter_redirect),
