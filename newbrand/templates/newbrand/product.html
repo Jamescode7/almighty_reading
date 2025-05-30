@@ -1,0 +1,25 @@
+{% extends "newbrand/base.html" %} {% block content %}
+<section class="pt-5 mt-4">
+  <div class="container">
+    <h2 class="mb-4 font-weight-bold text-center">Products &amp; Services</h2>
+
+    <div class="card-columns">
+      {% for i in "123456" %}
+      <div class="card border-0 shadow-sm">
+        <img
+          src="https://via.placeholder.com/350x220?text=Product+{{ i }}"
+          class="card-img-top"
+          alt="Product {{ i }}"
+        />
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold">Product {{ i }}</h5>
+          <p class="card-text small">
+            Brief description of product {{ i }} highlighting its key benefit.
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

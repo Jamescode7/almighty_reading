@@ -1,0 +1,41 @@
+/* ===== Core Tokens ===== */
+:root {
+    --primary: #004aad;
+    --secondary: #007bff;
+}
+
+/* Typography & Utilities */
+body { font-family: "Roboto", "Noto Sans KR", sans-serif; }
+h1, h2, h3, h4, h5 { font-weight: 700; }
+
+.hero-image {
+  background: url("/static/newbrand/img/hero.jpg") center/cover no-repeat;
+  padding: 8rem 0;
+}
+
+
+/* Timeline (About page) */
+.timeline { list-style: none; padding-left: 0; position: relative; }
+.timeline:before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px;
+    background: #dee2e6; transform: translateX(-50%);
+}
+.timeline > li { position: relative; margin: 2rem 0; }
+.timeline-badge {
+    position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+    background: var(--primary); color: #fff; padding: 6px 14px; border-radius: 20px;
+    font-weight: bold; font-size: 0.85rem;
+}
+.timeline-panel {
+    width: 45%; padding: 1.25rem; background: #fff; border-radius: 0.5rem;
+    border: 1px solid #e9ecef; box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+.timeline-inverted .timeline-panel { margin-left: 55%; }
+.timeline > li:not(.timeline-inverted) .timeline-panel { margin-right: 55%; }
+
+/* Cards */
+.card-columns .card { transition: transform .2s; }
+.card-columns .card:hover { transform: translateY(-4px); }
+
+/* Footer */
+footer { font-size: 0.9rem; }

@@ -13,49 +13,58 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+import os
+
 from django.contrib import admin
 from django.http import HttpResponseRedirect
-from django.urls import path, include
 from django.shortcuts import redirect
-
+from django.urls import include, path
 from django.views.static import serve
-import os
 
 from common_value.models import AppVersion
 from manage import main
 from study_info.views import bin_response
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STEP_READING = os.path.join(BASE_DIR, 'step_reading')
-STEP_READING2 = os.path.join(BASE_DIR, 'step_reading2')
-STEP_READING3 = os.path.join(BASE_DIR, 'step_reading3')
-STEP_READING4 = os.path.join(BASE_DIR, 'step_reading4')
+STEP_READING = os.path.join(BASE_DIR, "step_reading")
+STEP_READING2 = os.path.join(BASE_DIR, "step_reading2")
+STEP_READING3 = os.path.join(BASE_DIR, "step_reading3")
+STEP_READING4 = os.path.join(BASE_DIR, "step_reading4")
+
 
 def step_reading(request, resource):
     return serve(request, resource, STEP_READING)
+
+
 def step_reading2(request, resource):
     return serve(request, resource, STEP_READING2)
+
+
 def step_reading3(request, resource):
     return serve(request, resource, STEP_READING3)
+
+
 def step_reading4(request, resource):
     return serve(request, resource, STEP_READING4)
 
-urlpatterns = [
-    path('', lambda request: redirect('manager/info/', permanent=False)),
-    path('ad/adm/admin/', admin.site.urls),
-    path('member_info/', include('member_info.urls')),
-    path('library/', include('library.urls')),
-    path('common_value/', include('common_value.urls')),
-    path('study_info/', include('study_info.urls')),
-    path('api/', include('appapi.urls')),
-    path('manager/', include('manager.urls')),
-    path('dialog/', include('dialog.urls')),
-    path('engedu_privacy_policy/', include('engedu_privacy_policy.urls')),
 
-    #path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
-    #path('step_reading/<path:resource>', flutter_redirect),
+urlpatterns = [
+    path("", lambda request: redirect("manager/info/", permanent=False)),
+    path("ad/adm/admin/", admin.site.urls),
+    path("member_info/", include("member_info.urls")),
+    path("library/", include("library.urls")),
+    path("common_value/", include("common_value.urls")),
+    path("study_info/", include("study_info.urls")),
+    path("api/", include("appapi.urls")),
+    path("manager/", include("manager.urls")),
+    path("dialog/", include("dialog.urls")),
+    path("engedu_privacy_policy/", include("engedu_privacy_policy.urls")),
+    path("newbrand/", include("newbrand.urls")),
+    # path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
+    # path('step_reading/<path:resource>', flutter_redirect),
 ]
-'''
+"""
 urlpatterns = [
     path('', lambda request: redirect('manager/info/', permanent=False)),
     path('ad/adm/admin/', admin.site.urls),
@@ -70,9 +79,9 @@ urlpatterns = [
     path('step_reading/', lambda r: flutter_redirect(r, 'index.html')),
     path('step_reading/<path:resource>', flutter_redirect),
 ]
-'''
+"""
 
-'''
+"""
 urlpatterns = [
     path('', lambda request: redirect('step_reading/', permanent=False)),
     path('step_reading/', lambda r: step_reading(r, 'index.html')),
@@ -87,4 +96,4 @@ urlpatterns = [
     path('step_reading4/', lambda r: step_reading4(r, 'index.html')),
     path('step_reading4/<path:resource>', step_reading4),
 ]
-'''
+"""

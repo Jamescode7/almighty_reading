@@ -1,0 +1,62 @@
+{% extends "newbrand/base.html" %} {% block content %}
+<!-- HERO -->
+<header
+  class="jumbotron jumbotron-fluid text-white text-center hero-image mb-0"
+>
+  <div class="container">
+    <h1 class="display-4 font-weight-bold">Welcome to NEWBRAND</h1>
+    <p class="lead">Modern English Solutions for Global Learners</p>
+    <a href="{% url 'newbrand:product' %}" class="btn btn-primary btn-lg"
+      >Explore Products</a
+    >
+  </div>
+</header>
+
+<!-- FEATURES -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-4 font-weight-bold">Our Strengths</h2>
+    <div class="card-deck">
+      <div class="card border-0 shadow-sm">
+        <img
+          src="https://via.placeholder.com/600x400?text=Quality"
+          class="card-img-top"
+          alt="Quality"
+        />
+        <div class="card-body text-center">
+          <h5 class="card-title font-weight-bold">Quality Content</h5>
+          <p class="card-text">
+            Curated learning materials developed by experts.
+          </p>
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <img
+          src="https://via.placeholder.com/600x400?text=Technology"
+          class="card-img-top"
+          alt="Tech"
+        />
+        <div class="card-body text-center">
+          <h5 class="card-title font-weight-bold">Smart Technology</h5>
+          <p class="card-text">
+            AI-powered platform that adapts to every learner.
+          </p>
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <img
+          src="https://via.placeholder.com/600x400?text=Support"
+          class="card-img-top"
+          alt="Support"
+        />
+        <div class="card-body text-center">
+          <h5 class="card-title font-weight-bold">Global Support</h5>
+          <p class="card-text">
+            Friendly assistance in English &amp; Korean, 24/7.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
