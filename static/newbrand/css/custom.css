@@ -61,24 +61,58 @@ h1, h2, h3, h4, h5 { font-weight: 700; }
 
 
 
-/* Timeline (About page) */
-.timeline { list-style: none; padding-left: 0; position: relative; }
-.timeline:before {
-    content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px;
-    background: #dee2e6; transform: translateX(-50%);
+/* Timeline */
+.timeline {
+  position: relative;
+  margin: 2rem 0;
+  padding: 0;
 }
-.timeline > li { position: relative; margin: 2rem 0; }
-.timeline-badge {
-    position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
-    background: var(--primary); color: #fff; padding: 6px 14px; border-radius: 20px;
-    font-weight: bold; font-size: 0.85rem;
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 100%;
+  background-color: #007bff;
+  transform: translateX(-50%);
 }
-.timeline-panel {
-    width: 45%; padding: 1.25rem; background: #fff; border-radius: 0.5rem;
-    border: 1px solid #e9ecef; box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 1rem 2rem;
+  box-sizing: border-box;
 }
-.timeline-inverted .timeline-panel { margin-left: 55%; }
-.timeline > li:not(.timeline-inverted) .timeline-panel { margin-right: 55%; }
+.timeline-item:nth-child(odd) {
+  left: 0;
+  text-align: right;
+}
+.timeline-item:nth-child(even) {
+  left: 50%;
+  text-align: left;
+}
+.timeline-icon {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+}
+.timeline-content {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+  max-width: 90%;
+}
 
 /* Cards */
 .card-columns .card { transition: transform .2s; }

@@ -1,46 +1,101 @@
-{% extends "newbrand/base.html" %} {% block content %}
-<section class="pt-5 mt-4">
-  <div class="container">
-    <h2 class="mb-5 font-weight-bold text-center">About NEWBRAND</h2>
+{# templates/newbrand/about.html #} {% extends "newbrand/base.html" %} {% load
+static %} {% block content %}
 
-    <!-- Timeline -->
-    <ul class="timeline">
-      <li>
-        <div class="timeline-badge">2010</div>
-        <div class="timeline-panel">
-          <h5 class="font-weight-bold">Founded in Seoul</h5>
-          <p class="text-muted">Started as a small language institute.</p>
-        </div>
-      </li>
-      <li class="timeline-inverted">
-        <div class="timeline-badge">2015</div>
-        <div class="timeline-panel">
-          <h5 class="font-weight-bold">Digital Transformation</h5>
-          <p class="text-muted">Launched the first e-learning platform.</p>
-        </div>
-      </li>
-      <li>
-        <div class="timeline-badge">2025</div>
-        <div class="timeline-panel">
-          <h5 class="font-weight-bold">Global Brand Launch</h5>
-          <p class="text-muted">
-            Rebranded to “NEWBRAND” with cutting-edge AI solutions.
-          </p>
-        </div>
-      </li>
-    </ul>
+<section id="about" class="py-5 mt-5">
+  <!-- Section Header -->
+  <div class="container text-center mb-4">
+    <h2 class="display-4 font-weight-bold">About Us</h2>
+    <p class="lead">우리의 여정, 미션, 비전을 한눈에 확인해 보세요.</p>
+  </div>
 
-    <!-- Mission / Vision -->
-    <div class="row mt-5">
-      <div class="col-md-6 mb-4">
-        <h4 class="font-weight-bold">Mission</h4>
-        <p>
-          Empower every learner with accessible, high-quality English education.
-        </p>
+  <!-- Mission & Vision Section -->
+
+  <div class="bg-light py-5">
+    <div class="container">
+      <div class="row mb-5">
+        <!-- Mission Card -->
+        <div class="col-md-6 mb-4" data-aos="fade-right">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title text-primary">
+                <i class="ri-target-line align-middle mr-2"></i>Our Mission
+              </h5>
+              <p class="card-text">
+                영어 학습의 모든 순간을 <strong>개인 맞춤형</strong>으로
+                설계하여,<br />
+                단계별 <strong>Writing</strong> 연습부터
+                <strong>LevelUp 테스트</strong>,<br />
+                <strong>Meta 학습 가이드</strong>,
+                <strong>Forget Me Not 복습 알림</strong>까지<br />
+                하나의 플랫폼에서 제공합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Vision Card -->
+        <div class="col-md-6 mb-4" data-aos="fade-left">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title text-primary">
+                <i class="ri-eye-line align-middle mr-2"></i>Our Vision
+              </h5>
+              <p class="card-text">
+                AI 기술과 커뮤니티 기반 협업 학습을 통해 전 세대를 아우르는<br />
+                글로벌 학습 생태계를 구축하여, 언제 어디서나 신뢰받는<br />
+                영어 학습 파트너가 됩니다.<br />
+                Writing의 자유도를 높이고, LevelUp 챌린지를 통해<br />
+                도전 의식을 고취하며, Meta 인식을 통해 학습 전략을<br />
+                개선하고, Forget Me Not 기능으로 복습을 자동화하는<br />
+                선순환 구조를 완성합니다.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-6 mb-4">
-        <h4 class="font-weight-bold">Vision</h4>
-        <p>To become the world’s most trusted partner in English mastery.</p>
+    </div>
+  </div>
+
+  <!-- Timeline Section -->
+
+  <div class="py-5">
+    <div class="container">
+      <div class="timeline">
+        <div class="timeline-item" data-aos="fade-up">
+          <div class="timeline-icon bg-primary text-white">
+            <i class="ri-rocket-line"></i>
+          </div>
+          <div class="timeline-content shadow-sm">
+            <h5 class="mb-1">2020</h5>
+            <p>NEWBRAND 설립 및 플랫폼 초기 버전 출시</p>
+          </div>
+        </div>
+        <div class="timeline-item" data-aos="fade-up" data-aos-delay="100">
+          <div class="timeline-icon bg-primary text-white">
+            <i class="ri-book-open-line"></i>
+          </div>
+          <div class="timeline-content shadow-sm">
+            <h5 class="mb-1">2021</h5>
+            <p>Writing 모듈 런칭: 맞춤형 작문 연습 제공</p>
+          </div>
+        </div>
+        <div class="timeline-item" data-aos="fade-up" data-aos-delay="200">
+          <div class="timeline-icon bg-primary text-white">
+            <i class="ri-bar-chart-line"></i>
+          </div>
+          <div class="timeline-content shadow-sm">
+            <h5 class="mb-1">2022</h5>
+            <p>LevelUp 테스트 시스템 도입: 실시간 레벨 체크</p>
+          </div>
+        </div>
+        <div class="timeline-item" data-aos="fade-up" data-aos-delay="300">
+          <div class="timeline-icon bg-primary text-white">
+            <i class="ri-refresh-line"></i>
+          </div>
+          <div class="timeline-content shadow-sm">
+            <h5 class="mb-1">2023</h5>
+            <p>Forget Me Not 리마인더 기능 추가: 복습 주기 자동화</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -9,6 +9,12 @@
     />
     <title>{{ title|default:"NEWBRAND" }}</title>
 
+    <!-- AOS CSS 추가 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+      rel="stylesheet"
+    />
+
     <!-- Bootstrap 4.6 (Last 4.x) -->
     <!-- ✅ Bootstrap 4.6.0 (jsDelivr CDN) -->
     <link
@@ -97,5 +103,12 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
     <script src="{% static 'newbrand/js/custom.js' %}"></script>
+    <!-- AOS JS 초기화 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        AOS.init({ duration: 800, once: true });
+      });
+    </script>
   </body>
 </html>
