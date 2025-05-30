@@ -8,10 +8,57 @@
 body { font-family: "Roboto", "Noto Sans KR", sans-serif; }
 h1, h2, h3, h4, h5 { font-weight: 700; }
 
+/* Hero 기본 설정 */
 .hero-image {
-  background: url("/static/newbrand/img/hero.jpg") center/cover no-repeat;
+  position: relative;
+  background: url("/static/newbrand/img/hero-classroom.png") center/cover no-repeat;
   padding: 8rem 0;
+  overflow: hidden;
 }
+
+/* 반투명 오버레이 */
+.hero-image::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+/* 컨텐츠를 overlay 위로 올리기 */
+.hero-image .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* 타이포그래피 조정 */
+.hero-image h1 {
+  font-size: 2.5rem;       /* 필요 시 조정 */
+  line-height: 1.2;        /* 두 줄 래핑 시 간격 */
+  color: #fff;
+}
+@media (min-width: 768px) {
+  .hero-image h1 {
+    font-size: 3.5rem;     /* 데스크탑에서 좀 더 크게 */
+  }
+}
+
+.hero-image p.lead {
+  font-size: 1.25rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+/* CTA 버튼 강조 */
+.hero-image .btn-primary {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.hero-image .btn-primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
 
 
 /* Timeline (About page) */

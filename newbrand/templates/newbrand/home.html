@@ -1,59 +1,110 @@
-{% extends "newbrand/base.html" %} {% block content %}
-<!-- HERO -->
-<header
-  class="jumbotron jumbotron-fluid text-white text-center hero-image mb-0"
+{# templates/home.html #} {% extends "newbrand/base.html" %} {% load static %}
+{% block content %}
+
+<!-- Hero Section -->
+
+<section
+  id="hero"
+  class="d-flex align-items-center justify-content-center text-center hero-image"
 >
   <div class="container">
-    <h1 class="display-4 font-weight-bold">Welcome to NEWBRAND</h1>
-    <p class="lead">Modern English Solutions for Global Learners</p>
-    <a href="{% url 'newbrand:product' %}" class="btn btn-primary btn-lg"
-      >Explore Products</a
+    <h1 class="display-4 font-weight-bold">Learn English Anytime, Anywhere</h1>
+    <p class="lead mb-4">Your journey to mastery starts here</p>
+    <a href="#products" class="btn btn-primary btn-lg js-scroll-trigger"
+      >서비스 살펴보기</a
     >
   </div>
-</header>
+</section>
 
-<!-- FEATURES -->
-<section class="py-5">
+<!-- Our Strengths Section -->
+
+<section id="strengths" class="py-5">
   <div class="container">
-    <h2 class="text-center mb-4 font-weight-bold">Our Strengths</h2>
-    <div class="card-deck">
-      <div class="card border-0 shadow-sm">
-        <img
-          src="https://via.placeholder.com/600x400?text=Quality"
-          class="card-img-top"
-          alt="Quality"
-        />
-        <div class="card-body text-center">
-          <h5 class="card-title font-weight-bold">Quality Content</h5>
-          <p class="card-text">
-            Curated learning materials developed by experts.
-          </p>
+    <h2 class="text-center mb-5 font-weight-bold">Our Strengths</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center shadow-sm">
+          <img
+            src="{% static 'newbrand/img/strength-quality.png' %}"
+            class="card-img-top"
+            alt="Quality Content"
+          />
+          <div class="card-body">
+            <h5 class="card-title">Quality Content</h5>
+            <p class="card-text">전문가가 집필하는 검증된 교재</p>
+          </div>
         </div>
       </div>
-      <div class="card border-0 shadow-sm">
-        <img
-          src="https://via.placeholder.com/600x400?text=Technology"
-          class="card-img-top"
-          alt="Tech"
-        />
-        <div class="card-body text-center">
-          <h5 class="card-title font-weight-bold">Smart Technology</h5>
-          <p class="card-text">
-            AI-powered platform that adapts to every learner.
-          </p>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center shadow-sm">
+          <img
+            src="{% static 'newbrand/img/strength-smart.png' %}"
+            class="card-img-top"
+            alt="Smart Technology"
+          />
+          <div class="card-body">
+            <h5 class="card-title">Smart Technology</h5>
+            <p class="card-text">AI 기반 대시보드로 학습 관리</p>
+          </div>
         </div>
       </div>
-      <div class="card border-0 shadow-sm">
-        <img
-          src="https://via.placeholder.com/600x400?text=Support"
-          class="card-img-top"
-          alt="Support"
-        />
-        <div class="card-body text-center">
-          <h5 class="card-title font-weight-bold">Global Support</h5>
-          <p class="card-text">
-            Friendly assistance in English &amp; Korean, 24/7.
-          </p>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center shadow-sm">
+          <img
+            src="{% static 'newbrand/img/strength-global.png' %}"
+            class="card-img-top"
+            alt="Global Support"
+          />
+          <div class="card-body">
+            <h5 class="card-title">Global Support</h5>
+            <p class="card-text">24/7 글로벌 고객센터 운영</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- More Features Section -->
+
+<section id="more-features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4 font-weight-bold">More Features</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="feature-box text-center p-4 shadow-sm rounded">
+          <img
+            src="{% static 'newbrand/img/feature-quiz.png' %}"
+            alt="Interactive Quizzes"
+            class="mb-3"
+            style="width: 64px; height: 64px"
+          />
+          <h5>Interactive Quizzes</h5>
+          <p>실시간 피드백으로 학습 효과 증대</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="feature-box text-center p-4 shadow-sm rounded">
+          <img
+            src="{% static 'newbrand/img/feture-forum.png' %}"
+            alt="Community Forums"
+            class="mb-3"
+            style="width: 64px; height: 64px"
+          />
+          <h5>Community Forums</h5>
+          <p>전 세계 학습자들과 소통할 수 있는 공간</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="feature-box text-center p-4 shadow-sm rounded">
+          <img
+            src="{% static 'newbrand/img/feature-progress.png' %}"
+            alt="Progress Tracking"
+            class="mb-3"
+            style="width: 64px; height: 64px"
+          />
+          <h5>Progress Tracking</h5>
+          <p>학습 통계를 한눈에 확인</p>
         </div>
       </div>
     </div>
