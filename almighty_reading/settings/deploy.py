@@ -2,7 +2,7 @@ from .base import *
 
 
 def read_secret(secret_name):
-    file = open('/run/secrets/' + secret_name)
+    file = open("/run/secrets/" + secret_name)
     secret = file.read()
     secret = secret.rstrip().lstrip()
     file.close()
@@ -15,35 +15,34 @@ env = environ.Env(
 )
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settingspp - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
+SECRET_KEY = read_secret("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = ['https://www.readoly.co.kr']
+CSRF_TRUSTED_ORIGINS = ["https://www.readoly.co.kr"]
 
 # HTTPS 사용 시 Django가 'X-Forwarded-Proto' 헤더를 신뢰할 수 있도록 설정
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django',
-        'USER': 'django',
-        'PASSWORD': read_secret('MYSQL_PASSWORD'),
-        'HOST': 'mariadb',
-        'PORT': '3306',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "django",
+        "USER": "django",
+        "PASSWORD": read_secret("MYSQL_PASSWORD"),
+        "HOST": "mariadb",
+        "PORT": "3306",
     }
 }
-
