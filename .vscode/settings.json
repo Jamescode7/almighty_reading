@@ -1,0 +1,10 @@
+{
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportWildcardImportFromLibrary": "none",
+    "reportUndefinedVariable": "none",
+    "reportMissingImports": "none",
+    "reportGeneralTypeIssues": "none"
+  },
+  "python.languageServer": "Pylance"
+}
