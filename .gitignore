@@ -91,3 +91,7 @@ make-pdf.sh
 _minted/
 *.tex
 *.pdf
+
+# Python 컴파일 파일 무시
+*.pyc
+__pycache__/
