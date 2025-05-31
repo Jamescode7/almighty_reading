@@ -1,12 +1,16 @@
 /* ===== Core Tokens ===== */
 :root {
-    --primary: #004aad;
-    --secondary: #007bff;
+  --primary: #004aad;
+  --secondary: #007bff;
 }
 
 /* Typography & Utilities */
-body { font-family: "Roboto", "Noto Sans KR", sans-serif; }
-h1, h2, h3, h4, h5 { font-weight: 700; }
+body {
+  font-family: "Roboto", "Noto Sans KR", sans-serif;
+}
+h1, h2, h3, h4, h5 {
+  font-weight: 700;
+}
 
 /* Hero 기본 설정 */
 .hero-image {
@@ -59,8 +63,6 @@ h1, h2, h3, h4, h5 { font-weight: 700; }
   transform: translateY(-2px);
 }
 
-
-
 /* Timeline */
 .timeline {
   position: relative;
@@ -74,7 +76,7 @@ h1, h2, h3, h4, h5 { font-weight: 700; }
   left: 50%;
   width: 4px;
   height: 100%;
-  background-color: #007bff;
+  background-color: var(--secondary);
   transform: translateX(-50%);
 }
 .timeline-item {
@@ -97,7 +99,7 @@ h1, h2, h3, h4, h5 { font-weight: 700; }
   left: 50%;
   width: 40px;
   height: 40px;
-  background-color: #007bff;
+  background-color: var(--secondary);
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -114,9 +116,71 @@ h1, h2, h3, h4, h5 { font-weight: 700; }
   max-width: 90%;
 }
 
-/* Cards */
-.card-columns .card { transition: transform .2s; }
-.card-columns .card:hover { transform: translateY(-4px); }
+/* Product 페이지 전용 스타일 */
+#product {
+  padding-top: 6rem; /* 네비게이션 바 겹침 방지 */
+}
+
+/* 섹션 구분선을 원할 경우 주석 해제 */
+/*
+section#writing + hr,
+section#levelup + hr,
+section#meta + hr,
+section#forget + hr {
+  border: none;
+  border-top: 1px solid #dee2e6;
+  margin: 3rem 0;
+}
+*/
+
+/* 모든 카드 상단 이미지를 동일한 비율로 자르고, 영역 안에 맞추기(fit) */
+.card-img-top {
+  width: 100%;
+  height: 0;
+  padding-top: 66.66%; /* 3:2 비율을 위해 높이를 너비의 66.66%로 설정 */
+  object-fit: cover;  /* 이미지 영역을 꽉 채우면서 잘림(cover) */
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* 카드 내부를 플렉스 컨테이너로 만들어 버튼을 카드 하단에 고정 */
+.card-body {
+  display: flex;
+  flex-direction: column;
+}
+.card-body .btn {
+  margin-top: auto; /* 버튼을 항상 카드바디 맨 아래로 밀어줌 */
+}
+
+/* 카드 컬럼 호버 효과 (선택 사항) */
+.card-columns .card {
+  transition: transform .2s;
+}
+.card-columns .card:hover {
+  transform: translateY(-4px);
+}
+
+/* 회색 배경(bg-light)을 살짝 더 연하게 조정 (선택 사항) */
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+/* 반응형: 모바일(≤576px)에서 상단 버튼과 카드 여백 조정 */
+@media (max-width: 575.98px) {
+  /* Section 상단 버튼 그룹을 블록으로 바꿔 가로폭 100% 차지 */
+  #product .text-center .btn {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  /* 카드 간 좌우 여백 줄이기 */
+  .col-md-6.col-lg-3.mb-4 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 
 /* Footer */
-footer { font-size: 0.9rem; }
+footer {
+  font-size: 0.9rem;
+}
