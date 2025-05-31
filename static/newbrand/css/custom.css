@@ -184,3 +184,111 @@ section#forget + hr {
 footer {
   font-size: 0.9rem;
 }
+
+
+/* ===== Contact 페이지 전용 스타일 ===== */
+
+/* 섹션 배경색 통일 (필요 시) */
+#contact {
+  background-color: #fff; /* 흰색 배경 유지 */
+}
+
+/* Contact Form 박스 스타일 */
+.contact-form {
+  background-color: #fff;
+  border-radius: 0.5rem;
+}
+.contact-form .form-control {
+  border-radius: 0.25rem;
+}
+.contact-form .form-group label {
+  font-weight: 600;
+}
+.contact-form .btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.contact-form .btn-primary:hover {
+  background-color: darken(var(--primary), 10%);
+  transform: translateY(-2px);
+}
+
+/* Contact Info 박스 스타일 */
+.contact-info {
+  background-color: #fff;
+  border-radius: 0.5rem;
+}
+.contact-info h5 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+.contact-info p {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+.contact-info p i {
+  font-size: 1.25rem;
+  vertical-align: middle;
+}
+.contact-info a {
+  text-decoration: none;
+  color: var(--secondary);
+}
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+/* Google Maps iframe 반응형 처리 */
+.map-responsive {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 비율 ( 높이 = 너비의 56.25%) */
+  height: 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+.map-responsive iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* 섹션 헤더 여백 및 타이포그래피 */
+#contact .display-4 {
+  font-size: 2.5rem;
+}
+@media (min-width: 768px) {
+  #contact .display-4 {
+    font-size: 3rem;
+  }
+}
+#contact .lead {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* AOS 애니메이션 딜레이 보정 (옵션) */
+[data-aos] {
+  opacity: 0;
+  transition-property: opacity, transform;
+}
+
+/* 모바일 레이아웃 조정 */
+@media (max-width: 575.98px) {
+  /* 폼과 연락처 정보 박스에 padding 축소 */
+  .contact-form,
+  .contact-info {
+    padding: 1rem;
+  }
+  /* 섹션 제목 글자 크기 축소 */
+  #contact .display-4 {
+    font-size: 1.75rem;
+  }
+  #contact .lead {
+    font-size: 1rem;
+  }
+}

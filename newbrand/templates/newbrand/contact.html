@@ -1,72 +1,110 @@
-{% extends "newbrand/base.html" %} {% block content %}
-<section class="pt-5 mt-4">
+{# templates/newbrand/contact.html #}
+{% extends "newbrand/base.html" %}
+{% load static %}
+{% block content %}
+
+<section id="contact" class="py-5">
   <div class="container">
-    <h2 class="mb-4 font-weight-bold text-center">Contact Us</h2>
+    <!-- 섹션 헤더 -->
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="display-4 font-weight-bold">Contact Us</h2>
+      <p class="lead">
+        궁금한 점이나 제휴 문의가 있으시면 언제든 연락 주세요.<br />
+        아래 양식을 작성해 주시면 빠르게 회신해 드리겠습니다.
+      </p>
+    </div>
 
     <div class="row">
-      <!-- Contact Details -->
-      <div class="col-md-5 mb-4">
-        <h5 class="font-weight-bold">Head Office</h5>
-        <p>
-          Seoul, Korea<br />Tel. +82-2-123-4567<br />Email: info@newbrand.com
-        </p>
-
-        <h5 class="font-weight-bold mt-4">Business Hours</h5>
-        <p>Mon – Fri 09:00 – 18:00 (KST)</p>
+      <!-- 1) 문의 폼 섹션 -->
+      <div class="col-lg-6 mb-5" data-aos="fade-up" data-aos-delay="100">
+        <div class="contact-form p-4 shadow-sm rounded">
+          <form action="{% url 'newbrand:contact_submit' %}" method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_name">Name<span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="id_name"
+                name="name"
+                placeholder="Your Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="id_email">Email<span class="text-danger">*</span></label>
+              <input
+                type="email"
+                class="form-control"
+                id="id_email"
+                name="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="id_subject">Subject</label>
+              <input
+                type="text"
+                class="form-control"
+                id="id_subject"
+                name="subject"
+                placeholder="Subject (Optional)"
+              />
+            </div>
+            <div class="form-group">
+              <label for="id_message">Message<span class="text-danger">*</span></label>
+              <textarea
+                class="form-control"
+                id="id_message"
+                name="message"
+                rows="6"
+                placeholder="Leave your message here..."
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-3">
+              Send Message
+            </button>
+          </form>
+        </div>
       </div>
 
-      <!-- Map -->
-      <div class="col-md-7 mb-4">
-        <div class="embed-responsive embed-responsive-16by9 shadow-sm">
+      <!-- 2) 연락처 정보 & 구글맵 섹션 -->
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+        <!-- 연락처 정보 -->
+        <div class="contact-info mb-5 p-4 shadow-sm rounded">
+          <h5 class="font-weight-bold mb-3">Get in Touch</h5>
+          <p>
+            <i class="ri-mail-line text-primary mr-2"></i>
+            <a href="mailto:support@newbrand.com" class="text-dark">support@newbrand.com</a>
+          </p>
+          <p>
+            <i class="ri-phone-line text-primary mr-2"></i>
+            <a href="tel:+821012345678" class="text-dark">+82 10-1234-5678</a>
+          </p>
+          <p>
+            <i class="ri-map-pin-line text-primary mr-2"></i>
+            서울특별시 강남구 테헤란로 123, NEWBRAND 빌딩 5층
+          </p>
+        </div>
+
+        <!-- Google Maps 임베드 (반응형 처리) -->
+        <div class="map-responsive shadow-sm rounded">
           <iframe
-            class="embed-responsive-item"
-            src="https://maps.google.com/maps?q=seoul&amp;output=embed"
-            allowfullscreen
-            title="NEWBRAND Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163.1234567890123!2d127.0344567890123!3d37.498765432109876!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca4567890123:0x1234567890abcdef!2sNEWBRAND%20Office!5e0!3m2!1sko!2skr!4v1621234567890!5m2!1sko!2skr"
+            width="600"
+            height="450"
+            frameborder="0"
+            style="border:0;"
+            allowfullscreen=""
+            aria-hidden="false"
+            tabindex="0"
           ></iframe>
         </div>
       </div>
     </div>
-
-    <!-- Simple Placeholder Form -->
-    <div class="row mt-5">
-      <div class="col-lg-8 mx-auto">
-        <form>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                placeholder="Your Name"
-              />
-            </div>
-            <div class="form-group col-md-6">
-              <label for="email">E-mail</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                placeholder="you@example.com"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea
-              id="message"
-              rows="4"
-              class="form-control"
-              placeholder="Write your inquiry here…"
-            ></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" disabled>
-            Send (disabled – prototype)
-          </button>
-        </form>
-      </div>
-    </div>
   </div>
 </section>
+
 {% endblock %}
